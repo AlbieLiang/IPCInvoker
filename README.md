@@ -7,9 +7,15 @@ IPCInvoker就是一个用来简化跨进程调用的组件，IPCInvoker底层也
 
 ## 引入组件库
 ```gradle
+allprojects {
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+}
 
 dependencies {
-    compile 'cc.suitalk.android:ipcinvoker:1.0.0'
+//     compile 'cc.suitalk.android:ipcinvoker:1.0.0'
+    compile 'com.github.AlbieLiang:IPCInvoker:1.0.0'
 }
 
 ```

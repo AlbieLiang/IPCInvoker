@@ -21,7 +21,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import cc.suitalk.ipcinvoker.IPCInvoker;
-import cc.suitalk.ipcinvoker.IPCRemoteASyncInvoke;
+import cc.suitalk.ipcinvoker.IPCRemoteAsyncInvoke;
 import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
 import cc.suitalk.ipcinvoker.sample.IPCData;
 import cc.suitalk.ipcinvoker.sample.service.MainProcessIPCService;
@@ -40,7 +40,7 @@ public class IPCInvokeSample_InvokeByTypeWithData {
         o.id = id;
         o.debugType = debugType;
         o.version = pkgVersion;
-        IPCInvoker.invokeASync(MainProcessIPCService.PROCESS_NAME, o, IPCRemoteInvoke_PrintWithData.class, new IPCRemoteInvokeCallback<IPCData>() {
+        IPCInvoker.invokeAsync(MainProcessIPCService.PROCESS_NAME, o, IPCRemoteInvoke_PrintWithData.class, new IPCRemoteInvokeCallback<IPCData>() {
             @Override
             public void onCallback(IPCData data) {
                 Log.i(TAG, "onCallback : %s", data.result);
@@ -52,7 +52,7 @@ public class IPCInvokeSample_InvokeByTypeWithData {
     }
 
 
-    private static class IPCRemoteInvoke_PrintWithData implements IPCRemoteASyncInvoke<IPCRemoteInvoke_PrintWithData, IPCData>, Parcelable {
+    private static class IPCRemoteInvoke_PrintWithData implements IPCRemoteAsyncInvoke<IPCRemoteInvoke_PrintWithData, IPCData>, Parcelable {
 
         private String id;
         private int debugType;

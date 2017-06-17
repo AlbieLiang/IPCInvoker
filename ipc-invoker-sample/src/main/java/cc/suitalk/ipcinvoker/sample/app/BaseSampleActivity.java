@@ -107,7 +107,7 @@ public class BaseSampleActivity extends AppCompatActivity {
                         putValue.key = key;
                         putValue.value = value;
 
-                        IPCInvoker.invokeASync(remoteProcessName, putValue, IPCInvokeTask_PutValue.class, new IPCRemoteInvokeCallback<Bundle>() {
+                        IPCInvoker.invokeAsync(remoteProcessName, putValue, IPCInvokeTask_PutValue.class, new IPCRemoteInvokeCallback<Bundle>() {
                             @Override
                             public void onCallback(final Bundle data) {
                                 runOnUiThread(new Runnable() {

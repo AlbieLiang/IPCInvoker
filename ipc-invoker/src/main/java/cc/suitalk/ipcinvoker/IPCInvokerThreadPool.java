@@ -19,6 +19,13 @@ package cc.suitalk.ipcinvoker;
 
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.support.annotation.NonNull;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+
+import cc.suitalk.ipcinvoker.tools.Log;
 
 /**
  * Created by albieliang on 2017/5/20.
@@ -26,9 +33,15 @@ import android.os.HandlerThread;
 
 class IPCInvokerThreadPool {
 
+    private static final String TAG = "IPC.IPCInvokerThreadPool";
+
+    private static final int DEFAULT_CORE_POOL_SIZE = 3;
+
     private static IPCInvokerThreadPool sThreadPool;
     
     private Handler mHandler;
+    private ExecutorService mExecutorService;
+    private int mCorePoolSize = DEFAULT_CORE_POOL_SIZE;
     
     private static IPCInvokerThreadPool getImpl() {
         if (sThreadPool == null) {
@@ -42,27 +55,40 @@ class IPCInvokerThreadPool {
     }
     
     private IPCInvokerThreadPool() {
-        HandlerThread thread = new HandlerThread("IPCThreadPool#" + hashCode());
+        HandlerThread thread = new HandlerThread("IPCInvokerThreadPool#WorkerThread-" + hashCode());
         thread.start();
         mHandler = new Handler(thread.getLooper());
+        mExecutorService = Executors.newScheduledThreadPool(mCorePoolSize, new ThreadFactory() {
+
+            int index = 0;
+            @Override
+            public Thread newThread(@NonNull final Runnable r) {
+                String name = "IPCInvokerThreadPool#Thread-" + (index++);
+                HandlerThread thread = new HandlerThread(name) {
+                    @Override
+                    protected void onLooperPrepared() {
+                        r.run();
+                    }
+                };
+                Log.i(TAG, "newThread(thread : %s)", name);
+                return thread;
+            }
+        });
+        Log.i(TAG, "initialize IPCInvoker ThreadPool(hashCode : %s)", hashCode());
     }
     
     public static boolean post(Runnable run) {
         if (run == null) {
             return false;
         }
-        return getImpl().getHandler().post(run);
+        getImpl().mExecutorService.execute(run);
+        return true;
     }
     
     public static boolean postDelayed(Runnable run, long delayMillis) {
         if (run == null) {
             return false;
         }
-        return getImpl().getHandler().postDelayed(run, delayMillis);
-    }
-    
-    private Handler getHandler() {
-        // TODO: 2017/5/20 albielaing, add strategy here.
-        return mHandler;
+        return getImpl().mHandler.postDelayed(run, delayMillis);
     }
 }

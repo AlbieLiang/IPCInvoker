@@ -21,6 +21,6 @@ package cc.suitalk.ipcinvoker;
  * Created by albieliang on 2017/5/28.
  */
 
-public interface IPCRemoteASyncInvoke<InputType, ResultType> {
+public interface IPCRemoteAsyncInvoke<InputType, ResultType> {
     void invoke(InputType data, IPCRemoteInvokeCallback<ResultType> callback);
 }

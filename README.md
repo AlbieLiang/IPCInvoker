@@ -1,24 +1,24 @@
 # IPCInvoker
 
+[![](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/AlbieLiang/IPCInvoker)
+
+
+
 在Android开发过程中，经常需要写一些跨进程的逻辑，一般情况下我们都是通过AIDL接口来调用的，写AIDL接口并不是一件容易的事情，需要写Service，定义特定的业务接口，调用时需要绑定Service等。
 
 IPCInvoker就是一个用来简化跨进程调用的组件，IPCInvoker底层也是通过AIDL实现的，只是把接口分装得更加容易使用。
 
 
 ## 引入组件库
+
+IPCInvoker组件库已经提交到jcenter上了，可以直接dependencies中配置引用
+
 ```gradle
-allprojects {
-    repositories {
-        maven { url 'https://jitpack.io' }
-    }
-}
-
 dependencies {
-//     compile 'cc.suitalk.android:ipcinvoker:1.0.0'
-    compile 'com.github.AlbieLiang:IPCInvoker:1.0.0'
+    compile 'cc.suitalk.android:ipc-invoker:1.0.0'
 }
-
 ```
+
 
 ## 在项目中使用
 
@@ -136,7 +136,7 @@ public class IPCInvokeSample_InvokeByType {
         bundle.putString("id", id);
         bundle.putInt("type", debugType);
         bundle.putInt("version", 0);
-        IPCInvoker.invokeASync(PushProcessIPCService.PROCESS_NAME, bundle, IPCRemoteInvoke_PrintSomething.class, new IPCRemoteInvokeCallback<IPCData>() {
+        IPCInvoker.invokeAsync(PushProcessIPCService.PROCESS_NAME, bundle, IPCRemoteInvoke_PrintSomething.class, new IPCRemoteInvokeCallback<IPCData>() {
             @Override
             public void onCallback(IPCData data) {
                 Log.i(TAG, "onCallback : %s", data.result);
@@ -147,7 +147,7 @@ public class IPCInvokeSample_InvokeByType {
         });
     }
 
-    private static class IPCRemoteInvoke_PrintSomething implements IPCRemoteASyncInvoke<Bundle, IPCData> {
+    private static class IPCRemoteInvoke_PrintSomething implements IPCRemoteAsyncInvoke<Bundle, IPCData> {
 
         @Override
         public void invoke(Bundle data, IPCRemoteInvokeCallback<IPCData> callback) {

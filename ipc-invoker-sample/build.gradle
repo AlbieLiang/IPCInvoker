@@ -44,5 +44,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.1.0'
     testCompile 'junit:junit:4.12'
 
-    compile 'com.github.AlbieLiang:IPCInvoker:1.0.0'
+//    compile 'com.github.AlbieLiang:IPCInvoker:1.0.0'
+//    compile 'cc.suitalk.android:ipc-invoker:1.0.0'
+    compile project(':ipc-invoker')
 }

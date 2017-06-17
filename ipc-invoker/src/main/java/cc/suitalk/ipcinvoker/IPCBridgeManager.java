@@ -24,6 +24,7 @@ import android.content.ServiceConnection;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
@@ -91,6 +92,7 @@ class IPCBridgeManager implements IPCInvokerInitializer {
 
                 @Override
                 public void onServiceConnected(ComponentName name, IBinder service) {
+                    Log.i(TAG, "onServiceConnected(%s, tid : %s)", bw.hashCode(), Thread.currentThread().getId());
                     bw.bridge = AIDL_IPCInvokeBridge.Stub.asInterface(service);
                     synchronized (bw) {
                         bw.isConnecting = false;
@@ -100,6 +102,7 @@ class IPCBridgeManager implements IPCInvokerInitializer {
 
                 @Override
                 public void onServiceDisconnected(ComponentName name) {
+                    Log.i(TAG, "onServiceDisconnected(%s, tid : %s)", bw.hashCode(), Thread.currentThread().getId());
                     mBridgeMap.remove(process);
                     bw.bridge = null;
                     synchronized (bw) {
@@ -112,10 +115,12 @@ class IPCBridgeManager implements IPCInvokerInitializer {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
+                    Log.i(TAG, "bindService(%s, tid : %s)", bw.hashCode(), Thread.currentThread().getId());
                     context.bindService(intent, bw.serviceConnection, Context.BIND_AUTO_CREATE);
                     mHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
+                            Log.i(TAG, "on connect timeout(%s, tid : %s)", bw.hashCode(), Thread.currentThread().getId());
                             if (!bw.isConnecting) {
                                 return;
                             }
@@ -131,7 +136,7 @@ class IPCBridgeManager implements IPCInvokerInitializer {
                                 mBridgeMap.remove(process);
                             }
                         }
-                    }, 10 * 1000);
+                    }, getTimeout());
                 }
             });
             try {
@@ -232,6 +237,13 @@ class IPCBridgeManager implements IPCInvokerInitializer {
     @Override
     public <T extends BaseIPCService> void addIPCService(String processName, Class<T> service) {
         mServiceClassMap.put(processName, service);
+    }
+
+    private static long getTimeout() {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            return 3 * 1000;
+        }
+        return 10 * 1000;
     }
 
     private static class IPCBridgeWrapper {

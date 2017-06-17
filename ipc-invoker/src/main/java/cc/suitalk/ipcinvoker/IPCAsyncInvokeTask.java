@@ -23,7 +23,7 @@ import android.os.Bundle;
  * Created by albieliang on 2017/5/13.
  */
 
-public interface IPCASyncInvokeTask {
+public interface IPCAsyncInvokeTask {
 
     void invoke(Bundle data, IPCInvokeCallback callback);
 }

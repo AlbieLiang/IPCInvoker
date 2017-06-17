@@ -44,17 +44,17 @@ public abstract class BaseIPCService extends Service {
     private AIDL_IPCInvokeBridge.Stub mBinder = new AIDL_IPCInvokeBridge.Stub() {
 
         @Override
-        public void invokeASync(final Bundle data, final String clazz, final AIDL_IPCInvokeCallback callback) throws RemoteException {
+        public void invokeAsync(final Bundle data, final String clazz, final AIDL_IPCInvokeCallback callback) throws RemoteException {
             if (clazz == null || clazz.length() == 0) {
-                Log.e(TAG, "invokeASync failed, class is null or nil.");
+                Log.e(TAG, "invokeAsync failed, class is null or nil.");
                 return;
             }
-            IPCASyncInvokeTask task = IPCReflectUtil.newInstance(clazz, IPCASyncInvokeTask.class);
+            IPCAsyncInvokeTask task = IPCReflectUtil.newInstance(clazz, IPCAsyncInvokeTask.class);
             if (task == null) {
-                Log.e(TAG, "invokeASync failed, can not newInstance by class %s.", clazz);
+                Log.e(TAG, "invokeAsync failed, can not newInstance by class %s.", clazz);
                 return;
             }
-            final IPCASyncInvokeTask finalTask = task;
+            final IPCAsyncInvokeTask finalTask = task;
             if (data != null) {
                 data.setClassLoader(BaseIPCService.class.getClassLoader());
             }
@@ -81,7 +81,7 @@ public abstract class BaseIPCService extends Service {
         @Override
         public Bundle invokeSync(Bundle data, String clazz) throws RemoteException {
             if (clazz == null || clazz.length() == 0) {
-                Log.e(TAG, "invokeASync failed, class is null or nil.");
+                Log.e(TAG, "invokeAsync failed, class is null or nil.");
                 return null;
             }
             IPCSyncInvokeTask task = IPCReflectUtil.newInstance(clazz, IPCSyncInvokeTask.class);

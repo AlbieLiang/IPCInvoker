@@ -9,9 +9,9 @@ import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeCallback;
 
 interface AIDL_IPCInvokeBridge {
     /**
-     * The clazz must the implements of IPCASyncInvokeTask.
+     * The clazz must the implements of IPCAsyncInvokeTask.
      */
-    oneway void invokeASync(in Bundle data, String clazz, AIDL_IPCInvokeCallback callback);
+    oneway void invokeAsync(in Bundle data, String clazz, AIDL_IPCInvokeCallback callback);
 
     /**
      * The clazz must the implements of IPCSyncInvokeTask.

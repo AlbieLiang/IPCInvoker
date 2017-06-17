@@ -19,7 +19,7 @@ package cc.suitalk.ipcinvoker.sample.async;
 
 import android.os.Bundle;
 
-import cc.suitalk.ipcinvoker.IPCASyncInvokeTask;
+import cc.suitalk.ipcinvoker.IPCAsyncInvokeTask;
 import cc.suitalk.ipcinvoker.IPCInvokeCallback;
 import cc.suitalk.ipcinvoker.IPCInvoker;
 import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
@@ -42,7 +42,7 @@ public class IPCInvokeSample_InvokeWithBundle {
         bundle.putString("id", id);
         bundle.putInt("type", debugType);
         bundle.putInt("version", 0);
-        IPCInvoker.invokeASync(MainProcessIPCService.PROCESS_NAME, bundle, IPCInvokeTask_CheckWxaPkg.class, new IPCInvokeCallback() {
+        IPCInvoker.invokeAsync(MainProcessIPCService.PROCESS_NAME, bundle, IPCInvokeTask_CheckWxaPkg.class, new IPCInvokeCallback() {
             @Override
             public void onCallback(Bundle data) {
                 Log.i(TAG, "onCallback : %s", data);
@@ -54,7 +54,7 @@ public class IPCInvokeSample_InvokeWithBundle {
         });
     }
 
-    private static class IPCInvokeTask_CheckWxaPkg implements IPCASyncInvokeTask {
+    private static class IPCInvokeTask_CheckWxaPkg implements IPCAsyncInvokeTask {
 
         @Override
         public void invoke(Bundle data, IPCInvokeCallback callback) {

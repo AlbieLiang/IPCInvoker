@@ -22,7 +22,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import cc.suitalk.ipcinvoker.IPCInvokeLogic;
-import cc.suitalk.ipcinvoker.IPCRemoteASyncInvoke;
+import cc.suitalk.ipcinvoker.IPCRemoteAsyncInvoke;
 import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
 import cc.suitalk.ipcinvoker.tools.Log;
 
@@ -30,7 +30,7 @@ import cc.suitalk.ipcinvoker.tools.Log;
  * Created by albieliang on 2017/6/3.
  */
 
-public class IPCInvokeTask_PutValue implements Parcelable, IPCRemoteASyncInvoke<IPCInvokeTask_PutValue, Bundle> {
+public class IPCInvokeTask_PutValue implements Parcelable, IPCRemoteAsyncInvoke<IPCInvokeTask_PutValue, Bundle> {
 
     private static final String TAG = "IPCInvokerSample.IPCInvokeTask_PutValue";
 

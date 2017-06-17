@@ -19,12 +19,14 @@ package cc.suitalk.ipcinvoker;
 
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+import cc.suitalk.ipcinvoker.reflect.ReflectStaticFieldSmith;
 import cc.suitalk.ipcinvoker.tools.Log;
 
 /**
@@ -55,21 +57,28 @@ class IPCInvokerThreadPool {
     }
     
     private IPCInvokerThreadPool() {
-        HandlerThread thread = new HandlerThread("IPCInvokerThreadPool#WorkerThread-" + hashCode());
-        thread.start();
-        mHandler = new Handler(thread.getLooper());
+        final HandlerThread handlerThread = new HandlerThread("IPCInvokerThreadPool#WorkerThread-" + hashCode());
+        handlerThread.start();
+        mHandler = new Handler(handlerThread.getLooper());
         mExecutorService = Executors.newScheduledThreadPool(mCorePoolSize, new ThreadFactory() {
 
             int index = 0;
             @Override
             public Thread newThread(@NonNull final Runnable r) {
                 String name = "IPCInvokerThreadPool#Thread-" + (index++);
-                HandlerThread thread = new HandlerThread(name) {
+                Thread thread = new Thread(new Runnable() {
                     @Override
-                    protected void onLooperPrepared() {
+                    public void run() {
+                        ThreadLocal<Looper> tl = new ReflectStaticFieldSmith<ThreadLocal<Looper>>(Looper.class, "sThreadLocal").getWithoutThrow();
+                        if (tl != null && tl.get() == null) {
+                            Log.d(TAG, "create a new Looper ThreadLocal variable.");
+                            tl.set(handlerThread.getLooper());
+                        } else {
+                            Log.d(TAG, "ThreadLocal Looper variable is null or has set.(%s)", tl);
+                        }
                         r.run();
                     }
-                };
+                }, name);
                 Log.i(TAG, "newThread(thread : %s)", name);
                 return thread;
             }

@@ -18,6 +18,8 @@
 package cc.suitalk.ipcinvoker.sample.app;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -56,7 +58,13 @@ public class IPCInvokeTask_PutValue implements Parcelable, IPCRemoteAsyncInvoke<
                 result.getInt(PID), result.getString(PROCESS_NAME), result.getInt(RESULT_SIZE)));
 
         Log.i(TAG, "putValue, result : %s", result);
-
+        Looper looper = Looper.myLooper();
+        (new Handler(looper)).post(new Runnable() {
+            @Override
+            public void run() {
+                Log.i(TAG, "test post message to Looper(%s).", Looper.myLooper().hashCode());
+            }
+        });
         callback.onCallback(result);
     }
 

@@ -23,7 +23,7 @@ import android.os.Parcelable;
 import cc.suitalk.ipcinvoker.IPCInvoker;
 import cc.suitalk.ipcinvoker.IPCRemoteAsyncInvoke;
 import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
-import cc.suitalk.ipcinvoker.sample.IPCData;
+import cc.suitalk.ipcinvoker.sample.IPCSampleData;
 import cc.suitalk.ipcinvoker.sample.service.MainProcessIPCService;
 import cc.suitalk.ipcinvoker.tools.Log;
 
@@ -35,14 +35,14 @@ public class IPCInvokeSample_InvokeByTypeWithData {
 
     private static final String TAG = "IPCInvokerSample.IPCInvokeSample_InvokeByTypeWithData";
 
-    public static void invokeIPCLogic(String id, int debugType, int pkgVersion, final IPCRemoteInvokeCallback<IPCData> callback) {
+    public static void invokeIPCLogic(String id, int debugType, int pkgVersion, final IPCRemoteInvokeCallback<IPCSampleData> callback) {
         IPCRemoteInvoke_PrintWithData o = new IPCRemoteInvoke_PrintWithData();
         o.id = id;
         o.debugType = debugType;
         o.version = pkgVersion;
-        IPCInvoker.invokeAsync(MainProcessIPCService.PROCESS_NAME, o, IPCRemoteInvoke_PrintWithData.class, new IPCRemoteInvokeCallback<IPCData>() {
+        IPCInvoker.invokeAsync(MainProcessIPCService.PROCESS_NAME, o, IPCRemoteInvoke_PrintWithData.class, new IPCRemoteInvokeCallback<IPCSampleData>() {
             @Override
-            public void onCallback(IPCData data) {
+            public void onCallback(IPCSampleData data) {
                 Log.i(TAG, "onCallback : %s", data.result);
                 if (callback != null) {
                     callback.onCallback(data);
@@ -52,15 +52,15 @@ public class IPCInvokeSample_InvokeByTypeWithData {
     }
 
 
-    private static class IPCRemoteInvoke_PrintWithData implements IPCRemoteAsyncInvoke<IPCRemoteInvoke_PrintWithData, IPCData>, Parcelable {
+    private static class IPCRemoteInvoke_PrintWithData implements IPCRemoteAsyncInvoke<IPCRemoteInvoke_PrintWithData, IPCSampleData>, Parcelable {
 
         private String id;
         private int debugType;
         private int version;
 
         @Override
-        public void invoke(IPCRemoteInvoke_PrintWithData data, IPCRemoteInvokeCallback<IPCData> callback) {
-            IPCData result = new IPCData();
+        public void invoke(IPCRemoteInvoke_PrintWithData data, IPCRemoteInvokeCallback<IPCSampleData> callback) {
+            IPCSampleData result = new IPCSampleData();
             result.result = String.format("id:%s|type:%s|version:%s", data.id, data.debugType, data.version);
             callback.onCallback(result);
         }

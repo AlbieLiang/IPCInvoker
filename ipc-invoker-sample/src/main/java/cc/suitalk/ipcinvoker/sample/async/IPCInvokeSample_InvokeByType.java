@@ -22,7 +22,7 @@ import android.os.Bundle;
 import cc.suitalk.ipcinvoker.IPCInvoker;
 import cc.suitalk.ipcinvoker.IPCRemoteAsyncInvoke;
 import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
-import cc.suitalk.ipcinvoker.sample.IPCData;
+import cc.suitalk.ipcinvoker.sample.IPCSampleData;
 import cc.suitalk.ipcinvoker.sample.service.PushProcessIPCService;
 import cc.suitalk.ipcinvoker.tools.Log;
 
@@ -34,14 +34,14 @@ public class IPCInvokeSample_InvokeByType {
 
     private static final String TAG = "IPCInvokerSample.IPCInvokeSample_InvokeByType";
 
-    public static void invokeIPCLogic(String id, int debugType, int pkgVersion, final IPCRemoteInvokeCallback<IPCData> callback) {
+    public static void invokeIPCLogic(String id, int debugType, int pkgVersion, final IPCRemoteInvokeCallback<IPCSampleData> callback) {
         Bundle bundle = new Bundle();
         bundle.putString("id", id);
         bundle.putInt("type", debugType);
         bundle.putInt("version", 0);
-        IPCInvoker.invokeAsync(PushProcessIPCService.PROCESS_NAME, bundle, IPCRemoteInvoke_PrintSomething.class, new IPCRemoteInvokeCallback<IPCData>() {
+        IPCInvoker.invokeAsync(PushProcessIPCService.PROCESS_NAME, bundle, IPCRemoteInvoke_PrintSomething.class, new IPCRemoteInvokeCallback<IPCSampleData>() {
             @Override
-            public void onCallback(IPCData data) {
+            public void onCallback(IPCSampleData data) {
                 Log.i(TAG, "onCallback : %s", data.result);
                 if (callback != null) {
                     callback.onCallback(data);
@@ -50,11 +50,11 @@ public class IPCInvokeSample_InvokeByType {
         });
     }
 
-    private static class IPCRemoteInvoke_PrintSomething implements IPCRemoteAsyncInvoke<Bundle, IPCData> {
+    private static class IPCRemoteInvoke_PrintSomething implements IPCRemoteAsyncInvoke<Bundle, IPCSampleData> {
 
         @Override
-        public void invoke(Bundle data, IPCRemoteInvokeCallback<IPCData> callback) {
-            IPCData result = new IPCData();
+        public void invoke(Bundle data, IPCRemoteInvokeCallback<IPCSampleData> callback) {
+            IPCSampleData result = new IPCSampleData();
             result.result = data.getString("id") + ":" + data.getInt("type") + ":" + data.getInt("version");
             callback.onCallback(result);
         }

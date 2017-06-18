@@ -17,14 +17,17 @@
 
 package cc.suitalk.ipcinvoker.sample;
 
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import cc.suitalk.ipcinvoker.event.IPCData;
 
 /**
  * Created by albieliang on 2017/5/14.
  */
 
-public class IPCData implements Parcelable {
+public class IPCSampleData implements Parcelable, IPCData {
 
     public String result;
 
@@ -38,17 +41,29 @@ public class IPCData implements Parcelable {
         return 0;
     }
 
-    public static final Creator<IPCData> CREATOR = new Creator<IPCData>() {
+    public static final Creator<IPCSampleData> CREATOR = new Creator<IPCSampleData>() {
         @Override
-        public IPCData createFromParcel(Parcel in) {
-            IPCData o = new IPCData();
+        public IPCSampleData createFromParcel(Parcel in) {
+            IPCSampleData o = new IPCSampleData();
             o.result = in.readString();
             return o;
         }
 
         @Override
-        public IPCData[] newArray(int size) {
-            return new IPCData[size];
+        public IPCSampleData[] newArray(int size) {
+            return new IPCSampleData[size];
         }
     };
+
+    @Override
+    public Bundle toBundle() {
+        Bundle bundle = new Bundle();
+        bundle.putString("result", result);
+        return null;
+    }
+
+    @Override
+    public void fromBundle(Bundle bundle) {
+        result = bundle.getString("result");
+    }
 }

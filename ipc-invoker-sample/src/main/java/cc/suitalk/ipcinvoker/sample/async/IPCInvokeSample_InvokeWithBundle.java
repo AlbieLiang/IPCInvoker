@@ -23,7 +23,7 @@ import cc.suitalk.ipcinvoker.IPCAsyncInvokeTask;
 import cc.suitalk.ipcinvoker.IPCInvokeCallback;
 import cc.suitalk.ipcinvoker.IPCInvoker;
 import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
-import cc.suitalk.ipcinvoker.sample.IPCData;
+import cc.suitalk.ipcinvoker.sample.IPCSampleData;
 import cc.suitalk.ipcinvoker.sample.service.MainProcessIPCService;
 import cc.suitalk.ipcinvoker.tools.Log;
 
@@ -61,7 +61,7 @@ public class IPCInvokeSample_InvokeWithBundle {
             String id = data.getString("id");
             int debugType = data.getInt("type");
             int version = data.getInt("version");
-            IPCData result = new IPCData();
+            IPCSampleData result = new IPCSampleData();
             result.result = String.format("id:%s|type:%s|version:%s", id, debugType, version);
             // Add remote logic here
             Bundle bundle = new Bundle();

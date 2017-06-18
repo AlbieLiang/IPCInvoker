@@ -100,7 +100,7 @@ public class IPCInvokerApplication extends Application {
 
 public class IPCInvokeSample_InvokeByType {
 
-    public static IPCData invokeIPCLogic(String id, int debugType, int pkgVersion) {
+    public static IPCSampleData invokeIPCLogic(String id, int debugType, int pkgVersion) {
         Bundle bundle = new Bundle();
         bundle.putString("id", id);
         bundle.putInt("type", debugType);
@@ -108,11 +108,11 @@ public class IPCInvokeSample_InvokeByType {
         return IPCInvoker.invokeSync(PushProcessIPCService.PROCESS_NAME, bundle, IPCRemoteInvoke_PrintSomething.class);
     }
 
-    private static class IPCRemoteInvoke_PrintSomething implements IPCRemoteSyncInvoke<Bundle, IPCData> {
+    private static class IPCRemoteInvoke_PrintSomething implements IPCRemoteSyncInvoke<Bundle, IPCSampleData> {
 
         @Override
-        public IPCData invoke(Bundle data) {
-            IPCData result = new IPCData();
+        public IPCSampleData invoke(Bundle data) {
+            IPCSampleData result = new IPCSampleData();
             result.result = data.getString("id") + ":" + data.getInt("type") + ":" + data.getInt("version");
             return result;
         }
@@ -131,14 +131,14 @@ public class IPCInvokeSample_InvokeByType {
 
     private static final String TAG = "IPCInvokerSample.IPCInvokeSample_InvokeByType";
 
-    public static void invokeIPCLogic(String id, int debugType, int pkgVersion, final IPCRemoteInvokeCallback<IPCData> callback) {
+    public static void invokeIPCLogic(String id, int debugType, int pkgVersion, final IPCRemoteInvokeCallback<IPCSampleData> callback) {
         Bundle bundle = new Bundle();
         bundle.putString("id", id);
         bundle.putInt("type", debugType);
         bundle.putInt("version", 0);
-        IPCInvoker.invokeAsync(PushProcessIPCService.PROCESS_NAME, bundle, IPCRemoteInvoke_PrintSomething.class, new IPCRemoteInvokeCallback<IPCData>() {
+        IPCInvoker.invokeAsync(PushProcessIPCService.PROCESS_NAME, bundle, IPCRemoteInvoke_PrintSomething.class, new IPCRemoteInvokeCallback<IPCSampleData>() {
             @Override
-            public void onCallback(IPCData data) {
+            public void onCallback(IPCSampleData data) {
                 Log.i(TAG, "onCallback : %s", data.result);
                 if (callback != null) {
                     callback.onCallback(data);
@@ -147,11 +147,11 @@ public class IPCInvokeSample_InvokeByType {
         });
     }
 
-    private static class IPCRemoteInvoke_PrintSomething implements IPCRemoteAsyncInvoke<Bundle, IPCData> {
+    private static class IPCRemoteInvoke_PrintSomething implements IPCRemoteAsyncInvoke<Bundle, IPCSampleData> {
 
         @Override
-        public void invoke(Bundle data, IPCRemoteInvokeCallback<IPCData> callback) {
-            IPCData result = new IPCData();
+        public void invoke(Bundle data, IPCRemoteInvokeCallback<IPCSampleData> callback) {
+            IPCSampleData result = new IPCSampleData();
             result.result = data.getString("id") + ":" + data.getInt("type") + ":" + data.getInt("version");
             callback.onCallback(result);
         }
@@ -161,11 +161,11 @@ public class IPCInvokeSample_InvokeByType {
 
 ```
 
-上述示例中IPCData是一个可序列化的Parcelable，IPCInvoker支持的跨进程调用的数据必须是可序列化的Parcelable（默认支持Bundle）
+上述示例中IPCSampleData是一个可序列化的Parcelable，IPCInvoker支持的跨进程调用的数据必须是可序列化的Parcelable（默认支持Bundle）
 
 
 ```java
-public class IPCData implements Parcelable {
+public class IPCSampleData implements Parcelable {
 
     public String result;
 
@@ -179,17 +179,17 @@ public class IPCData implements Parcelable {
         return 0;
     }
 
-    public static final Creator<IPCData> CREATOR = new Creator<IPCData>() {
+    public static final Creator<IPCSampleData> CREATOR = new Creator<IPCSampleData>() {
         @Override
-        public IPCData createFromParcel(Parcel in) {
-            IPCData o = new IPCData();
+        public IPCSampleData createFromParcel(Parcel in) {
+            IPCSampleData o = new IPCSampleData();
             o.result = in.readString();
             return o;
         }
 
         @Override
-        public IPCData[] newArray(int size) {
-            return new IPCData[size];
+        public IPCSampleData[] newArray(int size) {
+            return new IPCSampleData[size];
         }
     };
 }

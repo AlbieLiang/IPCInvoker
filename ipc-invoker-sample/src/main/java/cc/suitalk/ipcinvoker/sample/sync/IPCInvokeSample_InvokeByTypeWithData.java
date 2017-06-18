@@ -22,7 +22,7 @@ import android.os.Parcelable;
 
 import cc.suitalk.ipcinvoker.IPCInvoker;
 import cc.suitalk.ipcinvoker.IPCRemoteSyncInvoke;
-import cc.suitalk.ipcinvoker.sample.IPCData;
+import cc.suitalk.ipcinvoker.sample.IPCSampleData;
 import cc.suitalk.ipcinvoker.sample.service.MainProcessIPCService;
 
 /**
@@ -31,7 +31,7 @@ import cc.suitalk.ipcinvoker.sample.service.MainProcessIPCService;
 
 public class IPCInvokeSample_InvokeByTypeWithData {
 
-    public static IPCData invokeIPCLogic(String id, int debugType, int pkgVersion) {
+    public static IPCSampleData invokeIPCLogic(String id, int debugType, int pkgVersion) {
         IPCRemoteInvoke_PrintWithData o = new IPCRemoteInvoke_PrintWithData();
         o.id = id;
         o.debugType = debugType;
@@ -40,15 +40,15 @@ public class IPCInvokeSample_InvokeByTypeWithData {
     }
 
 
-    private static class IPCRemoteInvoke_PrintWithData implements IPCRemoteSyncInvoke<IPCRemoteInvoke_PrintWithData, IPCData>, Parcelable {
+    private static class IPCRemoteInvoke_PrintWithData implements IPCRemoteSyncInvoke<IPCRemoteInvoke_PrintWithData, IPCSampleData>, Parcelable {
 
         private String id;
         private int debugType;
         private int version;
 
         @Override
-        public IPCData invoke(IPCRemoteInvoke_PrintWithData data) {
-            IPCData result = new IPCData();
+        public IPCSampleData invoke(IPCRemoteInvoke_PrintWithData data) {
+            IPCSampleData result = new IPCSampleData();
             result.result = String.format("id:%s|type:%s|version:%s", data.id, data.debugType, data.version);
             return result;
         }

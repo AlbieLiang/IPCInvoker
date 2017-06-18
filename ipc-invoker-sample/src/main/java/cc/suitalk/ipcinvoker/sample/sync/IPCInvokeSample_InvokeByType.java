@@ -21,7 +21,7 @@ import android.os.Bundle;
 
 import cc.suitalk.ipcinvoker.IPCInvoker;
 import cc.suitalk.ipcinvoker.IPCRemoteSyncInvoke;
-import cc.suitalk.ipcinvoker.sample.IPCData;
+import cc.suitalk.ipcinvoker.sample.IPCSampleData;
 import cc.suitalk.ipcinvoker.sample.service.PushProcessIPCService;
 
 /**
@@ -30,7 +30,7 @@ import cc.suitalk.ipcinvoker.sample.service.PushProcessIPCService;
 
 public class IPCInvokeSample_InvokeByType {
 
-    public static IPCData invokeIPCLogic(String id, int debugType, int pkgVersion) {
+    public static IPCSampleData invokeIPCLogic(String id, int debugType, int pkgVersion) {
         Bundle bundle = new Bundle();
         bundle.putString("id", id);
         bundle.putInt("type", debugType);
@@ -38,11 +38,11 @@ public class IPCInvokeSample_InvokeByType {
         return IPCInvoker.invokeSync(PushProcessIPCService.PROCESS_NAME, bundle, IPCRemoteInvoke_PrintSomething.class);
     }
 
-    private static class IPCRemoteInvoke_PrintSomething implements IPCRemoteSyncInvoke<Bundle, IPCData> {
+    private static class IPCRemoteInvoke_PrintSomething implements IPCRemoteSyncInvoke<Bundle, IPCSampleData> {
 
         @Override
-        public IPCData invoke(Bundle data) {
-            IPCData result = new IPCData();
+        public IPCSampleData invoke(Bundle data) {
+            IPCSampleData result = new IPCSampleData();
             result.result = data.getString("id") + ":" + data.getInt("type") + ":" + data.getInt("version");
             return result;
         }

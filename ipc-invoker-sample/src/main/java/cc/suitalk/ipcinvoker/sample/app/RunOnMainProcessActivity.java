@@ -29,7 +29,7 @@ import cc.suitalk.ipcinvoker.sample.R;
  * Created by albieliang on 2017/6/3.
  */
 
-public class RunInMainProcessActivity extends BaseSampleActivity {
+public class RunOnMainProcessActivity extends BaseSampleActivity {
 
     Button openPushActivityBtn;
     Button openSupportActivityBtn;
@@ -44,7 +44,7 @@ public class RunInMainProcessActivity extends BaseSampleActivity {
         openPushActivityBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), RunInPushProcessActivity.class);
+                Intent intent = new Intent(v.getContext(), RunOnPushProcessActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
@@ -53,7 +53,7 @@ public class RunInMainProcessActivity extends BaseSampleActivity {
         openSupportActivityBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), RunInSupportProcessActivity.class);
+                Intent intent = new Intent(v.getContext(), RunOnSupportProcessActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }

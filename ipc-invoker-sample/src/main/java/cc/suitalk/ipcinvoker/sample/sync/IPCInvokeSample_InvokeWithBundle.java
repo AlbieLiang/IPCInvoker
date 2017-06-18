@@ -21,7 +21,7 @@ import android.os.Bundle;
 
 import cc.suitalk.ipcinvoker.IPCInvoker;
 import cc.suitalk.ipcinvoker.IPCSyncInvokeTask;
-import cc.suitalk.ipcinvoker.sample.IPCData;
+import cc.suitalk.ipcinvoker.sample.IPCSampleData;
 import cc.suitalk.ipcinvoker.sample.service.MainProcessIPCService;
 
 /**
@@ -47,7 +47,7 @@ public class IPCInvokeSample_InvokeWithBundle {
             String id = data.getString("id");
             int type = data.getInt("type");
             int version = data.getInt("version");
-            IPCData result = new IPCData();
+            IPCSampleData result = new IPCSampleData();
             result.result = String.format("id:%s|type:%s|version:%s", id, type, version);
             // Add remote logic here
             Bundle bundle = new Bundle();

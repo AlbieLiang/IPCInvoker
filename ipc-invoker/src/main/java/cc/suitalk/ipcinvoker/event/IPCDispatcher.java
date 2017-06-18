@@ -15,27 +15,22 @@
  *
  */
 
-package cc.suitalk.ipcinvoker.sample.app;
-
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-
-import cc.suitalk.ipcinvoker.sample.R;
+package cc.suitalk.ipcinvoker.event;
 
 /**
- * Created by albieliang on 2017/6/3.
+ * Created by albieliang on 2017/6/18.
  */
 
-public class RunInSupportProcessActivity extends BaseSampleActivity {
+public abstract class IPCDispatcher {
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setTitle(R.string.support_process);
+    protected String getName() {
+        return getClass().getName();
     }
 
-    @Override
-    protected int getLayoutId() {
-        return R.layout.run_on_support_process_activity;
+    public final void dispatch(IPCData event) {
+        if (event == null) {
+            return;
+        }
+        IPCEventBus.getImpl().dispatch(getName(), event);
     }
 }

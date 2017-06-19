@@ -97,7 +97,7 @@ public class RunOnPushProcessTestEventActivity extends AppCompatActivity {
         final IPCObserver observer1 = new IPCObserver() {
             @Override
             public void onCallback(Bundle data) {
-                Log.i(TAG, "register observer by client, onCallback(%s, %s)", hashCode(), data);
+                Log.i(TAG, "register observer by Observable, onCallback(%s, %s)", hashCode(), data);
             }
         };
         processEt = (EditText) findViewById(R.id.remoteProcessNameEt);

@@ -94,9 +94,13 @@ class IPCBridgeManager implements IPCInvokerInitializer {
                 public void onServiceConnected(ComponentName name, IBinder service) {
                     Log.i(TAG, "onServiceConnected(%s, tid : %s)", bw.hashCode(), Thread.currentThread().getId());
                     bw.bridge = AIDL_IPCInvokeBridge.Stub.asInterface(service);
+                    if (bw.connectTimeoutRunnable != null) {
+                        mHandler.removeCallbacks(bw.connectTimeoutRunnable);
+                    }
                     synchronized (bw) {
                         bw.isConnecting = false;
                         bw.notifyAll();
+                        bw.connectTimeoutRunnable = null;
                     }
                 }
 
@@ -117,7 +121,10 @@ class IPCBridgeManager implements IPCInvokerInitializer {
                 public void run() {
                     Log.i(TAG, "bindService(%s, tid : %s)", bw.hashCode(), Thread.currentThread().getId());
                     context.bindService(intent, bw.serviceConnection, Context.BIND_AUTO_CREATE);
-                    mHandler.postDelayed(new Runnable() {
+                    if (bw.connectTimeoutRunnable != null) {
+                        mHandler.removeCallbacks(bw.connectTimeoutRunnable);
+                    }
+                    bw.connectTimeoutRunnable = new Runnable() {
                         @Override
                         public void run() {
                             Log.i(TAG, "on connect timeout(%s, tid : %s)", bw.hashCode(), Thread.currentThread().getId());
@@ -131,12 +138,14 @@ class IPCBridgeManager implements IPCInvokerInitializer {
                                 }
                                 bw.isConnecting = false;
                                 bw.notifyAll();
+                                bw.connectTimeoutRunnable = null;
                             }
                             synchronized (mBridgeMap) {
                                 mBridgeMap.remove(process);
                             }
                         }
-                    }, getTimeout());
+                    };
+                    mHandler.postDelayed(bw.connectTimeoutRunnable, getTimeout());
                 }
             });
             try {
@@ -250,5 +259,6 @@ class IPCBridgeManager implements IPCInvokerInitializer {
         AIDL_IPCInvokeBridge bridge;
         ServiceConnection serviceConnection;
         volatile boolean isConnecting;
+        Runnable connectTimeoutRunnable;
     }
 }

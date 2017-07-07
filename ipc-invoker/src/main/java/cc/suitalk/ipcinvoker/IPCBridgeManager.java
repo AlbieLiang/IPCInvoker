@@ -29,7 +29,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
 import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeBridge;
-import cc.suitalk.ipcinvoker.model.IPCInvokerInitializer;
+import cc.suitalk.ipcinvoker.activate.IPCInvokerInitializer;
 import cc.suitalk.ipcinvoker.tools.Log;
 
 import java.util.HashMap;

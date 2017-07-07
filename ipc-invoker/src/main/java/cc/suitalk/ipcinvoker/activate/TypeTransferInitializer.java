@@ -15,15 +15,17 @@
  *
  */
 
-package cc.suitalk.ipcinvoker.model;
+package cc.suitalk.ipcinvoker.activate;
 
-import cc.suitalk.ipcinvoker.BaseIPCService;
+import android.support.annotation.NonNull;
+
+import cc.suitalk.ipcinvoker.extension.BaseTypeTransfer;
 
 /**
- * Created by albieliang on 2017/5/28.
+ * Created by albieliang on 2017/7/7.
  */
 
-public interface IPCInvokerInitializer {
+public interface TypeTransferInitializer {
 
-    <T extends BaseIPCService> void addIPCService(String processName, Class<T> service);
+    void addTypeTransfer(@NonNull BaseTypeTransfer transfer);
 }

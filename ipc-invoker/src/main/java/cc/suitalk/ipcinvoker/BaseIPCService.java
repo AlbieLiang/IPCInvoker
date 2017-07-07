@@ -27,6 +27,7 @@ import android.support.annotation.Nullable;
 
 import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeBridge;
 import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeCallback;
+import cc.suitalk.ipcinvoker.reflect.ReflectUtil;
 import cc.suitalk.ipcinvoker.tools.Log;
 
 /**
@@ -49,7 +50,7 @@ public abstract class BaseIPCService extends Service {
                 Log.e(TAG, "invokeAsync failed, class is null or nil.");
                 return;
             }
-            IPCAsyncInvokeTask task = IPCReflectUtil.newInstance(clazz, IPCAsyncInvokeTask.class);
+            IPCAsyncInvokeTask task = ReflectUtil.newInstance(clazz, IPCAsyncInvokeTask.class);
             if (task == null) {
                 Log.e(TAG, "invokeAsync failed, can not newInstance by class %s.", clazz);
                 return;
@@ -58,7 +59,7 @@ public abstract class BaseIPCService extends Service {
             if (data != null) {
                 data.setClassLoader(BaseIPCService.class.getClassLoader());
             }
-            IPCInvokerThreadPool.post(new Runnable() {
+            ThreadPool.post(new Runnable() {
                 @Override
                 public void run() {
                     finalTask.invoke(data, new IPCInvokeCallback() {
@@ -66,6 +67,9 @@ public abstract class BaseIPCService extends Service {
                         public void onCallback(Bundle data) {
                             if (callback != null) {
                                 try {
+                                    if (data != null) {
+                                        data.setClassLoader(BaseIPCService.class.getClassLoader());
+                                    }
                                     callback.onCallback(data);
                                 } catch (RemoteException e) {
                                     Log.e(TAG, "%s", e);
@@ -84,7 +88,7 @@ public abstract class BaseIPCService extends Service {
                 Log.e(TAG, "invokeAsync failed, class is null or nil.");
                 return null;
             }
-            IPCSyncInvokeTask task = IPCReflectUtil.newInstance(clazz, IPCSyncInvokeTask.class);
+            IPCSyncInvokeTask task = ReflectUtil.newInstance(clazz, IPCSyncInvokeTask.class);
             if (task == null) {
                 Log.e(TAG, "invokeSync failed, can not newInstance by class %s.", clazz);
                 return null;
@@ -131,7 +135,7 @@ public abstract class BaseIPCService extends Service {
         }
         stopSelf();
         IPCServiceManager.getImpl().remove(getProcessName());
-        IPCInvokerThreadPool.postDelayed(new Runnable() {
+        ThreadPool.postDelayed(new Runnable() {
             @Override
             public void run() {
                 Process.killProcess(Process.myPid());

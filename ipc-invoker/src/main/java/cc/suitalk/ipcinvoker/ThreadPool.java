@@ -33,31 +33,31 @@ import cc.suitalk.ipcinvoker.tools.Log;
  * Created by albieliang on 2017/5/20.
  */
 
-class IPCInvokerThreadPool {
+class ThreadPool {
 
-    private static final String TAG = "IPC.IPCInvokerThreadPool";
+    private static final String TAG = "IPC.ThreadPool";
 
     private static final int DEFAULT_CORE_POOL_SIZE = 3;
 
-    private static IPCInvokerThreadPool sThreadPool;
+    private static ThreadPool sThreadPool;
     
     private Handler mHandler;
     private ExecutorService mExecutorService;
     private int mCorePoolSize = DEFAULT_CORE_POOL_SIZE;
     
-    private static IPCInvokerThreadPool getImpl() {
+    private static ThreadPool getImpl() {
         if (sThreadPool == null) {
-            synchronized (IPCInvokerThreadPool.class) {
+            synchronized (ThreadPool.class) {
                 if (sThreadPool == null) {
-                    sThreadPool = new IPCInvokerThreadPool();
+                    sThreadPool = new ThreadPool();
                 }
             }
         }
         return sThreadPool;
     }
     
-    private IPCInvokerThreadPool() {
-        final HandlerThread handlerThread = new HandlerThread("IPCInvokerThreadPool#WorkerThread-" + hashCode());
+    private ThreadPool() {
+        final HandlerThread handlerThread = new HandlerThread("ThreadPool#WorkerThread-" + hashCode());
         handlerThread.start();
         mHandler = new Handler(handlerThread.getLooper());
         mExecutorService = Executors.newScheduledThreadPool(mCorePoolSize, new ThreadFactory() {
@@ -65,7 +65,7 @@ class IPCInvokerThreadPool {
             int index = 0;
             @Override
             public Thread newThread(@NonNull final Runnable r) {
-                String name = "IPCInvokerThreadPool#Thread-" + (index++);
+                String name = "ThreadPool#Thread-" + (index++);
                 Thread thread = new Thread(new Runnable() {
                     @Override
                     public void run() {

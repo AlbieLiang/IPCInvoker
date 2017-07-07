@@ -15,13 +15,18 @@
  *
  */
 
-package cc.suitalk.ipcinvoker.model;
+package cc.suitalk.ipcinvoker.activate;
+
+import cc.suitalk.ipcinvoker.extension.ParcelableTransfer;
 
 /**
- * Created by albieliang on 2017/5/28.
+ * Created by albieliang on 2017/7/7.
  */
 
-public interface IPCInvokerInitDelegate {
+public abstract class DefaultInitDelegate implements IPCInvokerInitDelegate {
 
-    void onAttachServiceInfo(IPCInvokerInitializer initializer);
+    @Override
+    public void onAddTypeTransfer(TypeTransferInitializer initializer) {
+        initializer.addTypeTransfer(new ParcelableTransfer());
+    }
 }

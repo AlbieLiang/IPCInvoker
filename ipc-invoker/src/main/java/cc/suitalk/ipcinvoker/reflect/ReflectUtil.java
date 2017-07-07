@@ -15,7 +15,7 @@
  *
  */
 
-package cc.suitalk.ipcinvoker;
+package cc.suitalk.ipcinvoker.reflect;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -26,9 +26,9 @@ import cc.suitalk.ipcinvoker.tools.Log;
  * Created by albieliang on 2017/5/20.
  */
 
-class IPCReflectUtil {
+public class ReflectUtil {
 
-    private static final String TAG = "IPC.IPCReflectUtil";
+    private static final String TAG = "IPC.ReflectUtil";
 
     public static <T> T newInstance(String clazz, Class<?> parentClass) {
         if (clazz == null || clazz.length() == 0) {

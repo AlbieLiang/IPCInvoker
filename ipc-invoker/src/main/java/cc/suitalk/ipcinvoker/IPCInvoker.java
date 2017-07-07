@@ -17,7 +17,6 @@
 
 package cc.suitalk.ipcinvoker;
 
-import android.app.Application;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.RemoteException;
@@ -26,7 +25,7 @@ import android.support.annotation.WorkerThread;
 
 import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeBridge;
 import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeCallback;
-import cc.suitalk.ipcinvoker.model.IPCInvokerInitDelegate;
+import cc.suitalk.ipcinvoker.reflect.ReflectUtil;
 import cc.suitalk.ipcinvoker.tools.Log;
 
 /**
@@ -40,49 +39,6 @@ public class IPCInvoker {
     private static final String INNER_KEY_REMOTE_TASK_CLASS = "__remote_task_class";
     private static final String INNER_KEY_REMOTE_TASK_DATA = "__remote_task_data";
     private static final String INNER_KEY_REMOTE_TASK_RESULT_DATA = "__remote_task_result_data";
-
-    public static void setup(@NonNull Application application, @NonNull IPCInvokerInitDelegate delegate) {
-        IPCInvokeLogic.setContext(application);
-        delegate.onAttachServiceInfo(IPCBridgeManager.getImpl());
-    }
-
-    /**
-     * Invoke this method to pre-connect Remote Service to improve the performance of the first time IPC invoke.
-     *
-     * @param process remote service process name
-     */
-    public static void connectRemoteService(@NonNull final String process) {
-        if (hasConnectedRemoteService(process)) {
-            return;
-        }
-        IPCInvokerThreadPool.post(new Runnable() {
-            @Override
-            public void run() {
-                IPCBridgeManager.getImpl().prepareIPCBridge(process);
-            }
-        });
-    }
-
-    /**
-     * Invoke this method to disconnect the connection between current process and remote process to release resource.
-     *
-     * @param process remote service process name
-     */
-    public static void disconnectRemoteService(@NonNull final String process) {
-        if (hasConnectedRemoteService(process)) {
-            return;
-        }
-        IPCInvokerThreadPool.post(new Runnable() {
-            @Override
-            public void run() {
-                IPCBridgeManager.getImpl().releaseIPCBridge(process);
-            }
-        });
-    }
-
-    public static boolean hasConnectedRemoteService(@NonNull String process) {
-        return IPCBridgeManager.getImpl().hasIPCBridge(process);
-    }
 
     /**
      * Async invoke, it must be invoke on WorkerThread.
@@ -108,7 +64,7 @@ public class IPCInvoker {
             return false;
         }
         if (IPCInvokeLogic.isCurrentProcess(process)) {
-            IPCAsyncInvokeTask task = IPCReflectUtil.newInstance(taskClass, IPCAsyncInvokeTask.class);
+            IPCAsyncInvokeTask task = ReflectUtil.newInstance(taskClass, IPCAsyncInvokeTask.class);
             if (task == null) {
                 Log.e(TAG, "invokeAsync failed, newInstance(%s) return null.", taskClass);
                 return false;
@@ -225,7 +181,7 @@ public class IPCInvoker {
             return null;
         }
         if (IPCInvokeLogic.isCurrentProcess(process)) {
-            IPCSyncInvokeTask task = IPCReflectUtil.newInstance(taskClass, IPCSyncInvokeTask.class);
+            IPCSyncInvokeTask task = ReflectUtil.newInstance(taskClass, IPCSyncInvokeTask.class);
             if (task == null) {
                 Log.e(TAG, "invokeSync failed, newInstance(%s) return null.", taskClass);
                 return null;
@@ -316,7 +272,7 @@ public class IPCInvoker {
                 Log.e(TAG, "proxy SyncInvoke failed, class is null or nil.");
                 return null;
             }
-            IPCRemoteSyncInvoke<Parcelable, Parcelable> task = IPCReflectUtil.newInstance(clazz, IPCRemoteSyncInvoke.class);
+            IPCRemoteSyncInvoke<Parcelable, Parcelable> task = ReflectUtil.newInstance(clazz, IPCRemoteSyncInvoke.class);
             if (task == null) {
                 Log.w(TAG, "proxy SyncInvoke failed, newInstance(%s) return null.", clazz);
                 return null;
@@ -337,7 +293,7 @@ public class IPCInvoker {
                 Log.e(TAG, "proxy AsyncInvoke failed, class is null or nil.");
                 return;
             }
-            IPCRemoteAsyncInvoke task = IPCReflectUtil.newInstance(clazz, IPCRemoteAsyncInvoke.class);
+            IPCRemoteAsyncInvoke task = ReflectUtil.newInstance(clazz, IPCRemoteAsyncInvoke.class);
             if (task == null) {
                 Log.w(TAG, "proxy AsyncInvoke failed, newInstance(%s) return null.", clazz);
                 return;

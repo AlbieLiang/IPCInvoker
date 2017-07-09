@@ -17,7 +17,9 @@
 
 package cc.suitalk.ipcinvoker.activate;
 
+import cc.suitalk.ipcinvoker.extension.IPCDataTransfer;
 import cc.suitalk.ipcinvoker.extension.ParcelableTransfer;
+import cc.suitalk.ipcinvoker.extension.XParcelableTransfer;
 
 /**
  * Created by albieliang on 2017/7/7.
@@ -28,5 +30,7 @@ public abstract class DefaultInitDelegate implements IPCInvokerInitDelegate {
     @Override
     public void onAddTypeTransfer(TypeTransferInitializer initializer) {
         initializer.addTypeTransfer(new ParcelableTransfer());
+        initializer.addTypeTransfer(new IPCDataTransfer());
+        initializer.addTypeTransfer(new XParcelableTransfer());
     }
 }

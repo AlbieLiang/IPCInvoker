@@ -27,6 +27,7 @@ import android.widget.TextView;
 import cc.suitalk.ipcinvoker.IPCRemoteAsyncInvoke;
 import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
 import cc.suitalk.ipcinvoker.IPCRemoteSyncInvoke;
+import cc.suitalk.ipcinvoker.annotation.Singleton;
 import cc.suitalk.ipcinvoker.extension.XIPCInvoker;
 import cc.suitalk.ipcinvoker.sample.R;
 import cc.suitalk.ipcinvoker.sample.app.model.ThreadPool;
@@ -70,7 +71,7 @@ public class XIPCInvokerTestCaseActivity extends AppCompatActivity {
                         TestType data = new TestType();
                         data.key = "wx-developer";
                         data.value = "XIPCInvoker";
-                        final IPCInteger result = XIPCInvoker.invokeSync(PushProcessIPCService.PROCESS_NAME, data, IPCInvokeTask_getInt.class);
+                        final IPCInteger result = XIPCInvoker.invokeSync(process, data, IPCInvokeTask_getInt.class);
 
                         Log.i(TAG, "result : %s", result.value);
                         runOnUiThread(new Runnable() {
@@ -87,13 +88,14 @@ public class XIPCInvokerTestCaseActivity extends AppCompatActivity {
         asyncInvokeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final String process = processEt.getText().toString();
                 ThreadPool.post(new Runnable() {
                     @Override
                     public void run() {
                         TestType data = new TestType();
                         data.key = "wx-developer";
                         data.value = "AlbieLiang";
-                        XIPCInvoker.invokeAsync(PushProcessIPCService.PROCESS_NAME, data, IPCInvokeTask_getString.class, new IPCRemoteInvokeCallback<IPCString>() {
+                        XIPCInvoker.invokeAsync(process, data, IPCInvokeTask_getString.class, new IPCRemoteInvokeCallback<IPCString>() {
 
                             @Override
                             public void onCallback(final IPCString data) {
@@ -121,11 +123,14 @@ public class XIPCInvokerTestCaseActivity extends AppCompatActivity {
         }
     }
 
+    @Singleton
     private static class IPCInvokeTask_getString implements IPCRemoteAsyncInvoke<TestType, IPCString> {
+
+        int count;
 
         @Override
         public void invoke(TestType data, IPCRemoteInvokeCallback<IPCString> callback) {
-            callback.onCallback(new IPCString(data.key + ":" + data.value));
+            callback.onCallback(new IPCString(data.key + ":" + data.value + ", count : " + (count++)));
         }
     }
 }

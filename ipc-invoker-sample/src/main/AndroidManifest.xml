@@ -28,13 +28,21 @@
         android:theme="@style/AppTheme" >
 
         <activity
-            android:name=".app.RunOnMainProcessActivity"
+            android:name=".app.IPCInvokerMainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".app.XIPCInvokerTestCaseActivity"
+            android:label="@string/app_name"/>
+
+        <activity
+            android:name=".app.IPCInvokerTestCaseActivity"
+            android:label="@string/app_name"/>
 
         <activity
             android:name=".app.RunOnPushProcessActivity"
@@ -50,7 +58,7 @@
             android:exported="false"/>
 
         <activity
-            android:name=".app.RunOnPushProcessTestEventActivity"
+            android:name=".app.IPCEventTestCaseActivity"
             android:label="@string/push_process"
             android:process=":push"
             android:taskAffinity=".push"

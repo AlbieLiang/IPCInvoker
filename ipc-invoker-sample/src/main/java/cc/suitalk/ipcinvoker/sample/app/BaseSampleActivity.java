@@ -28,6 +28,9 @@ import android.widget.TextView;
 import cc.suitalk.ipcinvoker.IPCInvoker;
 import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
 import cc.suitalk.ipcinvoker.sample.R;
+import cc.suitalk.ipcinvoker.sample.app.ipctask.IPCInvokeTask_GetValue;
+import cc.suitalk.ipcinvoker.sample.app.ipctask.IPCInvokeTask_PutValue;
+import cc.suitalk.ipcinvoker.sample.app.model.ThreadPool;
 
 /**
  * Created by albieliang on 2017/6/3.

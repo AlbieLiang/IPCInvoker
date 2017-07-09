@@ -15,29 +15,34 @@
  *
  */
 
-package cc.suitalk.ipcinvoker.sample.app;
+package cc.suitalk.ipcinvoker.sample.app.ipctask;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.view.View;
 
-import cc.suitalk.ipcinvoker.sample.R;
+import cc.suitalk.ipcinvoker.IPCSyncInvokeTask;
+import cc.suitalk.ipcinvoker.sample.app.model.DataCenter;
+import cc.suitalk.ipcinvoker.tools.Log;
+
 
 /**
  * Created by albieliang on 2017/6/3.
  */
 
-public class RunOnPushProcessActivity extends BaseSampleActivity {
+public class IPCInvokeTask_GetValue implements IPCSyncInvokeTask {
+
+    private static final String TAG = "IPCInvokerSample.IPCInvokeTask_GetValue";
+
+    public static final String KEY = "key";
+    public static final String VALUE = "value";
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setTitle(R.string.push_process);
-    }
+    public Bundle invoke(Bundle data) {
+        String key = data.getString(KEY);
+        Bundle result = new Bundle();
+        result.putString(VALUE, DataCenter.getImpl().getString(key));
 
-    @Override
-    protected int getLayoutId() {
-        return R.layout.run_on_push_process_activity;
+        Log.i(TAG, "getValue, result : %s", result);
+
+        return result;
     }
 }

@@ -23,15 +23,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-        <Button
-            android:id="@+id/jumpToEventTestBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:text="Open Event Test Activity" />
-
-        <View style="@style/DividerStyle"/>
 
         <include
             layout="@layout/base_sample_activity"

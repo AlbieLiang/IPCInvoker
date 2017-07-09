@@ -59,7 +59,7 @@ public class IPCSampleData implements Parcelable, IPCData {
     public Bundle toBundle() {
         Bundle bundle = new Bundle();
         bundle.putString("result", result);
-        return null;
+        return bundle;
     }
 
     @Override

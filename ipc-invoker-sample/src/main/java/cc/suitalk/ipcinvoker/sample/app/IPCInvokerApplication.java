@@ -19,13 +19,14 @@ package cc.suitalk.ipcinvoker.sample.app;
 
 import android.app.Application;
 
-import cc.suitalk.ipcinvoker.IPCInvoker;
-import cc.suitalk.ipcinvoker.model.IPCInvokerInitDelegate;
-import cc.suitalk.ipcinvoker.model.IPCInvokerInitializer;
+import cc.suitalk.ipcinvoker.IPCInvokerBoot;
+import cc.suitalk.ipcinvoker.activate.DefaultInitDelegate;
+import cc.suitalk.ipcinvoker.activate.IPCInvokerInitializer;
+import cc.suitalk.ipcinvoker.activate.TypeTransferInitializer;
+import cc.suitalk.ipcinvoker.sample.nimble.TestTypeTransfer;
 import cc.suitalk.ipcinvoker.sample.service.PushProcessIPCService;
 import cc.suitalk.ipcinvoker.sample.service.MainProcessIPCService;
 import cc.suitalk.ipcinvoker.sample.service.SupportProcessIPCService;
-import cc.suitalk.ipcinvoker.tools.DefaultLogPrinter;
 import cc.suitalk.ipcinvoker.tools.Log;
 
 /**
@@ -47,12 +48,18 @@ public class IPCInvokerApplication extends Application {
             }
         });
         // Initialize IPCInvoker
-        IPCInvoker.setup(this, new IPCInvokerInitDelegate() {
+        IPCInvokerBoot.setup(this, new DefaultInitDelegate() {
             @Override
             public void onAttachServiceInfo(IPCInvokerInitializer initializer) {
                 initializer.addIPCService(MainProcessIPCService.PROCESS_NAME, MainProcessIPCService.class);
                 initializer.addIPCService(SupportProcessIPCService.PROCESS_NAME, SupportProcessIPCService.class);
                 initializer.addIPCService(PushProcessIPCService.PROCESS_NAME, PushProcessIPCService.class);
+            }
+
+            @Override
+            public void onAddTypeTransfer(TypeTransferInitializer initializer) {
+                super.onAddTypeTransfer(initializer);
+                initializer.addTypeTransfer(new TestTypeTransfer());
             }
         });
     }

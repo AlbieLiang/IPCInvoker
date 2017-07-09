@@ -15,29 +15,15 @@
  *
  */
 
-package cc.suitalk.ipcinvoker.sample.app;
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.view.View;
-
-import cc.suitalk.ipcinvoker.sample.R;
+package cc.suitalk.ipcinvoker.sample.nimble;
 
 /**
- * Created by albieliang on 2017/6/3.
+ * Created by albieliang on 2017/7/6.
  */
 
-public class RunOnPushProcessActivity extends BaseSampleActivity {
+public class TestType {
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setTitle(R.string.push_process);
-    }
+    public String key;
 
-    @Override
-    protected int getLayoutId() {
-        return R.layout.run_on_push_process_activity;
-    }
+    public String value;
 }

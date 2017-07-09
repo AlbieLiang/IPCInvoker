@@ -32,16 +32,16 @@ public class IPCInvokeSample_InvokeWithBundle {
 
     private static final String INNER_KEY_RESULT = "__result";
 
-    public static Bundle invokeIPCLogic(String id, int debugType, int pkgVersion) {
+    public static Bundle invokeIPCLogic(String id, int type, int version) {
         Bundle bundle = new Bundle();
         bundle.putString("id", id);
-        bundle.putInt("type", debugType);
+        bundle.putInt("type", type);
         bundle.putInt("version", 0);
-        Bundle result = IPCInvoker.invokeSync(MainProcessIPCService.PROCESS_NAME, bundle, IPCInvokeTask_CheckWxaPkg.class);
+        Bundle result = IPCInvoker.invokeSync(MainProcessIPCService.PROCESS_NAME, bundle, IPCInvokeTask_doSomething.class);
         return result.getParcelable(INNER_KEY_RESULT);
     }
 
-    private static class IPCInvokeTask_CheckWxaPkg implements IPCSyncInvokeTask {
+    private static class IPCInvokeTask_doSomething implements IPCSyncInvokeTask {
         @Override
         public Bundle invoke(Bundle data) {
             String id = data.getString("id");

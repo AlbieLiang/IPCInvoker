@@ -37,12 +37,12 @@ public class IPCInvokeSample_InvokeWithBundle {
 
     private static final String INNER_KEY_RESULT = "__result";
 
-    public static void invokeIPCLogic(String id, int debugType, int pkgVersion, final IPCRemoteInvokeCallback<Bundle> callback) {
+    public static void invokeIPCLogic(String id, int type, int version, final IPCRemoteInvokeCallback<Bundle> callback) {
         Bundle bundle = new Bundle();
         bundle.putString("id", id);
-        bundle.putInt("type", debugType);
+        bundle.putInt("type", type);
         bundle.putInt("version", 0);
-        IPCInvoker.invokeAsync(MainProcessIPCService.PROCESS_NAME, bundle, IPCInvokeTask_CheckWxaPkg.class, new IPCInvokeCallback() {
+        IPCInvoker.invokeAsync(MainProcessIPCService.PROCESS_NAME, bundle, IPCInvokeTask_doSomething.class, new IPCInvokeCallback() {
             @Override
             public void onCallback(Bundle data) {
                 Log.i(TAG, "onCallback : %s", data);
@@ -54,7 +54,7 @@ public class IPCInvokeSample_InvokeWithBundle {
         });
     }
 
-    private static class IPCInvokeTask_CheckWxaPkg implements IPCAsyncInvokeTask {
+    private static class IPCInvokeTask_doSomething implements IPCAsyncInvokeTask {
 
         @Override
         public void invoke(Bundle data, IPCInvokeCallback callback) {

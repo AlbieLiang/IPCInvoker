@@ -25,7 +25,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import cc.suitalk.ipcinvoker.IPCInvokeLogic;
-import cc.suitalk.ipcinvoker.IPCSyncInvokeTask;
+import cc.suitalk.ipcinvoker.IPCRemoteSyncInvoke;
 import cc.suitalk.ipcinvoker.event.IPCObserver;
 import cc.suitalk.ipcinvoker.sample.IPCSampleData;
 import cc.suitalk.ipcinvoker.sample.R;
@@ -57,7 +57,9 @@ public class IPCEventTestCaseActivity extends AppCompatActivity {
         final IPCObserver observer = new IPCObserver() {
             @Override
             public void onCallback(Bundle data) {
-                Log.i(TAG, "register observer by client, onCallback(%s, %s)", hashCode(), data);
+                String log = String.format("register observer by client, onCallback(%s, %s)", hashCode(), data);
+                Log.i(TAG, log);
+                clientMsgPanelTv.setText(log);
             }
         };
         clientMsgPanelTv = (TextView) findViewById(R.id.clientMsgPanelTv);
@@ -90,7 +92,9 @@ public class IPCEventTestCaseActivity extends AppCompatActivity {
         final IPCObserver observer1 = new IPCObserver() {
             @Override
             public void onCallback(Bundle data) {
-                Log.i(TAG, "register observer by Observable, onCallback(%s, %s)", hashCode(), data);
+                String log = String.format("register observer by Observable, onCallback(%s, %s)", hashCode(), data);
+                Log.i(TAG, log);
+                observerMsgPanelTv.setText(log);
             }
         };
         processEt = (EditText) findViewById(R.id.remoteProcessNameEt);
@@ -133,14 +137,14 @@ public class IPCEventTestCaseActivity extends AppCompatActivity {
 
     }
 
-    private static class IPCInvokeTask_PublishEvent implements IPCSyncInvokeTask {
+    private static class IPCInvokeTask_PublishEvent implements IPCRemoteSyncInvoke<Bundle, Bundle> {
 
         @Override
         public Bundle invoke(Bundle data) {
             OnClickEventDispatcher dispatcher = new OnClickEventDispatcher();
             IPCSampleData event = new IPCSampleData();
-            event.result = String.format("current process name : %s, pid : %s",
-                    IPCInvokeLogic.getCurrentProcessName(), android.os.Process.myPid());
+            event.result = String.format("current process name : %s, pid : %s, time : %s",
+                    IPCInvokeLogic.getCurrentProcessName(), android.os.Process.myPid(), System.currentTimeMillis());
             dispatcher.dispatch(event);
             Log.i(TAG, "publish event(%s)", event.result);
             return null;

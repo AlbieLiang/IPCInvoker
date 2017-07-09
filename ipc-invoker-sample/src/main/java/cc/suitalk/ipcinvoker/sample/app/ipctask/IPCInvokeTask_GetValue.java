@@ -19,6 +19,7 @@ package cc.suitalk.ipcinvoker.sample.app.ipctask;
 
 import android.os.Bundle;
 
+import cc.suitalk.ipcinvoker.IPCRemoteSyncInvoke;
 import cc.suitalk.ipcinvoker.IPCSyncInvokeTask;
 import cc.suitalk.ipcinvoker.sample.app.model.DataCenter;
 import cc.suitalk.ipcinvoker.tools.Log;
@@ -28,7 +29,7 @@ import cc.suitalk.ipcinvoker.tools.Log;
  * Created by albieliang on 2017/6/3.
  */
 
-public class IPCInvokeTask_GetValue implements IPCSyncInvokeTask {
+public class IPCInvokeTask_GetValue implements IPCRemoteSyncInvoke<Bundle, Bundle> {
 
     private static final String TAG = "IPCInvokerSample.IPCInvokeTask_GetValue";
 

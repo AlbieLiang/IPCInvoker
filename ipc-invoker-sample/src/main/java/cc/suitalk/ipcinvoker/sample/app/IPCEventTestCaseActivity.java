@@ -26,10 +26,10 @@ import android.widget.TextView;
 
 import cc.suitalk.ipcinvoker.IPCInvokeLogic;
 import cc.suitalk.ipcinvoker.IPCRemoteSyncInvoke;
+import cc.suitalk.ipcinvoker.ThreadCaller;
 import cc.suitalk.ipcinvoker.event.IPCObserver;
 import cc.suitalk.ipcinvoker.sample.IPCSampleData;
 import cc.suitalk.ipcinvoker.sample.R;
-import cc.suitalk.ipcinvoker.sample.app.model.ThreadPool;
 import cc.suitalk.ipcinvoker.sample.event.IPC;
 import cc.suitalk.ipcinvoker.sample.event.MObservable;
 import cc.suitalk.ipcinvoker.sample.event.OnClickEventDispatcher;
@@ -67,24 +67,14 @@ public class IPCEventTestCaseActivity extends AppCompatActivity {
         findViewById(R.id.registerByClientBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ThreadPool.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        IPC.getMainIPCClient().registerIPCObserver(OnClickEventDispatcher.class.getName(), observer);
-                    }
-                });
+                IPC.getMainIPCClient().registerIPCObserver(OnClickEventDispatcher.class.getName(), observer);
             }
         });
 
         findViewById(R.id.unregisterByClientBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ThreadPool.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        IPC.getMainIPCClient().unregisterIPCObserver(OnClickEventDispatcher.class.getName(), observer);
-                    }
-                });
+                IPC.getMainIPCClient().unregisterIPCObserver(OnClickEventDispatcher.class.getName(), observer);
             }
         });
 
@@ -103,33 +93,22 @@ public class IPCEventTestCaseActivity extends AppCompatActivity {
         findViewById(R.id.registerByObserverBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ThreadPool.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        MObservable.get(processEt.getText().toString(), OnClickEventDispatcher.class).registerIPCObserver(observer1);
-                    }
-                });
+                MObservable.get(processEt.getText().toString(), OnClickEventDispatcher.class).registerIPCObserver(observer1);
             }
         });
         findViewById(R.id.unregisterByObserverBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ThreadPool.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        MObservable.get(processEt.getText().toString(), OnClickEventDispatcher.class).unregisterIPCObserver(observer1);
-                    }
-                });
+                MObservable.get(processEt.getText().toString(), OnClickEventDispatcher.class).unregisterIPCObserver(observer1);
             }
         });
         findViewById(R.id.publishEventBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ThreadPool.post(new Runnable() {
+                ThreadCaller.post(new Runnable() {
                     @Override
                     public void run() {
-                        Bundle data = new Bundle();
-                        IPC.getMainIPCClient().invokeSync(data, IPCInvokeTask_PublishEvent.class);
+                        IPC.getMainIPCClient().invokeSync(null, IPCInvokeTask_PublishEvent.class);
                     }
                 });
             }

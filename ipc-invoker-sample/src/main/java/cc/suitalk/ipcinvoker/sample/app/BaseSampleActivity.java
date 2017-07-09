@@ -99,26 +99,21 @@ public class BaseSampleActivity extends AppCompatActivity {
         putValueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ThreadPool.post(new Runnable() {
+                String remoteProcessName = remoteProcessNameEt.getText().toString();
+                String key = putKeyEt.getText().toString();
+                String value = putValueEt.getText().toString();
+
+                IPCInvokeTask_PutValue putValue = new IPCInvokeTask_PutValue();
+                putValue.key = key;
+                putValue.value = value;
+
+                IPCInvoker.invokeAsync(remoteProcessName, putValue, IPCInvokeTask_PutValue.class, new IPCRemoteInvokeCallback<Bundle>() {
                     @Override
-                    public void run() {
-                        String remoteProcessName = remoteProcessNameEt.getText().toString();
-                        String key = putKeyEt.getText().toString();
-                        String value = putValueEt.getText().toString();
-
-                        IPCInvokeTask_PutValue putValue = new IPCInvokeTask_PutValue();
-                        putValue.key = key;
-                        putValue.value = value;
-
-                        IPCInvoker.invokeAsync(remoteProcessName, putValue, IPCInvokeTask_PutValue.class, new IPCRemoteInvokeCallback<Bundle>() {
+                    public void onCallback(final Bundle data) {
+                        runOnUiThread(new Runnable() {
                             @Override
-                            public void onCallback(final Bundle data) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        putResultTv.setText(data.getString(IPCInvokeTask_PutValue.RESULT));
-                                    }
-                                });
+                            public void run() {
+                                putResultTv.setText(data.getString(IPCInvokeTask_PutValue.RESULT));
                             }
                         });
                     }

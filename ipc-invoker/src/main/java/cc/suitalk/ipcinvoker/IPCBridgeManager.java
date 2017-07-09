@@ -79,6 +79,10 @@ class IPCBridgeManager implements IPCInvokerInitializer {
     public AIDL_IPCInvokeBridge getIPCBridge(@NonNull final String process) {
         IPCBridgeWrapper bridgeWrapper = mBridgeMap.get(process);
         if (bridgeWrapper == null) {
+            if (Looper.getMainLooper() == Looper.myLooper()) {
+                Log.w(TAG, "getIPCBridge failed, can not create bridge on Main thread.");
+                return null;
+            }
             bridgeWrapper = new IPCBridgeWrapper();
             synchronized (mBridgeMap) {
                 mBridgeMap.put(process, bridgeWrapper);
@@ -116,38 +120,30 @@ class IPCBridgeManager implements IPCInvokerInitializer {
                 }
             };
             final Intent intent = new Intent(context, getServiceClass(process));
-            mHandler.post(new Runnable() {
+            Log.i(TAG, "bindService(%s, tid : %s)", bw.hashCode(), Thread.currentThread().getId());
+            context.bindService(intent, bw.serviceConnection, Context.BIND_AUTO_CREATE);
+            bw.connectTimeoutRunnable = new Runnable() {
                 @Override
                 public void run() {
-                    Log.i(TAG, "bindService(%s, tid : %s)", bw.hashCode(), Thread.currentThread().getId());
-                    context.bindService(intent, bw.serviceConnection, Context.BIND_AUTO_CREATE);
-                    if (bw.connectTimeoutRunnable != null) {
-                        mHandler.removeCallbacks(bw.connectTimeoutRunnable);
+                    Log.i(TAG, "on connect timeout(%s, tid : %s)", bw.hashCode(), Thread.currentThread().getId());
+                    if (!bw.isConnecting) {
+                        return;
                     }
-                    bw.connectTimeoutRunnable = new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.i(TAG, "on connect timeout(%s, tid : %s)", bw.hashCode(), Thread.currentThread().getId());
-                            if (!bw.isConnecting) {
-                                return;
-                            }
-                            // Prevent deadlocks
-                            synchronized (bw) {
-                                if (!bw.isConnecting) {
-                                    return;
-                                }
-                                bw.isConnecting = false;
-                                bw.notifyAll();
-                                bw.connectTimeoutRunnable = null;
-                            }
-                            synchronized (mBridgeMap) {
-                                mBridgeMap.remove(process);
-                            }
+                    // Prevent deadlocks
+                    synchronized (bw) {
+                        if (!bw.isConnecting) {
+                            return;
                         }
-                    };
-                    mHandler.postDelayed(bw.connectTimeoutRunnable, getTimeout());
+                        bw.isConnecting = false;
+                        bw.notifyAll();
+                        bw.connectTimeoutRunnable = null;
+                    }
+                    synchronized (mBridgeMap) {
+                        mBridgeMap.remove(process);
+                    }
                 }
-            });
+            };
+            mHandler.postDelayed(bw.connectTimeoutRunnable, getTimeout());
             try {
                 synchronized (bw) {
                     if (bw.isConnecting) {

@@ -19,6 +19,7 @@ package cc.suitalk.ipcinvoker.extension;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.AnyThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
@@ -27,7 +28,6 @@ import cc.suitalk.ipcinvoker.IPCRemoteAsyncInvoke;
 import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
 import cc.suitalk.ipcinvoker.IPCRemoteSyncInvoke;
 import cc.suitalk.ipcinvoker.ObjectStore;
-import cc.suitalk.ipcinvoker.ThreadCaller;
 import cc.suitalk.ipcinvoker.tools.Log;
 
 /**
@@ -39,43 +39,40 @@ public class XIPCInvoker {
     private static final String TAG = "IPC.XIPCInvoker";
 
     /**
+     * Async invoke, it can be invoked on any thread.
      *
-     * @param process
-     * @param data
-     * @param taskClass
-     * @param callback
-     * @param <T>
-     * @param <InputType>
-     * @param <ResultType>
+     * @param process      remote service process name
+     * @param data         data for remote process invoked, it must be a {@link Parcelable}
+     * @param taskClass    remote invoke logic task class
+     * @param callback     callback on current process after IPC invoked finished and initiative callback.
+     * @param <T>          the class implements {@link IPCRemoteAsyncInvoke} interface
+     * @param <InputType>  the class extends {@link Parcelable}
+     * @param <ResultType> the class extends {@link Parcelable}
      */
+    @AnyThread
     public static <T extends IPCRemoteAsyncInvoke<InputType, ResultType>, InputType, ResultType>
             void invokeAsync(final String process, final InputType data, @NonNull final Class<T> taskClass, final IPCRemoteInvokeCallback<ResultType> callback) {
-        ThreadCaller.post(new Runnable() {
-            @Override
-            public void run() {
-                boolean r = IPCInvoker.invokeAsync(process, new WrapperParcelable(taskClass.getName(), data),
-                        IPCAsyncInvokeTaskProxy.class, new IPCRemoteInvokeCallback<WrapperParcelable>() {
-                            @Override
-                            public void onCallback(WrapperParcelable data) {
-                                if (callback != null) {
-                                    callback.onCallback((ResultType) data.getTarget());
-                                }
-                            }
-                        });
-                Log.d(TAG, "IPCInvoker.invokeAsync return : %s", r);
-            }
-        });
+        IPCInvoker.invokeAsync(process, new WrapperParcelable(taskClass.getName(), data),
+                IPCAsyncInvokeTaskProxy.class, new IPCRemoteInvokeCallback<WrapperParcelable>() {
+                    @Override
+                    public void onCallback(WrapperParcelable data) {
+                        if (callback != null) {
+                            callback.onCallback((ResultType) data.getTarget());
+                        }
+                    }
+                });
     }
 
     /**
+     * Sync invoke, it must be invoked on WorkerThread.
      *
-     * @param process
-     * @param data
-     * @param taskClass
-     * @param <T>
-     * @param <InputType>
-     * @param <ResultType>
-     * @return
+     * @param process      remote service process name
+     * @param data         data for remote process invoked, it must be a {@link Parcelable}
+     * @param taskClass    remote invoke logic task class
+     * @param <T>          the class implements {@link IPCRemoteSyncInvoke} interface
+     * @param <InputType>  the class extends {@link Parcelable}
+     * @param <ResultType> the class extends {@link Parcelable}
+     * @return the cross-process invoke result.
      */
     @WorkerThread
     public static <T extends IPCRemoteSyncInvoke<InputType, ResultType>, InputType, ResultType>

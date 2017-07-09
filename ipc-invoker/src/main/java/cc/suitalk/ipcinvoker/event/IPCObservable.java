@@ -17,6 +17,7 @@
 
 package cc.suitalk.ipcinvoker.event;
 
+import android.support.annotation.AnyThread;
 import android.support.annotation.NonNull;
 
 import junit.framework.Assert;
@@ -41,10 +42,12 @@ public class IPCObservable {
         mClient = new IPCInvokeClient(process);
     }
 
+    @AnyThread
     public boolean registerIPCObserver(@NonNull IPCObserver o) {
         return mClient.registerIPCObserver(event, o);
     }
 
+    @AnyThread
     public boolean unregisterIPCObserver(@NonNull IPCObserver o) {
         return mClient.unregisterIPCObserver(event, o);
     }

@@ -19,6 +19,7 @@ package cc.suitalk.ipcinvoker;
 
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.AnyThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
@@ -42,12 +43,12 @@ public class IPCInvokeClient {
         this.process = process;
     }
 
-    @WorkerThread
+    @AnyThread
     public <T extends IPCAsyncInvokeTask> boolean invokeAsync(Bundle data, @NonNull Class<T> taskClass, final IPCInvokeCallback callback) {
         return IPCInvoker.invokeAsync(process, data, taskClass, callback);
     }
 
-    @WorkerThread
+    @AnyThread
     public <T extends IPCRemoteAsyncInvoke<InputType, ResultType>, InputType extends Parcelable, ResultType extends Parcelable>
             boolean invokeAsync(InputType data, @NonNull Class<T> taskClass, final IPCRemoteInvokeCallback<ResultType> callback) {
         return IPCInvoker.invokeAsync(process, data, taskClass, callback);
@@ -64,6 +65,7 @@ public class IPCInvokeClient {
         return IPCInvoker.invokeSync(process, data, taskClass);
     }
 
+    @AnyThread
     public boolean registerIPCObserver(String event, @NonNull IPCObserver observer) {
         if (event == null || event.length() == 0 || observer == null) {
             return false;
@@ -75,6 +77,7 @@ public class IPCInvokeClient {
         return true;
     }
 
+    @AnyThread
     public boolean unregisterIPCObserver(String event, @NonNull IPCObserver observer) {
         if (event == null || event.length() == 0 || observer == null) {
             return false;

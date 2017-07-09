@@ -17,6 +17,8 @@
 
 package cc.suitalk.ipcinvoker.event;
 
+import android.os.Bundle;
+
 /**
  * Created by albieliang on 2017/6/18.
  */
@@ -27,10 +29,17 @@ public abstract class IPCDispatcher {
         return getClass().getName();
     }
 
-    public final void dispatch(IPCData event) {
-        if (event == null) {
+    public final void dispatch(IPCData data) {
+        if (data == null) {
             return;
         }
-        IPCEventBus.getImpl().dispatch(getName(), event);
+        IPCEventBus.getImpl().dispatch(getName(), data.toBundle());
+    }
+
+    public final void dispatch(Bundle data) {
+        if (data == null) {
+            return;
+        }
+        IPCEventBus.getImpl().dispatch(getName(), data);
     }
 }

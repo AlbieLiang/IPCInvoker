@@ -50,7 +50,7 @@ public class IPCEventBus {
         mMap = new ConcurrentHashMap<>();
     }
 
-    public boolean dispatch(String event, IPCData data) {
+    public boolean dispatch(String event, Bundle data) {
         if (event == null || event.length() == 0 || data == null) {
             return false;
         }
@@ -62,10 +62,8 @@ public class IPCEventBus {
         synchronized (list) {
             tempList = new ArrayList<>(list);
         }
-        Bundle bundle = data.toBundle();
         for (IPCObserver observer : tempList) {
-            // TODO: 2017/6/19 albieliang
-            observer.onCallback(bundle);
+            observer.onCallback(data);
         }
         return true;
     }

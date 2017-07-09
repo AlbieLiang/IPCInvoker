@@ -20,7 +20,7 @@ package cc.suitalk.ipcinvoker.extension;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import cc.suitalk.ipcinvoker.reflect.ReflectUtil;
+import cc.suitalk.ipcinvoker.ObjectStore;
 
 /**
  * Created by albieliang on 2017/7/1.
@@ -62,7 +62,7 @@ public class XParcelableWrapper implements Parcelable {
         if (hasData == HAS_DATA) {
             String dataClass = in.readString();
             if (target == null) {
-                target = ReflectUtil.newInstance(dataClass, XParcelable.class);
+                target = ObjectStore.newInstance(dataClass, XParcelable.class);
             }
             target.readFromParcel(in);
         }

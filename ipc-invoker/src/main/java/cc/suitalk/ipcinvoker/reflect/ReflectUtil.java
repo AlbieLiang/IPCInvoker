@@ -91,4 +91,26 @@ public class ReflectUtil {
         }
         return null;
     }
+
+    public static <T> T newInstance(Class<?> clazz) {
+        if (clazz == null) {
+            Log.e(TAG, "newInstance failed, class is null or nil.");
+            return null;
+        }
+        try {
+            Class<?> c = clazz;
+            Constructor constructor = c.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            return (T) constructor.newInstance();
+        } catch (IllegalAccessException e) {
+            Log.e(TAG, "reflect error : %s", e);
+        } catch (InstantiationException e) {
+            Log.e(TAG, "reflect error : %s", e);
+        } catch (NoSuchMethodException e) {
+            Log.e(TAG, "reflect error : %s", e);
+        } catch (InvocationTargetException e) {
+            Log.e(TAG, "reflect error : %s", e);
+        }
+        return null;
+    }
 }

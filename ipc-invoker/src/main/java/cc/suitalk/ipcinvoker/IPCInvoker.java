@@ -25,7 +25,6 @@ import android.support.annotation.WorkerThread;
 
 import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeBridge;
 import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeCallback;
-import cc.suitalk.ipcinvoker.reflect.ReflectUtil;
 import cc.suitalk.ipcinvoker.tools.Log;
 
 /**
@@ -64,7 +63,7 @@ public class IPCInvoker {
             return false;
         }
         if (IPCInvokeLogic.isCurrentProcess(process)) {
-            IPCAsyncInvokeTask task = ReflectUtil.newInstance(taskClass, IPCAsyncInvokeTask.class);
+            IPCAsyncInvokeTask task = ObjectStore.get(taskClass, IPCAsyncInvokeTask.class);
             if (task == null) {
                 Log.e(TAG, "invokeAsync failed, newInstance(%s) return null.", taskClass);
                 return false;
@@ -96,6 +95,52 @@ public class IPCInvoker {
             Log.d(TAG, "invokeAsync failed, ipc invoke error : %s", e);
         }
         return false;
+    }
+
+    /**
+     * Sync invoke, it must be invoked on WorkerThread.
+     *
+     * @param process   remote service process name
+     * @param data      data for remote process invoked
+     * @param taskClass remote invoke logic task class
+     * @param <T>       the class implements {@link IPCSyncInvokeTask} interface
+     * @return the cross-process invoke result.
+     *
+     * @see #invokeSync(String, Parcelable, Class)
+     */
+    @WorkerThread
+    public static <T extends IPCSyncInvokeTask> Bundle invokeSync(@NonNull String process, Bundle data, @NonNull Class<T> taskClass) {
+        if (process == null || process.length() == 0) {
+            Log.e(TAG, "invokeSync failed, process is null or nil.");
+            return null;
+        }
+        if (taskClass == null) {
+            Log.e(TAG, "invokeSync failed, taskClass is null(process : %s).", process);
+            return null;
+        }
+        if (IPCInvokeLogic.isCurrentProcess(process)) {
+            IPCSyncInvokeTask task = ObjectStore.get(taskClass, IPCSyncInvokeTask.class);
+            if (task == null) {
+                Log.e(TAG, "invokeSync failed, newInstance(%s) return null.", taskClass);
+                return null;
+            }
+            return task.invoke(data);
+        }
+        AIDL_IPCInvokeBridge bridge = IPCBridgeManager.getImpl().getIPCBridge(process);
+        if (bridge == null) {
+            Log.e(TAG, "invokeSync failed, get bridge is null by process(%s).", process);
+            return null;
+        }
+        try {
+            Bundle result = bridge.invokeSync(data, taskClass.getName());
+            if (result != null) {
+                result.setClassLoader(IPCInvoker.class.getClassLoader());
+            }
+            return result;
+        } catch (RemoteException e) {
+            Log.d(TAG, "invokeSync failed, ipc invoke error : %s", e);
+        }
+        return null;
     }
 
     /**
@@ -157,52 +202,6 @@ public class IPCInvoker {
             Log.d(TAG, "invokeAsync failed, ipc invoke error : %s", e);
         }
         return false;
-    }
-
-    /**
-     * Sync invoke, it must be invoked on WorkerThread.
-     *
-     * @param process   remote service process name
-     * @param data      data for remote process invoked
-     * @param taskClass remote invoke logic task class
-     * @param <T>       the class implements {@link IPCSyncInvokeTask} interface
-     * @return the cross-process invoke result.
-     *
-     * @see #invokeSync(String, Parcelable, Class)
-     */
-    @WorkerThread
-    public static <T extends IPCSyncInvokeTask> Bundle invokeSync(@NonNull String process, Bundle data, @NonNull Class<T> taskClass) {
-        if (process == null || process.length() == 0) {
-            Log.e(TAG, "invokeSync failed, process is null or nil.");
-            return null;
-        }
-        if (taskClass == null) {
-            Log.e(TAG, "invokeSync failed, taskClass is null(process : %s).", process);
-            return null;
-        }
-        if (IPCInvokeLogic.isCurrentProcess(process)) {
-            IPCSyncInvokeTask task = ReflectUtil.newInstance(taskClass, IPCSyncInvokeTask.class);
-            if (task == null) {
-                Log.e(TAG, "invokeSync failed, newInstance(%s) return null.", taskClass);
-                return null;
-            }
-            return task.invoke(data);
-        }
-        AIDL_IPCInvokeBridge bridge = IPCBridgeManager.getImpl().getIPCBridge(process);
-        if (bridge == null) {
-            Log.e(TAG, "invokeSync failed, get bridge is null by process(%s).", process);
-            return null;
-        }
-        try {
-            Bundle result = bridge.invokeSync(data, taskClass.getName());
-            if (result != null) {
-                result.setClassLoader(IPCInvoker.class.getClassLoader());
-            }
-            return result;
-        } catch (RemoteException e) {
-            Log.d(TAG, "invokeSync failed, ipc invoke error : %s", e);
-        }
-        return null;
     }
 
     /**
@@ -272,7 +271,7 @@ public class IPCInvoker {
                 Log.e(TAG, "proxy SyncInvoke failed, class is null or nil.");
                 return null;
             }
-            IPCRemoteSyncInvoke<Parcelable, Parcelable> task = ReflectUtil.newInstance(clazz, IPCRemoteSyncInvoke.class);
+            IPCRemoteSyncInvoke<Parcelable, Parcelable> task = ObjectStore.get(clazz, IPCRemoteSyncInvoke.class);
             if (task == null) {
                 Log.w(TAG, "proxy SyncInvoke failed, newInstance(%s) return null.", clazz);
                 return null;
@@ -293,7 +292,7 @@ public class IPCInvoker {
                 Log.e(TAG, "proxy AsyncInvoke failed, class is null or nil.");
                 return;
             }
-            IPCRemoteAsyncInvoke task = ReflectUtil.newInstance(clazz, IPCRemoteAsyncInvoke.class);
+            IPCRemoteAsyncInvoke task = ObjectStore.get(clazz, IPCRemoteAsyncInvoke.class);
             if (task == null) {
                 Log.w(TAG, "proxy AsyncInvoke failed, newInstance(%s) return null.", clazz);
                 return;

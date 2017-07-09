@@ -27,7 +27,6 @@ import android.support.annotation.Nullable;
 
 import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeBridge;
 import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeCallback;
-import cc.suitalk.ipcinvoker.reflect.ReflectUtil;
 import cc.suitalk.ipcinvoker.tools.Log;
 
 /**
@@ -50,7 +49,7 @@ public abstract class BaseIPCService extends Service {
                 Log.e(TAG, "invokeAsync failed, class is null or nil.");
                 return;
             }
-            IPCAsyncInvokeTask task = ReflectUtil.newInstance(clazz, IPCAsyncInvokeTask.class);
+            IPCAsyncInvokeTask task = ObjectStore.get(clazz, IPCAsyncInvokeTask.class);
             if (task == null) {
                 Log.e(TAG, "invokeAsync failed, can not newInstance by class %s.", clazz);
                 return;
@@ -88,7 +87,7 @@ public abstract class BaseIPCService extends Service {
                 Log.e(TAG, "invokeAsync failed, class is null or nil.");
                 return null;
             }
-            IPCSyncInvokeTask task = ReflectUtil.newInstance(clazz, IPCSyncInvokeTask.class);
+            IPCSyncInvokeTask task = ObjectStore.get(clazz, IPCSyncInvokeTask.class);
             if (task == null) {
                 Log.e(TAG, "invokeSync failed, can not newInstance by class %s.", clazz);
                 return null;

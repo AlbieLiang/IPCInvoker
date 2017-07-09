@@ -20,8 +20,8 @@ package cc.suitalk.ipcinvoker.extension;
 import android.os.Bundle;
 import android.os.Parcel;
 
+import cc.suitalk.ipcinvoker.ObjectStore;
 import cc.suitalk.ipcinvoker.event.IPCData;
-import cc.suitalk.ipcinvoker.reflect.ReflectUtil;
 
 /**
  * Created by albieliang on 2017/7/9.
@@ -45,7 +45,7 @@ public class IPCDataTransfer implements BaseTypeTransfer {
     public Object readFromParcel(Parcel in) {
         String dataClass = in.readString();
         Bundle data = in.readBundle();
-        IPCData ipcData = ReflectUtil.newInstance(dataClass, IPCData.class);
+        IPCData ipcData = ObjectStore.newInstance(dataClass, IPCData.class);
         ipcData.fromBundle(data);
         return ipcData;
     }

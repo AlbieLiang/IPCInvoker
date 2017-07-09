@@ -90,10 +90,10 @@ public class IPCInvokeClient {
         return "Token#IPCObserver#" + o.hashCode();
     }
 
-    private static class IPCInvokeTask_RegisterIPCObserver implements IPCAsyncInvokeTask {
+    private static class IPCInvokeTask_RegisterIPCObserver implements IPCRemoteAsyncInvoke<Bundle, Bundle> {
 
         @Override
-        public void invoke(Bundle data, final IPCInvokeCallback callback) {
+        public void invoke(Bundle data, final IPCRemoteInvokeCallback<Bundle> callback) {
             final String token = data.getString(TOKEN);
             final String event = data.getString(EVENT);
             IPCEventBus.getImpl().registerIPCObserver(event, new IPCObserverProxy(token) {
@@ -105,10 +105,10 @@ public class IPCInvokeClient {
         }
     }
 
-    private static class IPCInvokeTask_UnregisterIPCObserver implements IPCAsyncInvokeTask {
+    private static class IPCInvokeTask_UnregisterIPCObserver implements IPCRemoteAsyncInvoke<Bundle, Bundle> {
 
         @Override
-        public void invoke(Bundle data, final IPCInvokeCallback callback) {
+        public void invoke(Bundle data, final IPCRemoteInvokeCallback callback) {
             final String token = data.getString(TOKEN);
             final String event = data.getString(EVENT);
             IPCEventBus.getImpl().unregisterIPCObserver(event, new IPCObserverProxy(token) {

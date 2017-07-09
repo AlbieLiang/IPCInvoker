@@ -15,15 +15,18 @@
  *
  */
 
-package cc.suitalk.ipcinvoker.event;
+package cc.suitalk.ipcinvoker.annotation;
 
-import android.os.Bundle;
-
-import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Created by albieliang on 2017/6/18.
+ * Created by albieliang on 2017/7/9.
  */
 
-public interface IPCObserver extends IPCRemoteInvokeCallback<Bundle> {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface Duplicate {
 }

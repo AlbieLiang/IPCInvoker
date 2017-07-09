@@ -21,6 +21,8 @@ import android.support.annotation.NonNull;
 
 import junit.framework.Assert;
 
+import cc.suitalk.ipcinvoker.reflect.ReflectUtil;
+
 /**
  * Created by albieliang on 2017/7/7.
  */
@@ -41,11 +43,7 @@ public class Singleton<T> implements ObjectAccessible<T> {
         if (target == null) {
             synchronized (this) {
                 if (target == null) {
-                    try {
-                        target = (T) targetClass.newInstance();
-                    } catch (InstantiationException e) {
-                    } catch (IllegalAccessException e) {
-                    }
+                    target = ReflectUtil.newInstance(targetClass);
                 }
             }
         }

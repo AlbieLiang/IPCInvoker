@@ -26,8 +26,8 @@ import cc.suitalk.ipcinvoker.IPCInvoker;
 import cc.suitalk.ipcinvoker.IPCRemoteAsyncInvoke;
 import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
 import cc.suitalk.ipcinvoker.IPCRemoteSyncInvoke;
+import cc.suitalk.ipcinvoker.ObjectStore;
 import cc.suitalk.ipcinvoker.ThreadCaller;
-import cc.suitalk.ipcinvoker.reflect.ReflectUtil;
 import cc.suitalk.ipcinvoker.tools.Log;
 
 /**
@@ -94,7 +94,7 @@ public class XIPCInvoker {
                 Log.e(TAG, "proxy SyncInvoke failed, class is null or nil.");
                 return new WrapperParcelable(null, null);
             }
-            IPCRemoteSyncInvoke task = ReflectUtil.newInstance(clazz, IPCRemoteSyncInvoke.class);
+            IPCRemoteSyncInvoke task = ObjectStore.get(clazz, IPCRemoteSyncInvoke.class);
             if (task == null) {
                 Log.w(TAG, "proxy SyncInvoke failed, newInstance(%s) return null.", clazz);
                 return new WrapperParcelable(null, null);
@@ -115,7 +115,7 @@ public class XIPCInvoker {
                 Log.e(TAG, "proxy AsyncInvoke failed, class is null or nil.");
                 return;
             }
-            IPCRemoteAsyncInvoke task = ReflectUtil.newInstance(clazz, IPCRemoteAsyncInvoke.class);
+            IPCRemoteAsyncInvoke task = ObjectStore.get(clazz, IPCRemoteAsyncInvoke.class);
             if (task == null) {
                 Log.w(TAG, "proxy AsyncInvoke failed, newInstance(%s) return null.", clazz);
                 return;

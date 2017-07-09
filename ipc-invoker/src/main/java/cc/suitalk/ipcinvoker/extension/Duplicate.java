@@ -21,6 +21,8 @@ import android.support.annotation.NonNull;
 
 import junit.framework.Assert;
 
+import cc.suitalk.ipcinvoker.reflect.ReflectUtil;
+
 /**
  * Created by albieliang on 2017/7/7.
  */
@@ -36,11 +38,6 @@ public class Duplicate<T> implements ObjectAccessible<T> {
 
     @Override
     public T get() {
-        try {
-            return (T) targetClass.newInstance();
-        } catch (InstantiationException e) {
-        } catch (IllegalAccessException e) {
-        }
-        return null;
+        return ReflectUtil.newInstance(targetClass);
     }
 }

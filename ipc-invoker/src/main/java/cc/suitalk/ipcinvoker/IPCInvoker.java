@@ -63,7 +63,7 @@ public class IPCInvoker {
             Log.e(TAG, "invokeAsync failed, task is null(process : %s).", process);
             return false;
         }
-        return ThreadCaller.post(new Runnable() {
+        return ThreadCaller.execute(new Runnable() {
             @Override
             public void run() {
                 if (IPCInvokeLogic.isCurrentProcess(process)) {
@@ -173,7 +173,7 @@ public class IPCInvoker {
             Log.e(TAG, "invokeAsync failed, taskClass is null(process : %s).", process);
             return false;
         }
-        return ThreadCaller.post(new Runnable() {
+        return ThreadCaller.execute(new Runnable() {
             @Override
             public void run() {
                 if (IPCInvokeLogic.isCurrentProcess(process)) {

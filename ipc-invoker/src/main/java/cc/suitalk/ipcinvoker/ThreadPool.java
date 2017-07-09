@@ -42,7 +42,7 @@ class ThreadPool {
     private static ThreadPool sThreadPool;
     
     private Handler mHandler;
-    private ExecutorService mExecutorService;
+    ExecutorService mExecutorService;
     private int mCorePoolSize = DEFAULT_CORE_POOL_SIZE;
     
     private static ThreadPool getImpl() {
@@ -55,7 +55,11 @@ class ThreadPool {
         }
         return sThreadPool;
     }
-    
+
+    static ThreadPool newInstance() {
+        return new ThreadPool();
+    }
+
     private ThreadPool() {
         final HandlerThread handlerThread = new HandlerThread("ThreadPool#WorkerThread-" + hashCode());
         handlerThread.start();

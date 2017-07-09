@@ -34,6 +34,8 @@ public class ThreadCaller {
     private Handler mHandler;
     private Handler mUiThreadHandler;
 
+    private ThreadPool mThreadPool;
+
     private static ThreadCaller getImpl() {
         if (sImpl == null) {
             synchronized (ThreadCaller.class) {
@@ -46,16 +48,26 @@ public class ThreadCaller {
     }
 
     private ThreadCaller() {
-        mHandlerThread = new HandlerThread("WorkerThread#" + hashCode());
+        mHandlerThread = new HandlerThread("ThreadCaller#Worker-" + hashCode());
         mHandlerThread.start();
         mHandler = new Handler(mHandlerThread.getLooper());
         mUiThreadHandler = new Handler(Looper.getMainLooper());
+        mThreadPool = ThreadPool.newInstance();
     }
 
     public static HandlerThread getWorkerThread() {
         return getImpl().mHandlerThread;
     }
 
+    /**
+     * Post task to the worker thread. That only one worker thread in the ThreadCaller.
+     *
+     * @param r Runnable task
+     * @return true post task success, otherwise false.
+     *
+     * @see #execute(Runnable)
+     * @see #postDelayed(Runnable, long)
+     */
     public static boolean post(Runnable r) {
         return getImpl().mHandler.post(r);
     }
@@ -88,5 +100,18 @@ public class ThreadCaller {
             return;
         }
         getImpl().mHandler.removeCallbacks(r);
+    }
+
+    /**
+     * Execute task on ThreadPool.
+     *
+     * @param r true the task was post into the queue, otherwise false.
+     */
+    public static boolean execute(Runnable r) {
+        if (r == null) {
+            return false;
+        }
+        getImpl().mThreadPool.mExecutorService.execute(r);
+        return true;
     }
 }

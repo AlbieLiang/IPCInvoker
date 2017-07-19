@@ -21,7 +21,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -42,9 +41,6 @@ public class BaseSampleActivity extends AppCompatActivity {
 
     private EditText remoteProcessNameEt;
 
-    private Button getValueBtn;
-    private Button putValueBtn;
-
     private EditText getKeyEt;
     private TextView getResultTv;
 
@@ -60,9 +56,6 @@ public class BaseSampleActivity extends AppCompatActivity {
 
         remoteProcessNameEt = (EditText) findViewById(R.id.remoteProcessNameEt);
 
-        getValueBtn = (Button) findViewById(R.id.getValueBtn);
-        putValueBtn = (Button) findViewById(R.id.putValueBtn);
-
         getKeyEt = (EditText) findViewById(R.id.getByKeyEt);
         getResultTv = (TextView) findViewById(R.id.getResultTv);
 
@@ -73,7 +66,7 @@ public class BaseSampleActivity extends AppCompatActivity {
 
         myPidTv.setText("" + android.os.Process.myPid());
 
-        getValueBtn.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.getValueBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ThreadPool.post(new Runnable() {
@@ -96,7 +89,7 @@ public class BaseSampleActivity extends AppCompatActivity {
             }
         });
 
-        putValueBtn.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.putValueBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String remoteProcessName = remoteProcessNameEt.getText().toString();

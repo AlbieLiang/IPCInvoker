@@ -22,7 +22,7 @@ ext {
     ]
 
     bintrayConfig = [
-            version : '1.1.2',
+            version : '1.1.5',
             siteUrl : 'https://github.com/AlbieLiang/IPCInvoker',   // 项目的主页
             gitUrl : 'https://github.com/AlbieLiang/IPCInvoker.git',   // Git仓库的url
             "license-name" : 'The Apache Software License, Version 2.0',

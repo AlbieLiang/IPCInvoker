@@ -17,12 +17,11 @@
 
 package cc.suitalk.ipcinvoker.event;
 
-import android.support.annotation.AnyThread;
-import android.support.annotation.NonNull;
-
 import junit.framework.Assert;
 
 import cc.suitalk.ipcinvoker.IPCInvokeClient;
+import cc.suitalk.ipcinvoker.annotation.AnyThread;
+import cc.suitalk.ipcinvoker.annotation.NonNull;
 
 /**
  * Created by albieliang on 2017/6/18.

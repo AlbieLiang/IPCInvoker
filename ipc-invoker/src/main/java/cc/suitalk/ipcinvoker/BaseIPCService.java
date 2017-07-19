@@ -23,10 +23,10 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Process;
 import android.os.RemoteException;
-import android.support.annotation.Nullable;
 
 import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeBridge;
 import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeCallback;
+import cc.suitalk.ipcinvoker.annotation.Nullable;
 import cc.suitalk.ipcinvoker.tools.Log;
 
 /**
@@ -102,7 +102,11 @@ public abstract class BaseIPCService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        Log.i(TAG, "onBind(%s)", intent);
+        Log.i(TAG, "onBind(%s), killSelf(%s)", intent, mNeedKillSelf);
+        if (mNeedKillSelf) {
+            Log.i(TAG, "need to kill self, return null Binder object.");
+            return null;
+        }
         IPCServiceManager.getImpl().put(IPCInvokeLogic.getCurrentProcessName(), this);
         mHasConnectting = true;
         return mBinder;
@@ -120,18 +124,25 @@ public abstract class BaseIPCService extends Service {
     public abstract String getProcessName();
 
     public void killSelf() {
-        mNeedKillSelf = true;
-        tryToKillSelf();
+        tryToKillSelf(true);
     }
 
     public void abortKillSelf() {
         mNeedKillSelf = false;
     }
 
-    private void tryToKillSelf() {
-        if (mHasConnectting || !mNeedKillSelf) {
+    public void tryToKillSelf() {
+        tryToKillSelf(false);
+    }
+
+    private void tryToKillSelf(boolean force) {
+        if (mHasConnectting && !force) {
             return;
         }
+        Log.i(TAG, "kill self(%s)", getProcessName());
+        mNeedKillSelf = true;
+        IPCBridgeManager.getImpl().lockCreateBridge(true);
+        IPCBridgeManager.getImpl().releaseAllIPCBridge();
         stopSelf();
         IPCServiceManager.getImpl().remove(getProcessName());
         ThreadPool.postDelayed(new Runnable() {

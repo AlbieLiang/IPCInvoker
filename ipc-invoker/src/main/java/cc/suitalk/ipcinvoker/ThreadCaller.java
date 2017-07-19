@@ -105,7 +105,8 @@ public class ThreadCaller {
     /**
      * Execute task on ThreadPool.
      *
-     * @param r true the task was post into the queue, otherwise false.
+     * @param r runnable task
+     * @return true the task was post into the queue, otherwise false.
      */
     public static boolean execute(Runnable r) {
         if (r == null) {

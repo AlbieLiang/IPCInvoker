@@ -17,10 +17,9 @@
 
 package cc.suitalk.ipcinvoker.extension;
 
-import android.support.annotation.NonNull;
-
 import junit.framework.Assert;
 
+import cc.suitalk.ipcinvoker.annotation.NonNull;
 import cc.suitalk.ipcinvoker.reflect.ReflectUtil;
 
 /**

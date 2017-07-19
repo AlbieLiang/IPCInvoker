@@ -20,12 +20,12 @@ package cc.suitalk.ipcinvoker;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
-import android.support.annotation.NonNull;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+import cc.suitalk.ipcinvoker.annotation.NonNull;
 import cc.suitalk.ipcinvoker.reflect.ReflectStaticFieldSmith;
 import cc.suitalk.ipcinvoker.tools.Log;
 

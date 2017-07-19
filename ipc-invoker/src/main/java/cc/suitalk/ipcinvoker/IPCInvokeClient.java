@@ -19,12 +19,12 @@ package cc.suitalk.ipcinvoker;
 
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.AnyThread;
-import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
 
 import junit.framework.Assert;
 
+import cc.suitalk.ipcinvoker.annotation.AnyThread;
+import cc.suitalk.ipcinvoker.annotation.NonNull;
+import cc.suitalk.ipcinvoker.annotation.WorkerThread;
 import cc.suitalk.ipcinvoker.event.IPCEventBus;
 import cc.suitalk.ipcinvoker.event.IPCObserver;
 

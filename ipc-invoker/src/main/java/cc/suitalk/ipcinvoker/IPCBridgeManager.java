@@ -25,15 +25,17 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
-import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
 
 import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeBridge;
 import cc.suitalk.ipcinvoker.activate.IPCInvokerInitializer;
+import cc.suitalk.ipcinvoker.annotation.NonNull;
+import cc.suitalk.ipcinvoker.annotation.WorkerThread;
 import cc.suitalk.ipcinvoker.tools.Log;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -50,6 +52,8 @@ class IPCBridgeManager implements IPCInvokerInitializer {
     private Handler mHandler;
 
     private Map<String, IPCBridgeWrapper> mBridgeMap;
+
+    private volatile boolean mLockCreateBridge;
 
     public static IPCBridgeManager getImpl() {
         if (sInstance == null) {
@@ -96,8 +100,16 @@ class IPCBridgeManager implements IPCInvokerInitializer {
 
                 @Override
                 public void onServiceConnected(ComponentName name, IBinder service) {
-                    Log.i(TAG, "onServiceConnected(%s, tid : %s)", bw.hashCode(), Thread.currentThread().getId());
-                    bw.bridge = AIDL_IPCInvokeBridge.Stub.asInterface(service);
+                    if (service == null) {
+                        Log.i(TAG, "onServiceConnected(%s), service is null", bw.hashCode());
+                        context.unbindService(bw.serviceConnection);
+                        mBridgeMap.remove(process);
+                        bw.serviceConnection = null;
+                        bw.bridge = null;
+                    } else {
+                        Log.i(TAG, "onServiceConnected(%s)", bw.hashCode());
+                        bw.bridge = AIDL_IPCInvokeBridge.Stub.asInterface(service);
+                    }
                     if (bw.connectTimeoutRunnable != null) {
                         mHandler.removeCallbacks(bw.connectTimeoutRunnable);
                     }
@@ -237,6 +249,30 @@ class IPCBridgeManager implements IPCInvokerInitializer {
                 }
             }
         });
+    }
+
+    public synchronized void lockCreateBridge(boolean lock) {
+        mLockCreateBridge = lock;
+    }
+
+    public void releaseAllIPCBridge() {
+        Log.i(TAG, "releaseAllIPCBridge");
+        if (mBridgeMap.isEmpty()) {
+            return;
+        }
+        Set<String> keySet = null;
+        synchronized (mBridgeMap) {
+            if (mBridgeMap.isEmpty()) {
+                return;
+            }
+            keySet = new HashSet<>(mBridgeMap.keySet());
+        }
+        if (keySet == null || keySet.isEmpty()) {
+            return;
+        }
+        for (String process : keySet) {
+            releaseIPCBridge(process);
+        }
     }
 
     @Override

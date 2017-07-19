@@ -20,12 +20,12 @@ package cc.suitalk.ipcinvoker;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.RemoteException;
-import android.support.annotation.AnyThread;
-import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
 
 import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeBridge;
 import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeCallback;
+import cc.suitalk.ipcinvoker.annotation.AnyThread;
+import cc.suitalk.ipcinvoker.annotation.NonNull;
+import cc.suitalk.ipcinvoker.annotation.WorkerThread;
 import cc.suitalk.ipcinvoker.tools.Log;
 
 /**
@@ -103,7 +103,7 @@ public class IPCInvoker {
     }
 
     /**
-     * Sync invoke, it must be invoked on WorkerThread.
+     * Sync invoke, it must be invoked on WorkerThread or make sure the connection is established before invoked.
      *
      * @param process   remote service process name
      * @param data      data for remote process invoked
@@ -177,7 +177,8 @@ public class IPCInvoker {
             @Override
             public void run() {
                 if (IPCInvokeLogic.isCurrentProcess(process)) {
-                    (new IPCAsyncInvokeTaskProxy()).invoke(buildBundle(data, taskClass), new IPCInvokeCallback() {
+                    IPCAsyncInvokeTaskProxy proxy = ObjectStore.get(IPCAsyncInvokeTaskProxy.class, IPCAsyncInvokeTaskProxy.class);
+                    proxy.invoke(buildBundle(data, taskClass), new IPCInvokeCallback() {
                         @Override
                         public void onCallback(Bundle data) {
                             if (callback != null) {
@@ -214,7 +215,7 @@ public class IPCInvoker {
     }
 
     /**
-     * Sync invoke, it must be invoked on WorkerThread.
+     * Sync invoke, it must be invoked on WorkerThread or make sure the connection is established before invoked.
      *
      * @param process      remote service process name
      * @param data         data for remote process invoked, it must be a {@link Parcelable}
@@ -238,7 +239,8 @@ public class IPCInvoker {
             return null;
         }
         if (IPCInvokeLogic.isCurrentProcess(process)) {
-            Bundle resData = (new IPCSyncInvokeTaskProxy()).invoke(buildBundle(data, taskClass));
+            IPCSyncInvokeTaskProxy proxy = ObjectStore.get(IPCSyncInvokeTaskProxy.class, IPCSyncInvokeTaskProxy.class);
+            Bundle resData = proxy.invoke(buildBundle(data, taskClass));
             if (resData == null) {
                 return null;
             }

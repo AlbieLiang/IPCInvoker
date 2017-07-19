@@ -17,8 +17,7 @@
 
 package cc.suitalk.ipcinvoker.activate;
 
-import android.support.annotation.NonNull;
-
+import cc.suitalk.ipcinvoker.annotation.NonNull;
 import cc.suitalk.ipcinvoker.extension.BaseTypeTransfer;
 
 /**

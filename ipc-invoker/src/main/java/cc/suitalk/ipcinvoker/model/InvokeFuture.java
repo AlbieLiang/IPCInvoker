@@ -17,12 +17,12 @@
 
 package cc.suitalk.ipcinvoker.model;
 
-import android.support.annotation.NonNull;
-
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import cc.suitalk.ipcinvoker.annotation.NonNull;
 
 /**
  * Created by albieliang on 2017/7/9.

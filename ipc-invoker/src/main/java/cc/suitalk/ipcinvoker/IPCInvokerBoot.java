@@ -18,10 +18,10 @@
 package cc.suitalk.ipcinvoker;
 
 import android.app.Application;
-import android.support.annotation.NonNull;
 
 import cc.suitalk.ipcinvoker.activate.IPCInvokerInitDelegate;
 import cc.suitalk.ipcinvoker.activate.TypeTransferInitializer;
+import cc.suitalk.ipcinvoker.annotation.NonNull;
 import cc.suitalk.ipcinvoker.extension.BaseTypeTransfer;
 import cc.suitalk.ipcinvoker.extension.ObjectTypeTransfer;
 

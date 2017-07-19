@@ -17,10 +17,10 @@
 
 package cc.suitalk.ipcinvoker;
 
-import android.support.annotation.NonNull;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import cc.suitalk.ipcinvoker.annotation.NonNull;
 
 /**
  * Created by albieliang on 2017/5/20.

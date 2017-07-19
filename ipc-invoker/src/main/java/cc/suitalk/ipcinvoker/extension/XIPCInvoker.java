@@ -19,15 +19,15 @@ package cc.suitalk.ipcinvoker.extension;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.AnyThread;
-import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
 
 import cc.suitalk.ipcinvoker.IPCInvoker;
 import cc.suitalk.ipcinvoker.IPCRemoteAsyncInvoke;
 import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
 import cc.suitalk.ipcinvoker.IPCRemoteSyncInvoke;
 import cc.suitalk.ipcinvoker.ObjectStore;
+import cc.suitalk.ipcinvoker.annotation.AnyThread;
+import cc.suitalk.ipcinvoker.annotation.NonNull;
+import cc.suitalk.ipcinvoker.annotation.WorkerThread;
 import cc.suitalk.ipcinvoker.tools.Log;
 
 /**
@@ -64,7 +64,7 @@ public class XIPCInvoker {
     }
 
     /**
-     * Sync invoke, it must be invoked on WorkerThread.
+     * Sync invoke, it must be invoked on WorkerThread or make sure the connection is established before invoked.
      *
      * @param process      remote service process name
      * @param data         data for remote process invoked, it must be a {@link Parcelable}

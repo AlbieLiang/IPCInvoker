@@ -46,6 +46,26 @@ public class IPCInteger implements Parcelable {
         dest.writeInt(value);
     }
 
+    @Override
+    public String toString() {
+        return Integer.toString(value);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this || value == obj) {
+            return true;
+        }
+        if (obj instanceof IPCInteger) {
+            IPCInteger o = (IPCInteger) obj;
+            return value == o.value;
+        }
+        if (obj instanceof Integer) {
+            return value == obj || obj != null && obj.equals(value);
+        }
+        return false;
+    }
+
     public static final Creator<IPCInteger> CREATOR = new Creator<IPCInteger>() {
         @Override
         public IPCInteger createFromParcel(Parcel in) {

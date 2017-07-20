@@ -46,6 +46,26 @@ public class IPCLong implements Parcelable {
         dest.writeLong(value);
     }
 
+    @Override
+    public String toString() {
+        return Long.toString(value);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this || value == obj) {
+            return true;
+        }
+        if (obj instanceof IPCLong) {
+            IPCLong o = (IPCLong) obj;
+            return value == o.value;
+        }
+        if (obj instanceof Long) {
+            return value == obj || obj != null && obj.equals(value);
+        }
+        return false;
+    }
+
     public static final Creator<IPCLong> CREATOR = new Creator<IPCLong>() {
         @Override
         public IPCLong createFromParcel(Parcel in) {

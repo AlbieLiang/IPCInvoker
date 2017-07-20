@@ -46,6 +46,26 @@ public class IPCFloat implements Parcelable {
         dest.writeFloat(value);
     }
 
+    @Override
+    public String toString() {
+        return Float.toString(value);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this || value == obj) {
+            return true;
+        }
+        if (obj instanceof IPCFloat) {
+            IPCFloat o = (IPCFloat) obj;
+            return value == o.value;
+        }
+        if (obj instanceof Float) {
+            return value == obj || obj != null && obj.equals(value);
+        }
+        return false;
+    }
+
     public static final Creator<IPCFloat> CREATOR = new Creator<IPCFloat>() {
         @Override
         public IPCFloat createFromParcel(Parcel in) {

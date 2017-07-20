@@ -46,6 +46,26 @@ public class IPCDouble implements Parcelable {
         dest.writeDouble(value);
     }
 
+    @Override
+    public String toString() {
+        return Double.toString(value);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this || value == obj) {
+            return true;
+        }
+        if (obj instanceof IPCDouble) {
+            IPCDouble o = (IPCDouble) obj;
+            return value == o.value;
+        }
+        if (obj instanceof Double) {
+            return value == obj || obj != null && obj.equals(value);
+        }
+        return false;
+    }
+
     public static final Creator<IPCDouble> CREATOR = new Creator<IPCDouble>() {
         @Override
         public IPCDouble createFromParcel(Parcel in) {

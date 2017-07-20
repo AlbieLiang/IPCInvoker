@@ -46,6 +46,26 @@ public class IPCString implements Parcelable {
         dest.writeString(value);
     }
 
+    @Override
+    public String toString() {
+        return value;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this || value == obj) {
+            return true;
+        }
+        if (obj instanceof IPCString) {
+            IPCString o = (IPCString) obj;
+            return value == o.value || value != null && value.equals(o.value);
+        }
+        if (obj instanceof String) {
+            return value == obj || value != null && value.equals(obj);
+        }
+        return false;
+    }
+
     public static final Creator<IPCString> CREATOR = new Creator<IPCString>() {
         @Override
         public IPCString createFromParcel(Parcel in) {

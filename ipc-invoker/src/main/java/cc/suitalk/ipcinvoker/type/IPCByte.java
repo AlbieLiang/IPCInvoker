@@ -46,6 +46,26 @@ public class IPCByte implements Parcelable {
         dest.writeByte(value);
     }
 
+    @Override
+    public String toString() {
+        return Integer.toString(value);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this || value == obj) {
+            return true;
+        }
+        if (obj instanceof IPCByte) {
+            IPCByte o = (IPCByte) obj;
+            return value == o.value;
+        }
+        if (obj instanceof Byte) {
+            return value == obj || obj != null && obj.equals(value);
+        }
+        return false;
+    }
+
     public static final Creator<IPCByte> CREATOR = new Creator<IPCByte>() {
         @Override
         public IPCByte createFromParcel(Parcel in) {

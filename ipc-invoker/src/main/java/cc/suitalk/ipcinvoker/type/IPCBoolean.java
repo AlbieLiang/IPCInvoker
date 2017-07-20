@@ -46,6 +46,26 @@ public class IPCBoolean implements Parcelable {
         dest.writeInt(value ? 1 : 0);
     }
 
+    @Override
+    public String toString() {
+        return Boolean.toString(value);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this || value == obj) {
+            return true;
+        }
+        if (obj instanceof IPCBoolean) {
+            IPCBoolean o = (IPCBoolean) obj;
+            return value == o.value;
+        }
+        if (obj instanceof Boolean) {
+            return value == obj || obj != null && obj.equals(value);
+        }
+        return false;
+    }
+
     public static final Creator<IPCBoolean> CREATOR = new Creator<IPCBoolean>() {
         @Override
         public IPCBoolean createFromParcel(Parcel in) {

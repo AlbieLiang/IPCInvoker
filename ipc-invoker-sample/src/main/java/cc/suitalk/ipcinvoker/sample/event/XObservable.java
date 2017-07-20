@@ -21,22 +21,22 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import cc.suitalk.ipcinvoker.annotation.NonNull;
-import cc.suitalk.ipcinvoker.event.IPCDispatcher;
-import cc.suitalk.ipcinvoker.event.IPCObservable;
+import cc.suitalk.ipcinvoker.extension.event.XIPCDispatcher;
+import cc.suitalk.ipcinvoker.extension.event.XIPCObservable;
 
 /**
  * Created by albieliang on 2017/6/18.
  */
 
-public class MObservable {
+public class XObservable {
 
-    private static Map<String, IPCObservable> sMap = new ConcurrentHashMap<>();
+    private static Map<String, XIPCObservable> sMap = new ConcurrentHashMap<>();
 
-    public static <T extends IPCDispatcher> IPCObservable get(@NonNull String process, @NonNull Class<T> clazz) {
+    public static <T extends XIPCDispatcher> XIPCObservable get(@NonNull String process, @NonNull Class<T> clazz) {
         String key = genKey(process, clazz);
-        IPCObservable observable = sMap.get(key);
+        XIPCObservable observable = sMap.get(key);
         if (observable == null) {
-            observable = new IPCObservable(process, clazz);
+            observable = new XIPCObservable(process, clazz);
             sMap.put(key, observable);
         }
         return observable;

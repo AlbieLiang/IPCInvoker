@@ -63,5 +63,11 @@ public class IPCInvokerMainActivity extends AppCompatActivity {
                 startActivity(new Intent(v.getContext(), IPCEventTestCaseActivity.class));
             }
         });
+        findViewById(R.id.jumpToXIPCDispatcherTestBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(v.getContext(), XIPCDispatcherTestActivity.class));
+            }
+        });
     }
 }

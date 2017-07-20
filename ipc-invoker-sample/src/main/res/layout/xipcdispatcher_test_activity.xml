@@ -25,7 +25,9 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:paddingBottom="10dp"
-        android:paddingTop="10dp">
+        android:paddingTop="10dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -36,37 +38,51 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:text="Remote Process Name: " />
+
+                <EditText
+                    android:id="@+id/remoteProcessNameEt"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:text="cc.suitalk.ipcinvoker.sample"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <Button
-                    android:id="@+id/openIPCInvokerBtn"
+                    android:id="@+id/registerByObserverBtn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Open IPCInvoker Activity"
-                    android:layout_marginBottom="10dp"/>
+                    android:text="Register By Observer" />
 
                 <Button
-                    android:id="@+id/openXxxIPCInvokerBtn"
+                    android:id="@+id/unregisterByObserverBtn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Open XIPCInvoker Activity"
-                    android:layout_marginBottom="10dp"/>
-
-                <Button
-                    android:id="@+id/jumpToEventTestBtn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Open Event Test Activity"
-                    android:layout_marginBottom="10dp"/>
-                <Button
-                    android:id="@+id/jumpToXIPCDispatcherTestBtn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Open XIPCDispatcher Test Activity"
-                    android:layout_marginBottom="10dp"/>
+                    android:text="Unregister By Observer" />
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/observerMsgPanelTv"
+                android:layout_width="match_parent"
+                android:layout_height="80dp" />
         </LinearLayout>
 
+        <View style="@style/DividerStyle"/>
+
+        <Button
+            android:id="@+id/publishEventBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Publish Event" />
     </LinearLayout>
 </ScrollView>

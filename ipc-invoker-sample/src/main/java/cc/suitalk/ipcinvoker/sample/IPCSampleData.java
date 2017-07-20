@@ -30,10 +30,12 @@ import cc.suitalk.ipcinvoker.event.IPCData;
 public class IPCSampleData implements Parcelable, IPCData {
 
     public String result;
+    public long timestamp;
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(result);
+        dest.writeLong(timestamp);
     }
 
     @Override
@@ -46,6 +48,7 @@ public class IPCSampleData implements Parcelable, IPCData {
         public IPCSampleData createFromParcel(Parcel in) {
             IPCSampleData o = new IPCSampleData();
             o.result = in.readString();
+            o.timestamp = in.readLong();
             return o;
         }
 
@@ -59,11 +62,13 @@ public class IPCSampleData implements Parcelable, IPCData {
     public Bundle toBundle() {
         Bundle bundle = new Bundle();
         bundle.putString("result", result);
+        bundle.putLong("timestamp", timestamp);
         return bundle;
     }
 
     @Override
     public void fromBundle(Bundle bundle) {
         result = bundle.getString("result");
+        timestamp = bundle.getLong("timestamp");
     }
 }

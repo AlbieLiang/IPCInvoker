@@ -51,15 +51,23 @@ public class IPCEventTestCaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.run_on_push_process_test_event_activity);
+        setContentView(R.layout.ipc_event_test_activity);
         setTitle(R.string.push_process);
 
         final IPCObserver observer = new IPCObserver() {
             @Override
-            public void onCallback(Bundle data) {
-                String log = String.format("register observer by client, onCallback(%s, %s)", hashCode(), data);
-                Log.i(TAG, log);
-                clientMsgPanelTv.setText(log);
+            public void onCallback(final Bundle data) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        IPCSampleData result = new IPCSampleData();
+                        result.fromBundle(data);
+                        String log = String.format("register observer by client, onCallback(%s), cost : %s",
+                                result.result, (System.nanoTime() - result.timestamp) / 1000000.0d);
+                        Log.i(TAG, log);
+                        clientMsgPanelTv.setText(log);
+                    }
+                });
             }
         };
         clientMsgPanelTv = (TextView) findViewById(R.id.clientMsgPanelTv);
@@ -81,10 +89,16 @@ public class IPCEventTestCaseActivity extends AppCompatActivity {
         //
         final IPCObserver observer1 = new IPCObserver() {
             @Override
-            public void onCallback(Bundle data) {
-                String log = String.format("register observer by Observable, onCallback(%s, %s)", hashCode(), data);
-                Log.i(TAG, log);
-                observerMsgPanelTv.setText(log);
+            public void onCallback(final Bundle data) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String log = String.format("register observer by Observable, onCallback(%s), cost : %s",
+                                data.getString("result"), (System.nanoTime() - data.getLong("timestamp")) / 1000000.0d);
+                        Log.i(TAG, log);
+                        observerMsgPanelTv.setText(log);
+                    }
+                });
             }
         };
         processEt = (EditText) findViewById(R.id.remoteProcessNameEt);
@@ -122,8 +136,9 @@ public class IPCEventTestCaseActivity extends AppCompatActivity {
         public Bundle invoke(Bundle data) {
             OnClickEventDispatcher dispatcher = new OnClickEventDispatcher();
             IPCSampleData event = new IPCSampleData();
-            event.result = String.format("current process name : %s, pid : %s, time : %s",
-                    IPCInvokeLogic.getCurrentProcessName(), android.os.Process.myPid(), System.currentTimeMillis());
+            event.result = String.format("current process name : %s, task : %s, pid : %s, time : %s",
+                    IPCInvokeLogic.getCurrentProcessName(), hashCode(), android.os.Process.myPid(), System.currentTimeMillis());
+            event.timestamp = System.nanoTime();
             dispatcher.dispatch(event);
             Log.i(TAG, "publish event(%s)", event.result);
             return null;

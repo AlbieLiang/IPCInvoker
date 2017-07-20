@@ -64,6 +64,13 @@
             android:taskAffinity=".push"
             android:exported="false"/>
 
+        <activity
+            android:name=".app.XIPCDispatcherTestActivity"
+            android:label="@string/support_process"
+            android:process=":support"
+            android:taskAffinity=".support"
+            android:exported="false"/>
+
         <service
             android:name=".service.MainProcessIPCService"
             android:exported="false"/>

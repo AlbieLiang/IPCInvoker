@@ -19,6 +19,8 @@ package cc.suitalk.ipcinvoker.reflect;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 import cc.suitalk.ipcinvoker.tools.Log;
 
@@ -112,5 +114,17 @@ public class ReflectUtil {
             Log.e(TAG, "reflect error : %s", e);
         }
         return null;
+    }
+
+    public static Class<?> getActualTypeArgument(Class<?> clazz) {
+        if (clazz == null || clazz.equals(Object.class)) {
+            return null;
+        }
+        Type superClass = clazz.getGenericSuperclass();
+        if (!(superClass instanceof ParameterizedType)) {
+            return getActualTypeArgument(clazz.getSuperclass());
+        }
+        Type type = ((ParameterizedType) superClass).getActualTypeArguments()[0];
+        return (Class<?>) type;
     }
 }

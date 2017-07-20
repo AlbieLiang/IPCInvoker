@@ -158,7 +158,7 @@ public class XIPCInvoker {
                 if (transfer != null) {
                     dest.writeInt(HAS_DATA);
                     dest.writeString(transfer.getClass().getName());
-                    ObjectTypeTransfer.writeToParcel(target, dest);
+                    transfer.writeToParcel(target, dest);
                     return;
                 }
             }

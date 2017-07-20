@@ -85,7 +85,7 @@ public class IPCInvokeClient {
         Bundle data = new Bundle();
         data.putString(TOKEN, buildToken(observer));
         data.putString(EVENT, event);
-        IPCInvoker.invokeAsync(process, data, IPCInvokeTask_UnregisterIPCObserver.class, observer);
+        IPCInvoker.invokeAsync(process, data, IPCInvokeTask_UnregisterIPCObserver.class, null);
         return true;
     }
 
@@ -117,7 +117,7 @@ public class IPCInvokeClient {
             IPCEventBus.getImpl().unregisterIPCObserver(event, new IPCObserverProxy(token) {
                 @Override
                 public void onCallback(Bundle data) {
-                    callback.onCallback(data);
+//                    callback.onCallback(data);
                 }
             });
         }

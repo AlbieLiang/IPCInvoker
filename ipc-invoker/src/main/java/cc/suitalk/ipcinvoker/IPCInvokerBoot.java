@@ -19,11 +19,14 @@ package cc.suitalk.ipcinvoker;
 
 import android.app.Application;
 
+import junit.framework.Assert;
+
 import cc.suitalk.ipcinvoker.activate.IPCInvokerInitDelegate;
 import cc.suitalk.ipcinvoker.activate.TypeTransferInitializer;
 import cc.suitalk.ipcinvoker.annotation.NonNull;
 import cc.suitalk.ipcinvoker.extension.BaseTypeTransfer;
 import cc.suitalk.ipcinvoker.extension.ObjectTypeTransfer;
+import cc.suitalk.ipcinvoker.tools.Log;
 
 /**
  * Created by albieliang on 2017/7/8.
@@ -31,7 +34,10 @@ import cc.suitalk.ipcinvoker.extension.ObjectTypeTransfer;
 
 public class IPCInvokerBoot {
 
+    private static final String TAG = "IPC.IPCInvokerBoot";
+
     public static void setup(@NonNull Application application, @NonNull IPCInvokerInitDelegate delegate) {
+        Assert.assertNotNull(application);
         IPCInvokeLogic.setContext(application);
         delegate.onAddTypeTransfer(new TypeTransferInitializer() {
             @Override
@@ -40,6 +46,7 @@ public class IPCInvokerBoot {
             }
         });
         delegate.onAttachServiceInfo(IPCBridgeManager.getImpl());
+        Log.i(TAG, "setup IPCInvoker(process : %s, application : %s)", IPCInvokeLogic.getCurrentProcessName(), application.hashCode());
     }
 
     /**

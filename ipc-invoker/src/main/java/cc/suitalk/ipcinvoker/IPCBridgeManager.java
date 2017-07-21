@@ -83,8 +83,17 @@ class IPCBridgeManager implements IPCInvokerInitializer {
     public AIDL_IPCInvokeBridge getIPCBridge(@NonNull final String process) {
         IPCBridgeWrapper bridgeWrapper = mBridgeMap.get(process);
         if (bridgeWrapper == null) {
+            if (mLockCreateBridge) {
+                Log.i(TAG, "build IPCBridge(process : %s) failed, locked.", process);
+                return null;
+            }
             if (Looper.getMainLooper() == Looper.myLooper()) {
                 Log.w(TAG, "getIPCBridge failed, can not create bridge on Main thread.");
+                return null;
+            }
+            final Class<?> serviceClass = getServiceClass(process);
+            if (serviceClass == null) {
+                Log.w(TAG, "getServiceClass by '%s', got null.", process);
                 return null;
             }
             bridgeWrapper = new IPCBridgeWrapper();
@@ -101,7 +110,7 @@ class IPCBridgeManager implements IPCInvokerInitializer {
                 @Override
                 public void onServiceConnected(ComponentName name, IBinder service) {
                     if (service == null) {
-                        Log.i(TAG, "onServiceConnected(%s), service is null", bw.hashCode());
+                        Log.i(TAG, "onServiceConnected(%s), but service is null", bw.hashCode());
                         context.unbindService(bw.serviceConnection);
                         mBridgeMap.remove(process);
                         bw.serviceConnection = null;
@@ -131,8 +140,8 @@ class IPCBridgeManager implements IPCInvokerInitializer {
                     bw.serviceConnection = null;
                 }
             };
-            final Intent intent = new Intent(context, getServiceClass(process));
-            Log.i(TAG, "bindService(%s, tid : %s)", bw.hashCode(), Thread.currentThread().getId());
+            final Intent intent = new Intent(context, serviceClass);
+            Log.i(TAG, "bindService(bw : %s, tid : %s, intent : %s)", bw.hashCode(), Thread.currentThread().getId(), intent);
             context.bindService(intent, bw.serviceConnection, Context.BIND_AUTO_CREATE);
             bw.connectTimeoutRunnable = new Runnable() {
                 @Override

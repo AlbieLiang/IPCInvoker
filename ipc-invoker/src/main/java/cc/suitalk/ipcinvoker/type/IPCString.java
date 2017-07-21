@@ -53,7 +53,7 @@ public class IPCString implements Parcelable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this || value == obj) {
+        if (obj == this) {
             return true;
         }
         if (obj instanceof IPCString) {
@@ -61,7 +61,7 @@ public class IPCString implements Parcelable {
             return value == o.value || value != null && value.equals(o.value);
         }
         if (obj instanceof String) {
-            return value == obj || value != null && value.equals(obj);
+            return obj.equals(value);
         }
         return false;
     }

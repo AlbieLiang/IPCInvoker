@@ -53,7 +53,7 @@ public class IPCByte implements Parcelable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this || value == obj) {
+        if (obj == this) {
             return true;
         }
         if (obj instanceof IPCByte) {
@@ -61,7 +61,7 @@ public class IPCByte implements Parcelable {
             return value == o.value;
         }
         if (obj instanceof Byte) {
-            return value == obj || obj != null && obj.equals(value);
+            return obj.equals(value);
         }
         return false;
     }

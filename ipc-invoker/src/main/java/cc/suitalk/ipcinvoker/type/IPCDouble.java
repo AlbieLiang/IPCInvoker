@@ -53,7 +53,7 @@ public class IPCDouble implements Parcelable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this || value == obj) {
+        if (obj == this) {
             return true;
         }
         if (obj instanceof IPCDouble) {
@@ -61,7 +61,7 @@ public class IPCDouble implements Parcelable {
             return value == o.value;
         }
         if (obj instanceof Double) {
-            return value == obj || obj != null && obj.equals(value);
+            return obj.equals(value);
         }
         return false;
     }

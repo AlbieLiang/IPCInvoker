@@ -53,7 +53,7 @@ public class IPCLong implements Parcelable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this || value == obj) {
+        if (obj == this) {
             return true;
         }
         if (obj instanceof IPCLong) {
@@ -61,7 +61,7 @@ public class IPCLong implements Parcelable {
             return value == o.value;
         }
         if (obj instanceof Long) {
-            return value == obj || obj != null && obj.equals(value);
+            return obj.equals(value);
         }
         return false;
     }

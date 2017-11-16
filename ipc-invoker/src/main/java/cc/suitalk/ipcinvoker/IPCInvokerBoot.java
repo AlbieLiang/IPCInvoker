@@ -86,4 +86,17 @@ public class IPCInvokerBoot {
     public static boolean hasConnectedRemoteService(@NonNull String process) {
         return IPCBridgeManager.getImpl().hasIPCBridge(process);
     }
+
+    /**
+     * Invoke this method to disconnect all of the connections between current process and remote process to release resource.
+     */
+    public static void disconnectAllRemoteService() {
+        ThreadPool.post(new Runnable() {
+            @Override
+            public void run() {
+                IPCBridgeManager.getImpl().releaseAllIPCBridge();
+            }
+        });
+    }
+
 }

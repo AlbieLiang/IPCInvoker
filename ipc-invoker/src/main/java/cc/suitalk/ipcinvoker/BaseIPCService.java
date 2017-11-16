@@ -117,7 +117,7 @@ public abstract class BaseIPCService extends Service {
         Log.i(TAG, "onUnbind(%s)", intent);
         boolean r = super.onUnbind(intent);
         mHasConnectting = false;
-        tryToKillSelf();
+//        tryToKillSelf();
         return r;
     }
 
@@ -128,6 +128,7 @@ public abstract class BaseIPCService extends Service {
     }
 
     public void abortKillSelf() {
+        Log.i(TAG, "abortKillSelf(%s)", getProcessName());
         mNeedKillSelf = false;
     }
 
@@ -137,6 +138,7 @@ public abstract class BaseIPCService extends Service {
 
     private void tryToKillSelf(boolean force) {
         if (mHasConnectting && !force) {
+            Log.i(TAG, "abort kill self(%s), the service was connected by other process.", getProcessName());
             return;
         }
         Log.i(TAG, "kill self(%s)", getProcessName());

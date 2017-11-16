@@ -20,6 +20,8 @@ package cc.suitalk.ipcinvoker.extension;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import cc.suitalk.ipcinvoker.annotation.NonNull;
+
 /**
  * Created by albieliang on 2017/7/6.
  */
@@ -32,7 +34,7 @@ public class ParcelableTransfer implements BaseTypeTransfer {
     }
 
     @Override
-    public void writeToParcel(Object o, Parcel dest) {
+    public void writeToParcel(@NonNull Object o, Parcel dest) {
         Parcelable parcelable = (Parcelable) o;
         dest.writeParcelable(parcelable, 0);
     }

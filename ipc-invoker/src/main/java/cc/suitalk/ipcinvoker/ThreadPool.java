@@ -39,7 +39,7 @@ class ThreadPool {
 
     private static final int DEFAULT_CORE_POOL_SIZE = 3;
 
-    private static ThreadPool sThreadPool;
+    private static volatile ThreadPool sThreadPool;
     
     private Handler mHandler;
     ExecutorService mExecutorService;

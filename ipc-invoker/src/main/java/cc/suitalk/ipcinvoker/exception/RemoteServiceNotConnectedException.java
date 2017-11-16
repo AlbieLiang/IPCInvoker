@@ -15,21 +15,26 @@
  *
  */
 
-package cc.suitalk.ipcinvoker.extension;
-
-import android.os.Parcel;
-
-import cc.suitalk.ipcinvoker.annotation.NonNull;
+package cc.suitalk.ipcinvoker.exception;
 
 /**
- * Created by albieliang on 2017/7/6.
+ * Created by albieliang on 2017/7/26.
  */
 
-public interface BaseTypeTransfer {
+public class RemoteServiceNotConnectedException extends IllegalStateException {
 
-    boolean canTransfer(Object o);
+    public RemoteServiceNotConnectedException() {
+    }
 
-    void writeToParcel(@NonNull Object o, Parcel dest);
+    public RemoteServiceNotConnectedException(String detailMessage) {
+        super(detailMessage);
+    }
 
-    Object readFromParcel(Parcel in);
+    public RemoteServiceNotConnectedException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public RemoteServiceNotConnectedException(Throwable cause) {
+        super(cause);
+    }
 }

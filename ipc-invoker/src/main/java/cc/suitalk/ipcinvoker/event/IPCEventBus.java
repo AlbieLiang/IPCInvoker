@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class IPCEventBus {
 
-    private static IPCEventBus sImpl;
+    private static volatile IPCEventBus sImpl;
 
     Map<String, List<IPCObserver>> mMap;
 

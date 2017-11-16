@@ -53,7 +53,7 @@ public class XParcelableWrapper implements Parcelable {
             dest.writeString(target.getClass().getName());
             target.writeToParcel(dest);
         } else {
-            dest.writeInt(HAS_DATA);
+            dest.writeInt(NO_DATA);
         }
     }
 
@@ -64,7 +64,9 @@ public class XParcelableWrapper implements Parcelable {
             if (target == null) {
                 target = ObjectStore.newInstance(dataClass, XParcelable.class);
             }
-            target.readFromParcel(in);
+            if (target != null) {
+                target.readFromParcel(in);
+            }
         }
     }
 

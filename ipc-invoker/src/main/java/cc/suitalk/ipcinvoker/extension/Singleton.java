@@ -28,13 +28,18 @@ import cc.suitalk.ipcinvoker.reflect.ReflectUtil;
 
 public class Singleton<T> implements ObjectAccessible<T> {
 
-    private T target;
+    private volatile T target;
 
     private Class<T> targetClass;
 
     public Singleton(@NonNull Class<T> clazz) {
         Assert.assertNotNull(clazz);
         this.targetClass = clazz;
+    }
+
+    public Singleton(@NonNull T o) {
+        Assert.assertNotNull(o);
+        this.target = o;
     }
 
     @Override

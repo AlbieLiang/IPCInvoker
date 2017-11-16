@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 
 import cc.suitalk.ipcinvoker.ObjectStore;
+import cc.suitalk.ipcinvoker.annotation.NonNull;
 import cc.suitalk.ipcinvoker.event.IPCData;
 
 /**
@@ -35,7 +36,7 @@ public class IPCDataTransfer implements BaseTypeTransfer {
     }
 
     @Override
-    public void writeToParcel(Object o, Parcel dest) {
+    public void writeToParcel(@NonNull Object o, Parcel dest) {
         IPCData parcelable = (IPCData) o;
         dest.writeString(parcelable.getClass().getName());
         dest.writeBundle(parcelable.toBundle());
@@ -46,7 +47,10 @@ public class IPCDataTransfer implements BaseTypeTransfer {
         String dataClass = in.readString();
         Bundle data = in.readBundle();
         IPCData ipcData = ObjectStore.newInstance(dataClass, IPCData.class);
-        ipcData.fromBundle(data);
-        return ipcData;
+        if (ipcData != null) {
+            ipcData.fromBundle(data);
+            return ipcData;
+        }
+        return null;
     }
 }

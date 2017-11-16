@@ -30,6 +30,7 @@ import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeBridge;
 import cc.suitalk.ipcinvoker.activate.IPCInvokerInitializer;
 import cc.suitalk.ipcinvoker.annotation.NonNull;
 import cc.suitalk.ipcinvoker.annotation.WorkerThread;
+import cc.suitalk.ipcinvoker.exception.RemoteServiceNotConnectedException;
 import cc.suitalk.ipcinvoker.tools.Log;
 
 import java.util.HashMap;
@@ -46,7 +47,7 @@ class IPCBridgeManager implements IPCInvokerInitializer {
 
     private static final String TAG = "IPC.IPCBridgeManager";
 
-    private static IPCBridgeManager sInstance;
+    private static volatile IPCBridgeManager sInstance;
 
     private Map<String, Class<?>> mServiceClassMap;
     private Handler mHandler;
@@ -89,6 +90,9 @@ class IPCBridgeManager implements IPCInvokerInitializer {
             }
             if (Looper.getMainLooper() == Looper.myLooper()) {
                 Log.w(TAG, "getIPCBridge failed, can not create bridge on Main thread.");
+                if (BuildConfig.DEBUG) {
+                    throw new RemoteServiceNotConnectedException("can not invoke on main-thread, the remote service not connected.");
+                }
                 return null;
             }
             final Class<?> serviceClass = getServiceClass(process);
@@ -132,40 +136,35 @@ class IPCBridgeManager implements IPCInvokerInitializer {
                 @Override
                 public void onServiceDisconnected(ComponentName name) {
                     Log.i(TAG, "onServiceDisconnected(%s, tid : %s)", bw.hashCode(), Thread.currentThread().getId());
-                    mBridgeMap.remove(process);
-                    bw.bridge = null;
-                    synchronized (bw) {
-                        bw.isConnecting = false;
-                    }
-                    bw.serviceConnection = null;
+                    releaseIPCBridge(process);
                 }
             };
-            final Intent intent = new Intent(context, serviceClass);
-            Log.i(TAG, "bindService(bw : %s, tid : %s, intent : %s)", bw.hashCode(), Thread.currentThread().getId(), intent);
-            context.bindService(intent, bw.serviceConnection, Context.BIND_AUTO_CREATE);
-            bw.connectTimeoutRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    Log.i(TAG, "on connect timeout(%s, tid : %s)", bw.hashCode(), Thread.currentThread().getId());
-                    if (!bw.isConnecting) {
-                        return;
-                    }
-                    // Prevent deadlocks
-                    synchronized (bw) {
+            try {
+                final Intent intent = new Intent(context, serviceClass);
+                Log.i(TAG, "bindService(bw : %s, tid : %s, intent : %s)", bw.hashCode(), Thread.currentThread().getId(), intent);
+                context.bindService(intent, bw.serviceConnection, Context.BIND_AUTO_CREATE);
+                bw.connectTimeoutRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.i(TAG, "on connect timeout(%s, tid : %s)", bw.hashCode(), Thread.currentThread().getId());
                         if (!bw.isConnecting) {
                             return;
                         }
-                        bw.isConnecting = false;
-                        bw.notifyAll();
-                        bw.connectTimeoutRunnable = null;
+                        // Prevent deadlocks
+                        synchronized (bw) {
+                            if (!bw.isConnecting) {
+                                return;
+                            }
+                            bw.isConnecting = false;
+                            bw.notifyAll();
+                            bw.connectTimeoutRunnable = null;
+                        }
+                        synchronized (mBridgeMap) {
+                            mBridgeMap.remove(process);
+                        }
                     }
-                    synchronized (mBridgeMap) {
-                        mBridgeMap.remove(process);
-                    }
-                }
-            };
-            mHandler.postDelayed(bw.connectTimeoutRunnable, getTimeout());
-            try {
+                };
+                mHandler.postDelayed(bw.connectTimeoutRunnable, getTimeout());
                 synchronized (bw) {
                     if (bw.isConnecting) {
                         bw.wait();
@@ -173,6 +172,12 @@ class IPCBridgeManager implements IPCInvokerInitializer {
                 }
             } catch (InterruptedException e) {
                 Log.e(TAG, "%s", e);
+                synchronized (mBridgeMap) {
+                    mBridgeMap.remove(process);
+                }
+                return null;
+            } catch (SecurityException e) {
+                Log.e(TAG, "bindService error : %s", android.util.Log.getStackTraceString(e));
                 synchronized (mBridgeMap) {
                     mBridgeMap.remove(process);
                 }
@@ -201,7 +206,7 @@ class IPCBridgeManager implements IPCInvokerInitializer {
     @WorkerThread
     public boolean hasIPCBridge(@NonNull final String process) {
         if (IPCInvokeLogic.isCurrentProcess(process)) {
-            Log.i(TAG, "the same process(%s), do not need to build IPCBridge.", process);
+//            Log.i(TAG, "the same process(%s), do not need to build IPCBridge.", process);
             return false;
         }
         return mBridgeMap.get(process) != null;
@@ -243,11 +248,16 @@ class IPCBridgeManager implements IPCInvokerInitializer {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (bridgeWrapper.serviceConnection == null) {
+                ServiceConnection sc = bridgeWrapper.serviceConnection;
+                if (sc == null) {
                     Log.i(TAG, "releaseIPCBridge(%s) failed, ServiceConnection is null.", process);
                     return;
                 }
-                IPCInvokeLogic.getContext().unbindService(bridgeWrapper.serviceConnection);
+                try {
+                    IPCInvokeLogic.getContext().unbindService(sc);
+                } catch (Exception e) {
+                    Log.e(TAG, "unbindService(%s) error, %s", process, android.util.Log.getStackTraceString(e));
+                }
                 synchronized (mBridgeMap) {
                     mBridgeMap.remove(process);
                 }

@@ -182,6 +182,10 @@ public class IPCInvoker {
                         @Override
                         public void onCallback(Bundle data) {
                             if (callback != null) {
+                                if (data == null) {
+                                    callback.onCallback(null);
+                                    return;
+                                }
                                 data.setClassLoader(IPCInvoker.class.getClassLoader());
                                 callback.onCallback((ResultType) data.getParcelable(INNER_KEY_REMOTE_TASK_RESULT_DATA));
                             }
@@ -200,6 +204,10 @@ public class IPCInvoker {
                         invokeCallback = new AIDL_IPCInvokeCallback.Stub() {
                             @Override
                             public void onCallback(Bundle data) throws RemoteException {
+                                if (data == null) {
+                                    callback.onCallback(null);
+                                    return;
+                                }
                                 data.setClassLoader(IPCInvoker.class.getClassLoader());
                                 callback.onCallback((ResultType) data.getParcelable(INNER_KEY_REMOTE_TASK_RESULT_DATA));
                             }
@@ -276,6 +284,10 @@ public class IPCInvoker {
 
         @Override
         public Bundle invoke(Bundle data) {
+            if (data == null) {
+                Log.e(TAG, "proxy SyncInvoke failed, data is null.");
+                return null;
+            }
             Parcelable remoteData = data.getParcelable(INNER_KEY_REMOTE_TASK_DATA);
             String clazz = data.getString(INNER_KEY_REMOTE_TASK_CLASS);
             if (clazz == null || clazz.length() == 0) {

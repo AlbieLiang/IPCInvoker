@@ -27,5 +27,5 @@ public interface XParcelable {
 
     void writeToParcel(Parcel dest);
 
-    void readFromParcel(Parcel dest);
+    void readFromParcel(Parcel in);
 }

@@ -33,7 +33,7 @@ public class ObjectStore {
 
     private static final String TAG = "IPC.ObjectStore";
 
-    private static Map<String, Singleton> sMap = new ConcurrentHashMap<>();
+    private static final Map<String, Singleton> sMap = new ConcurrentHashMap<>();
 
     public static <T> T get(@NonNull String clazz, @NonNull Class<?> parentClass) {
         try {
@@ -72,6 +72,35 @@ public class ObjectStore {
                 return (T) o.get();
             }
             return ReflectUtil.newInstance(clazz, parentClass);
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
+    public static void put(@NonNull Object o) {
+        if (o == null) {
+            return;
+        }
+        Class<?> clazz = o.getClass();
+        if (!clazz.isAnnotationPresent(cc.suitalk.ipcinvoker.annotation.Singleton.class)) {
+            Log.w(TAG, "put failed, the class(%s).isAnnotationPresent(Singleton.class) return false", clazz);
+            return;
+        }
+        sMap.put(clazz.getName(), new Singleton(o));
+    }
+
+    public static <T> T get(@NonNull Class<?> clazz) {
+        try {
+            if (clazz.isAnnotationPresent(cc.suitalk.ipcinvoker.annotation.Singleton.class)) {
+                String className = clazz.getName();
+                Singleton o = sMap.get(className);
+                if (o == null) {
+                    o = new Singleton(clazz);
+                    sMap.put(className, o);
+                }
+                return (T) o.get();
+            }
+            return ReflectUtil.newInstance(clazz);
         } catch (Exception e) {
         }
         return null;

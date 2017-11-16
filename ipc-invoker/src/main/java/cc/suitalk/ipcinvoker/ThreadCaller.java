@@ -27,7 +27,7 @@ import android.os.Looper;
 
 public class ThreadCaller {
 
-    private static ThreadCaller sImpl;
+    private static volatile ThreadCaller sImpl;
 
     private HandlerThread mHandlerThread;
 

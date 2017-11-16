@@ -20,6 +20,7 @@ package cc.suitalk.ipcinvoker.extension;
 import android.os.Parcel;
 
 import cc.suitalk.ipcinvoker.ObjectStore;
+import cc.suitalk.ipcinvoker.annotation.NonNull;
 
 /**
  * Created by albieliang on 2017/7/9.
@@ -33,7 +34,7 @@ public class XParcelableTransfer implements BaseTypeTransfer {
     }
 
     @Override
-    public void writeToParcel(Object o, Parcel dest) {
+    public void writeToParcel(@NonNull Object o, Parcel dest) {
         XParcelable parcelable = (XParcelable) o;
         dest.writeString(parcelable.getClass().getName());
         parcelable.writeToParcel(dest);
@@ -43,7 +44,10 @@ public class XParcelableTransfer implements BaseTypeTransfer {
     public Object readFromParcel(Parcel in) {
         String dataClass = in.readString();
         XParcelable parcelable = ObjectStore.newInstance(dataClass, XParcelable.class);
-        parcelable.readFromParcel(in);
-        return parcelable;
+        if (parcelable != null) {
+            parcelable.readFromParcel(in);
+            return parcelable;
+        }
+        return null;
     }
 }

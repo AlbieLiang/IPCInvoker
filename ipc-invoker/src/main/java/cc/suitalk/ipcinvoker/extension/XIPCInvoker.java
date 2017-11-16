@@ -57,6 +57,11 @@ public class XIPCInvoker {
                     @Override
                     public void onCallback(WrapperParcelable data) {
                         if (callback != null) {
+                            if (data == null) {
+                                Log.w(TAG, "async invoke callback error, wrapper parcelable data is null!");
+                                callback.onCallback(null);
+                                return;
+                            }
                             callback.onCallback((ResultType) data.getTarget());
                         }
                     }
@@ -78,6 +83,10 @@ public class XIPCInvoker {
     public static <T extends IPCRemoteSyncInvoke<InputType, ResultType>, InputType, ResultType>
             ResultType invokeSync(String process, InputType data, @NonNull Class<T> taskClass) {
         WrapperParcelable parcelable = IPCInvoker.invokeSync(process, new WrapperParcelable(taskClass.getName(), data), IPCSyncInvokeTaskProxy.class);
+        if (parcelable == null) {
+            Log.w(TAG, "sync invoke error, wrapper parcelable data is null!");
+            return null;
+        }
         return (ResultType) parcelable.getTarget();
     }
 
@@ -162,7 +171,7 @@ public class XIPCInvoker {
                     return;
                 }
             }
-            dest.writeInt(HAS_DATA);
+            dest.writeInt(NO_DATA);
         }
 
         void readFromParcel(Parcel in) {

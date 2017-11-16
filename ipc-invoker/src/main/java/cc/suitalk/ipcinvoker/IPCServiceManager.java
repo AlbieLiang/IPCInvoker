@@ -28,7 +28,7 @@ import cc.suitalk.ipcinvoker.annotation.NonNull;
 
 class IPCServiceManager {
 
-    private static IPCServiceManager sMgr;
+    private static volatile IPCServiceManager sMgr;
 
     private Map<String, BaseIPCService> mIPCServiceMap;
 

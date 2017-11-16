@@ -1,0 +1,272 @@
+/*
+ *  Copyright (C) 2017-present Albie Liang. All rights reserved.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
+package <%=fileObject._package%>;
+
+import android.os.Bundle;
+
+import cc.suitalk.ipcinvoker.IPCAsyncInvokeTask;
+import cc.suitalk.ipcinvoker.IPCInvokeCallback;
+import cc.suitalk.ipcinvoker.IPCInvoker;
+import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
+import cc.suitalk.ipcinvoker.IPCSyncInvokeTask;
+import cc.suitalk.ipcinvoker.ObjectStore;
+import cc.suitalk.ipcinvoker.annotation.Singleton;
+import cc.suitalk.ipcinvoker.extension.ParameterHelper;
+import cc.suitalk.ipcinvoker.extension.annotation.IPCAsyncInvokeCallback;
+import cc.suitalk.ipcinvoker.extension.annotation.IPCAsyncInvokeMethod;
+import cc.suitalk.ipcinvoker.extension.annotation.IPCSyncInvokeMethod;
+<% var importedSet = ["android.os.Bundle",
+                      "cc.suitalk.ipcinvoker.IPCAsyncInvokeTask",
+                      "cc.suitalk.ipcinvoker.IPCInvokeCallback",
+                      "cc.suitalk.ipcinvoker.IPCInvoker",
+                      "cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback",
+                      "cc.suitalk.ipcinvoker.IPCSyncInvokeTask",
+                      "cc.suitalk.ipcinvoker.ObjectStore",
+                      "cc.suitalk.ipcinvoker.annotation.Singleton",
+                      "cc.suitalk.ipcinvoker.extension.ParameterHelper",
+                      "cc.suitalk.ipcinvoker.extension.annotation.IPCAsyncInvokeCallback",
+                      "cc.suitalk.ipcinvoker.extension.annotation.IPCAsyncInvokeMethod",
+                      "cc.suitalk.ipcinvoker.extension.annotation.IPCSyncInvokeMethod",
+                      "cc.suitalk.ipcinvoker.tools.Log"]%>
+<% for (var i = 0; i < fileObject._import.length; i++) {
+    var _import = fileObject._import[i];
+    if (importedSet.indexOf(_import) >= 0) {
+        continue;
+    }
+    importedSet.push(_import);%>
+import <%=_import%>;
+<%}%>
+<%var _class = fileObject._class[0];%>
+<% for (var i = 0; i < _class.subClass.length; i++) {
+    var subClass = _class.subClass[i];
+    var _import = fileObject._package + "." + _class._name + "." + subClass._name;
+    if (subClass._modifier != "public" || !subClass._static || importedSet.indexOf(_import) >= 0) {
+        continue;
+    }
+    %>
+import <%=_import%>;
+<% }%>
+import cc.suitalk.ipcinvoker.tools.Log;
+
+/**
+ *
+ * Created by ArbitraryGen on <%var date = new Date();%><%=date.toLocaleDateString() + " " + date.toLocaleTimeString()%>.
+ *
+ */
+public class <%=_class._name%>$AG {
+
+    private static final String TAG = "AG.<%=_class._name%>$AG";
+
+    public static final String PROCESS = "<%=_class._annotation.IPCInvokeTaskManager.process%>";
+
+    public static final Class<?> TARGET_CLASS = <%=_class._name%>.class;
+
+    private static final String KEY_INVOKE_METHOD = "__invoke_method";
+
+    <% for (var i = 0; i < methodSet.length; i++) {
+        var method = methodSet[i];
+        if (method._annotation.IPCAsyncInvokeMethod) {%>
+    private static final int ASYNC_INVOKE_METHOD_<%=method._name%> = <%=i%>;
+        <%} else {%>
+    private static final int SYNC_INVOKE_METHOD_<%=method._name%> = <%=i%>;
+        <%}
+       }%>
+
+    <% for (var i = 0; i < methodSet.length; i++) {
+        var method = methodSet[i];
+        for (var anno in method._annotation) {%>
+    @<%=method._annotation[anno]._name%><%
+        }
+        var argsStr = "";
+        var logFormatStr = "";
+        var logArgsStr = "";
+        var callbackArg = undefined;
+        if (method._args.length > 0) {
+            var arg = method._args[0];
+            argsStr = "final " + (arg._type.name) + (arg._type.genericityType ? "<" + arg._type.genericityType.join(", ") + "> " : " ") + arg._name;
+            logFormatStr = arg._name + " : %s";
+            logArgsStr = ", " + arg._name;
+            if (arg._type._annotation && arg._type._annotation.IPCAsyncInvokeCallback) {
+                callbackArg = arg;
+            }
+            for (var a = 1; a < method._args.length; a++) {
+                arg = method._args[a];
+                argsStr += ", final " + (arg._type.name) + (arg._type.genericityType ? "<" + arg._type.genericityType.join(", ") + "> " : " ") + arg._name;
+                logFormatStr += ", " + arg._name + " : %s";
+                logArgsStr += ", " + arg._name;
+
+                if (arg._type._annotation && arg._type._annotation.IPCAsyncInvokeCallback) {
+                    callbackArg = arg;
+                }
+            }
+        }%>
+    <%=method._modifier%> static <%=method._final ? "final " : ""%><%=method._type%> <%=method._name%>(<%=argsStr%>) {
+        Log.d(TAG, "<%=method._name%>(<%=logFormatStr%>)"<%=logArgsStr%>);
+        Bundle bundle = new Bundle();
+        bundle.putInt(KEY_INVOKE_METHOD, <%=method._annotation.IPCAsyncInvokeMethod ? "A" : ""%>SYNC_INVOKE_METHOD_<%=method._name%>);
+        // Parameter
+        <% for (var key in method._args) {
+            if (method._args[key] === callbackArg) {
+                continue;
+            }%>
+        ParameterHelper.put(bundle, "<%=method._args[key]._name%>", <%=method._args[key]._name%>);<%
+           }
+           if (method._annotation.IPCAsyncInvokeMethod) {
+        %>
+        // Callback
+        IPCInvokeCallback __callback = null;
+        <% if (callbackArg) {%>
+        if (<%=callbackArg._name%> != null) {
+            __callback = new IPCInvokeCallback() {
+
+                @Override
+                public void onCallback(Bundle data) {
+                    if (<%=callbackArg._name%> != null) {
+                        <%=(callbackArg._type.genericityType ? callbackArg._type.genericityType[0] : "Object")%> result = ParameterHelper.get(data, "__result");
+                        <%=callbackArg._name%>.onCallback(result);
+                    }
+                }
+            };
+        }
+        <% }%>
+        IPCInvoker.invokeAsync(PROCESS, bundle, IPCAsyncInvokeTaskImpl.class, __callback);
+        <% } else {%>
+        Bundle result = IPCInvoker.invokeSync(PROCESS, bundle, IPCSyncInvokeTaskImpl.class);
+        if (result == null) {
+            // Get width fallback
+            return null;
+        }
+        return ParameterHelper.get(result, "result");
+        <% }%>
+    }
+    <% }%>
+
+    // Get singleton target object
+    private static <%=_class._name%> getTarget() {
+        <%=_class._name%> task = ObjectStore.get(TARGET_CLASS);
+        if (task == null) {
+            synchronized (<%=_class._name%>$AG.class) {
+                task = ObjectStore.get(TARGET_CLASS);
+                if (task == null) {
+                    task = new <%=_class._name%>();
+                    ObjectStore.put(task);
+                }
+            }
+        }
+        return task;
+    }
+
+    @Singleton
+    private static final class IPCAsyncInvokeTaskImpl implements IPCAsyncInvokeTask {
+
+        @Override
+        public void invoke(Bundle __data, final IPCInvokeCallback __callback) {
+            int invokeMethod = __data.getInt(KEY_INVOKE_METHOD);
+            switch (invokeMethod) {
+                <% for (var i = 0; i < methodSet.length; i++) {
+                    var method = methodSet[i];
+                    if (!method._annotation.IPCAsyncInvokeMethod) {
+                        continue;
+                    }%>
+                case ASYNC_INVOKE_METHOD_<%=method._name%>: {
+                    // Get parameters
+                    <% var invokeArgs = "";
+                    var hasCallback = false;
+                    for (var key in method._args) {
+                        var arg = method._args[key];
+                        if (arg._type._annotation && arg._type._annotation.IPCAsyncInvokeCallback) {
+                            if (invokeArgs.length == 0) {
+                                invokeArgs = "__callbackProxy";
+                            } else {
+                                invokeArgs += ", __callbackProxy";
+                            }
+                            hasCallback = true;
+                            continue;
+                        } else {
+                            if (invokeArgs.length == 0) {
+                                invokeArgs += arg._name;
+                            } else {
+                                invokeArgs += ", " + arg._name;
+                            }
+                        }%>
+                    final <%=arg._type.name%> <%=arg._name%> = ParameterHelper.get(__data, "<%=arg._name%>");<%
+                    } %>
+                    // Obtain target task
+                    final <%=_class._name%> __task = getTarget();
+                    <% if (hasCallback) {%>
+                    // Create callback proxy
+                    IPCRemoteInvokeCallback __callbackProxy = null;
+                    if (__callback != null) {
+                        __callbackProxy = new IPCRemoteInvokeCallback() {
+                            @Override
+                            public void onCallback(Object data) {
+                                Bundle result = new Bundle();
+                                ParameterHelper.put(result, "__result", data);
+                                __callback.onCallback(result);
+                            }
+                        };
+                    }
+                    <% }%>
+                    // Invoke method
+                    __task.<%=method._name%>(<%=invokeArgs%>);
+                    break;
+                }
+                <% }%>
+            }
+        }
+    }
+
+    @Singleton
+    private static final class IPCSyncInvokeTaskImpl implements IPCSyncInvokeTask {
+
+        @Override
+        public Bundle invoke(Bundle __data) {
+            int invokeMethod = __data.getInt(KEY_INVOKE_METHOD);
+            switch (invokeMethod) {
+                <% for (var i = 0; i < methodSet.length; i++) {
+                    var method = methodSet[i];
+                    if (!method._annotation.IPCSyncInvokeMethod) {
+                        continue;
+                    }%>
+                case SYNC_INVOKE_METHOD_<%=method._name%>: {
+                    // Get parameters
+                    <% var invokeArgs = "";
+                    for (var key in method._args) {
+                        var arg = method._args[key];
+                        if (invokeArgs.length == 0) {
+                            invokeArgs += arg._name;
+                        } else {
+                            invokeArgs += ", " + arg._name;
+                        }%>
+                    final <%=arg._type.name%> <%=arg._name%> = ParameterHelper.get(__data, "<%=arg._name%>");<%
+                    } %>
+                    // Obtain target task
+                    final <%=_class._name%> __task = getTarget();
+                    // Invoke method
+                    <%=method._type%> result = __task.<%=method._name%>(<%=invokeArgs%>);
+                    // Create result
+                    Bundle bundle = new Bundle();
+                    ParameterHelper.put(bundle, "result", result);
+                    return bundle;
+                }
+                <% }%>
+            }
+            return null;
+        }
+    }
+}

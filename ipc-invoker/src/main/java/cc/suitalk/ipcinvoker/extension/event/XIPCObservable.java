@@ -90,6 +90,6 @@ public class XIPCObservable<InputType> {
     }
 
     public static String genKey(Class<?> dispatcherClass, Class<?> inputDataClass) {
-        return dispatcherClass.getName() + "#" + inputDataClass.getName();
+        return (new StringBuilder()).append(dispatcherClass.getName()).append("#").append(inputDataClass.getName()).toString();
     }
 }

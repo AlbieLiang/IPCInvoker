@@ -22,11 +22,18 @@ import android.content.Context;
 
 import junit.framework.Assert;
 
+import java.io.FileInputStream;
+import java.util.List;
+
+import cc.suitalk.ipcinvoker.tools.Log;
+
 /**
  * Created by albieliang on 2017/5/13.
  */
 
 public class IPCInvokeLogic {
+
+    private static final String TAG = "IPC.IPCInvokeLogic";
 
     private static Context sContext;
     private static String sCurrentProcessName;
@@ -56,9 +63,39 @@ public class IPCInvokeLogic {
             return null;
         }
         ActivityManager mActivityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningAppProcessInfo appProcess : mActivityManager.getRunningAppProcesses()) {
-            if (appProcess.pid == pid) {
-                return appProcess.processName;
+        if (mActivityManager != null) {
+            List<ActivityManager.RunningAppProcessInfo> list = mActivityManager.getRunningAppProcesses();
+            if (list != null && !list.isEmpty()) {
+                for (ActivityManager.RunningAppProcessInfo appProcess : list) {
+                    if (appProcess.pid == pid) {
+                        return appProcess.processName;
+                    }
+                }
+            }
+        }
+
+        byte[] b = new byte[128];
+        FileInputStream in = null;
+        try {
+            in = new FileInputStream("/proc/" + pid + "/cmdline");
+            int len = in.read(b);
+            if (len > 0) {
+                for (int i = 0; i < len; i++) {
+                    if (b[i] > 128 || b[i] <= 0) {
+                        len = i;
+                        break;
+                    }
+                }
+                return new String(b, 0, len);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "get running process error : %s", android.util.Log.getStackTraceString(e));
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (Exception e) {
             }
         }
         return null;

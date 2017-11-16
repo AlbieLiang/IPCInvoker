@@ -1,0 +1,116 @@
+/*
+ *  Copyright (C) 2017-present Albie Liang. All rights reserved.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *  
+ */
+
+apply plugin: 'com.android.library'
+//apply plugin: 'maven'
+//
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+def siteUrl = rootProject.ext.bintrayConfig["siteUrl"]   // 项目的主页
+def gitUrl = rootProject.ext.bintrayConfig["gitUrl"]   // Git仓库的url
+group = "cc.suitalk.tools"            // Maven Group ID for the artifact，
+
+// 这个version是library的版本，更新后也需要更改这个值
+version = rootProject.ext.bintrayConfig["version"]
+archivesBaseName = 'ipc-invoker-extension'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    provided 'com.android.support:appcompat-v7:25.1.0'
+    testCompile 'junit:junit:4.12'
+    compile project(':ipc-invoker-extension-annotation')
+}
+
+//
+//uploadArchives {
+//    repositories.mavenDeployer {
+//        // 如果你公司或者自己搭了nexus私服，那么可以将插件deploy到上面去
+//        //        repository(url: "http://10.XXX.XXX.XXX:8080/nexus/content/repositories/releases/") {
+//        //            authentication(userName: "admin", password: "admin")
+//        //        }
+//        // 如果没有私服的话，发布到本地也是ok的
+//        repository(url: "file:${project.rootDir.getAbsolutePath()}/repositories/release")
+//    }
+//}
+
+task packSourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    options.encoding "UTF-8"
+    options.charSet 'UTF-8'
+    options.author true
+    options.version true
+//    options.links "https://github.com/AlbieLiang/IPCInvoker/tree/master/ipc-invoker/build/docs/javadoc"
+    failOnError false
+}
+
+task packJavadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives packJavadocJar
+    archives packSourcesJar
+}
+
+Properties properties = new Properties()
+File file = project.rootProject.file('bintray-config.properties');
+if (file.isFile()) {
+    properties.load(file.newDataInputStream())
+
+    bintray {
+        user = properties.getProperty("bintray.user")
+        key = properties.getProperty("bintray.apikey")
+        configurations = ['archives']
+        pkg {
+            repo = "maven"          //这个应该是传到maven的仓库的
+            name = archivesBaseName    //发布的项目名字
+            websiteUrl = siteUrl
+            vcsUrl = gitUrl
+            licenses = ["Apache-2.0"]
+            publish = true
+        }
+    }
+}

@@ -1,0 +1,41 @@
+# Head of parse-project.rule
+#
+# @Author AlbieLiang
+#
+# @Date 2015-01-24
+#
+# Example :
+# @Root D:/ # Root directory of the projects.
+#
+# @Project AutoGenCodeTest # Use absolute path or relative path, if relative path was chose that @Root should be set, 
+#                          # otherwise current project directory will be used as root directory.(TODO)
+#
+# @Project-begin SomeProject # SomeProject begin and it must closed will the @Project-end tag. Detail define please reference
+#                            # the tag @Project
+# @Src src                   # The source folder(directory) name of the project, it can be repeated.
+# @Src-dir cc/suitalk/generator/core                               # Define a source directory for parse. It just parse the source file of this directory.
+# @Src-dir-recursion cc/suitalk/generator/core                     # Define a source directory for parse, the child directory of the
+#                                                                  # source directory may work as a source directory.
+# @Src-file cc/suitalk/arbitrarygen/core/ArbitraryGenEntrance.java # Define a source file for parse
+#
+# cc/suitalk/arbitrarygen/demo/*                          # A simple rule just like @Src-dir-recursion
+# cc/suitalk/arbitrarygen/demo/*Func.java                 # A simple rule parts match
+# cc/suitalk/arbitrarygen/demo/ArbitraryGenEntrance.java  # A simple rule just like @Src-file
+# 
+# 
+# 
+# 
+# @Project-end               # the end tag for @Project-begin
+#
+#
+# Add more rules here.
+@Author AlbieLiang
+@Date current
+@Root ${project.rootDir}
+@Project ${project.name}
+@Src src/main/java
+cc/suitalk/ipcinvoker/sample/extension/*.java
+
+@Project-begin ${project.name}
+# cc/suitalk/arbitrarygen/demo/MainActivity.java
+@Project-end

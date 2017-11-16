@@ -20,7 +20,6 @@ package cc.suitalk.ipcinvoker.sample.app.ipctask;
 import android.os.Bundle;
 
 import cc.suitalk.ipcinvoker.IPCRemoteSyncInvoke;
-import cc.suitalk.ipcinvoker.IPCSyncInvokeTask;
 import cc.suitalk.ipcinvoker.sample.app.model.DataCenter;
 import cc.suitalk.ipcinvoker.tools.Log;
 

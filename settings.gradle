@@ -15,4 +15,4 @@
  *
  */
 
-include ':ipc-invoker-sample', ':ipc-invoker'
+include ':ipc-invoker-sample', ':ipc-invoker', ':ipc-invoker-extension', ':ipc-invoker-ag-extension', ':ipc-invoker-extension-annotation'

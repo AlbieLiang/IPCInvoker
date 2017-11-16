@@ -17,6 +17,8 @@
 
 apply plugin: 'com.android.application'
 
+apply plugin: 'arbitrarygen'
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
@@ -34,6 +36,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    sourceSets {
+        main {
+            java {
+                srcDirs = ['src/main/java/', 'build/generated/source/ag-gen']
+            }
+        }
+    }
 }
 
 dependencies {
@@ -47,7 +57,40 @@ dependencies {
 //    compile 'com.github.AlbieLiang:IPCInvoker:1.0.0'
 //    compile 'cc.suitalk.android:ipc-invoker:1.1.5'
     compile project(':ipc-invoker')
+    compile project(':ipc-invoker-extension')
+    compile project(path: ':ipc-invoker-extension-annotation')
 
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
     compile 'io.reactivex.rxjava2:rxjava:2.1.0'
+}
+
+arbitraryGen {
+    templateDir "${project.rootDir.getAbsolutePath()}/ag-template"
+    srcDir "${project.projectDir.absolutePath}/ag-datasrc"
+    destDir "$buildDir/generated/source/ag-gen"
+
+    logger {
+        debug true
+        toFile true
+        printTag true
+        path "$buildDir/outputs/logs/ag.log"
+    }
+
+    statistic {
+        toFile true
+        path "$buildDir/outputs/logs/ag.statistic"
+    }
+
+    javaCodeEngine {
+        enable true
+        ruleFile "${project.projectDir.absolutePath}/ag-datasrc/parse-project.rule"
+
+        // external jar and class of customize type-define wrapper or customize annotation processor
+        extension {
+            jar "${project.rootDir.getAbsolutePath()}/ag-template/ipc-invoker-ag-extension-1.1.5.jar"
+            // customize annotation processor
+            pClass "cc.suitalk.ipcinvoker.ag.extension.IPCInvokeTaskProcessor"
+        }
+    }
+
 }

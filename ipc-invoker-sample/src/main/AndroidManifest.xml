@@ -71,6 +71,11 @@
             android:taskAffinity=".support"
             android:exported="false"/>
 
+        <activity
+            android:name=".app.IPCInvokerExtensionTestCaseActivity"
+            android:label="@string/main_process"
+            android:exported="false"/>
+
         <service
             android:name=".service.MainProcessIPCService"
             android:exported="false"/>

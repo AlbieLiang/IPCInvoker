@@ -19,6 +19,7 @@ package cc.suitalk.ipcinvoker.sample.nimble;
 
 import android.os.Parcel;
 
+import cc.suitalk.ipcinvoker.annotation.NonNull;
 import cc.suitalk.ipcinvoker.extension.BaseTypeTransfer;
 
 /**
@@ -32,7 +33,7 @@ public class TestTypeTransfer implements BaseTypeTransfer {
     }
 
     @Override
-    public void writeToParcel(Object o, Parcel dest) {
+    public void writeToParcel(@NonNull Object o, Parcel dest) {
         TestType testTypeObj = (TestType) o;
         dest.writeString(testTypeObj.key);
         dest.writeString(testTypeObj.value);

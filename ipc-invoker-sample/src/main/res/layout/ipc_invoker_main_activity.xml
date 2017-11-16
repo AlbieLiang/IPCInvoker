@@ -64,6 +64,12 @@
                     android:layout_height="wrap_content"
                     android:text="Open XIPCDispatcher Test Activity"
                     android:layout_marginBottom="10dp"/>
+                <Button
+                    android:id="@+id/jumpToIPCInvokerExtensionTestBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Open IPCInvoker Extension Test Activity"
+                    android:layout_marginBottom="10dp"/>
             </LinearLayout>
 
         </LinearLayout>

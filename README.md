@@ -15,7 +15,7 @@ IPCInvoker组件库已经提交到jcenter上了，可以直接dependencies中配
 
 ```gradle
 dependencies {
-    compile 'cc.suitalk.android:ipc-invoker:1.1.2'
+    compile 'cc.suitalk.android:ipc-invoker:1.1.6'
 }
 ```
 
@@ -53,18 +53,12 @@ public class PushProcessIPCService extends BaseIPCService {
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" />
-    <service
-        android:name=".service.SupportProcessIPCService"
-        android:process=":support"
-        android:exported="false"/>
-    <service
-        android:name=".service.MainProcessIPCService"
-        android:exported="false"/>
-    <service
-        android:name=".service.PushProcessIPCService"
-        android:process=":push"
-        android:exported="false"/>
+        android:theme="@style/AppTheme">
+        <service
+            android:name=".service.PushProcessIPCService"
+            android:process=":push"
+            android:exported="false"/>
+    </application>
 </manifest>
 
 ```
@@ -84,8 +78,8 @@ public class IPCInvokerApplication extends Application {
         IPCInvokerBoot.setup(this, new DefaultInitDelegate() {
             @Override
             public void onAttachServiceInfo(IPCInvokerInitializer initializer) {
-                initializer.addIPCService(MainProcessIPCService.PROCESS_NAME, MainProcessIPCService.class);
-                initializer.addIPCService(SupportProcessIPCService.PROCESS_NAME, SupportProcessIPCService.class);
+//              initializer.addIPCService(MainProcessIPCService.PROCESS_NAME, MainProcessIPCService.class);
+//              initializer.addIPCService(SupportProcessIPCService.PROCESS_NAME, SupportProcessIPCService.class);
                 initializer.addIPCService(PushProcessIPCService.PROCESS_NAME, PushProcessIPCService.class);
             }
 
@@ -106,25 +100,26 @@ public class IPCInvokerApplication extends Application {
 
 public class IPCInvokeSample_InvokeByType {
 
-    public static IPCSampleData invokeIPCLogic(String id, int type, int version) {
+    private static final String TAG = "IPCInvokerSample.IPCInvokeSample_InvokeByType";
+
+    public static void invokeSync() {
         Bundle bundle = new Bundle();
-        bundle.putString("id", id);
-        bundle.putInt("type", type);
-        bundle.putInt("version", version);
-        return IPCInvoker.invokeSync(PushProcessIPCService.PROCESS_NAME, bundle, IPCRemoteInvoke_doSomething.class);
+        bundle.putString("name", "AlbieLiang");
+        bundle.putInt("pid", android.os.Process.myPid());
+        IPCString result = IPCInvoker.invokeSync(PushProcessIPCService.PROCESS_NAME, bundle, IPCRemoteInvoke_BuildString.class);
+        Log.i(TAG, "invoke result : %s", result);
     }
 
-    private static class IPCRemoteInvoke_doSomething implements IPCRemoteSyncInvoke<Bundle, IPCSampleData> {
+    private static class IPCRemoteInvoke_BuildString implements IPCRemoteSyncInvoke<Bundle, IPCString> {
 
         @Override
-        public IPCSampleData invoke(Bundle data) {
-            IPCSampleData result = new IPCSampleData();
-            result.result = data.getString("id") + ":" + data.getInt("type") + ":" + data.getInt("version");
-            return result;
+        public IPCString invoke(Bundle data) {
+            String msg = String.format("name:%s|fromPid:%s|curPid:%s", data.getString("name"), data.getInt("pid"), android.os.Process.myPid());
+            Log.i(TAG, "build String : %s", msg);
+            return new IPCString(msg);
         }
     }
 }
-
 
 ```
 
@@ -137,36 +132,32 @@ public class IPCInvokeSample_InvokeByType {
 
     private static final String TAG = "IPCInvokerSample.IPCInvokeSample_InvokeByType";
 
-    public static void invokeIPCLogic(String id, int type, int version, final IPCRemoteInvokeCallback<IPCSampleData> callback) {
+    public static void invokeAsync() {
         Bundle bundle = new Bundle();
-        bundle.putString("id", id);
-        bundle.putInt("type", type);
-        bundle.putInt("version", version);
-        IPCInvoker.invokeAsync(PushProcessIPCService.PROCESS_NAME, bundle, IPCRemoteInvoke_doSomething.class, new IPCRemoteInvokeCallback<IPCString>() {
+        bundle.putString("name", "AlbieLiang");
+        bundle.putInt("pid", android.os.Process.myPid());
+        IPCInvoker.invokeAsync(PushProcessIPCService.PROCESS_NAME, bundle, IPCRemoteInvoke_PrintSomething.class, new IPCRemoteInvokeCallback<IPCString>() {
             @Override
             public void onCallback(IPCString data) {
                 Log.i(TAG, "onCallback : %s", data.value);
-                if (callback != null) {
-                    callback.onCallback(data);
-                }
             }
         });
     }
 
-    private static class IPCRemoteInvoke_doSomething implements IPCRemoteAsyncInvoke<Bundle, IPCString> {
+    private static class IPCRemoteInvoke_PrintSomething implements IPCRemoteAsyncInvoke<Bundle, IPCString> {
 
         @Override
         public void invoke(Bundle data, IPCRemoteInvokeCallback<IPCString> callback) {
-            callback.onCallback(new IPCString(data.getString("id") + ":" + data.getInt("type") + ":" + data.getInt("version")));
+            String result = String.format("name:%s|fromPid:%s|curPid:%s", data.getString("name"), data.getInt("pid"), android.os.Process.myPid());
+            callback.onCallback(new IPCString(result));
         }
     }
 }
-
-
 ```
 
-上述示例中IPCSampleData是一个可序列化的Parcelable，IPCString则是IPCInvoker里面提供的String的Parcelable的包装类，IPCInvoker支持的跨进程调用的数据必须是可序列化的Parcelable（默认支持Bundle）
+上述示例中IPCString是IPCInvoker里面提供的String的Parcelable的包装类，IPCInvoker支持的跨进程调用的数据必须是可序列化的Parcelable（默认支持Bundle）。
 
+当然也可以使用自己实现的Parcelable类作为跨进程调用的数据结构，如：
 
 ```java
 public class IPCSampleData implements Parcelable {

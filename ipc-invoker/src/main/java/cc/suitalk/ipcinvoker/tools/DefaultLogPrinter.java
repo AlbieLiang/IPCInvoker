@@ -17,8 +17,6 @@
 
 package cc.suitalk.ipcinvoker.tools;
 
-import android.os.Looper;
-
 import cc.suitalk.ipcinvoker.BuildConfig;
 import cc.suitalk.ipcinvoker.tools.log.ILogPrinter;
 import cc.suitalk.ipcinvoker.tools.log.ILogWriter;

@@ -23,6 +23,7 @@ import cc.suitalk.ipcinvoker.IPCInvoker;
 import cc.suitalk.ipcinvoker.IPCSyncInvokeTask;
 import cc.suitalk.ipcinvoker.sample.IPCSampleData;
 import cc.suitalk.ipcinvoker.sample.service.MainProcessIPCService;
+import cc.suitalk.ipcinvoker.tools.Log;
 
 /**
  * Created by albieliang on 2017/5/14.
@@ -30,30 +31,30 @@ import cc.suitalk.ipcinvoker.sample.service.MainProcessIPCService;
 
 public class IPCInvokeSample_InvokeWithBundle {
 
+    private static final String TAG = "IPCInvokerSample.IPCInvokeSample_InvokeWithBundle";
+
     private static final String INNER_KEY_RESULT = "__result";
 
-    public static Bundle invokeIPCLogic(String id, int type, int version) {
+    public static void invokeSync() {
         Bundle bundle = new Bundle();
-        bundle.putString("id", id);
-        bundle.putInt("type", type);
-        bundle.putInt("version", 0);
+        bundle.putString("name", "AlbieLiang");
+        bundle.putInt("pid", android.os.Process.myPid());
         Bundle result = IPCInvoker.invokeSync(MainProcessIPCService.PROCESS_NAME, bundle, IPCInvokeTask_doSomething.class);
-        return result.getParcelable(INNER_KEY_RESULT);
+        IPCSampleData data = result.getParcelable(INNER_KEY_RESULT);
+        Log.i(TAG, "invoke result : %s", data.result);
     }
 
     private static class IPCInvokeTask_doSomething implements IPCSyncInvokeTask {
         @Override
         public Bundle invoke(Bundle data) {
-            String id = data.getString("id");
-            int type = data.getInt("type");
-            int version = data.getInt("version");
+            String name = data.getString("name");
+            int pid = data.getInt("pid");
             IPCSampleData result = new IPCSampleData();
-            result.result = String.format("id:%s|type:%s|version:%s", id, type, version);
+            result.result = String.format("name:%s|fromPid:%s|curPid:%s", name, pid, android.os.Process.myPid());
             // Add remote logic here
             Bundle bundle = new Bundle();
             bundle.putParcelable(INNER_KEY_RESULT, result);
             return bundle;
         }
     }
-
 }

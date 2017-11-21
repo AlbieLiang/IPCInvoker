@@ -21,8 +21,8 @@ import android.os.Bundle;
 
 import cc.suitalk.ipcinvoker.IPCInvoker;
 import cc.suitalk.ipcinvoker.IPCRemoteSyncInvoke;
-import cc.suitalk.ipcinvoker.sample.IPCSampleData;
 import cc.suitalk.ipcinvoker.sample.service.PushProcessIPCService;
+import cc.suitalk.ipcinvoker.tools.Log;
 import cc.suitalk.ipcinvoker.type.IPCString;
 
 /**
@@ -31,19 +31,23 @@ import cc.suitalk.ipcinvoker.type.IPCString;
 
 public class IPCInvokeSample_InvokeByType {
 
-    public static IPCString invokeIPCLogic(String id, int debugType, int pkgVersion) {
+    private static final String TAG = "IPCInvokerSample.IPCInvokeSample_InvokeByType";
+
+    public static void invokeSync() {
         Bundle bundle = new Bundle();
-        bundle.putString("id", id);
-        bundle.putInt("type", debugType);
-        bundle.putInt("version", 0);
-        return IPCInvoker.invokeSync(PushProcessIPCService.PROCESS_NAME, bundle, IPCRemoteInvoke_PrintSomething.class);
+        bundle.putString("name", "AlbieLiang");
+        bundle.putInt("pid", android.os.Process.myPid());
+        IPCString result = IPCInvoker.invokeSync(PushProcessIPCService.PROCESS_NAME, bundle, IPCRemoteInvoke_BuildString.class);
+        Log.i(TAG, "invoke result : %s", result);
     }
 
-    private static class IPCRemoteInvoke_PrintSomething implements IPCRemoteSyncInvoke<Bundle, IPCString> {
+    private static class IPCRemoteInvoke_BuildString implements IPCRemoteSyncInvoke<Bundle, IPCString> {
 
         @Override
         public IPCString invoke(Bundle data) {
-            return new IPCString(data.getString("id") + ":" + data.getInt("type") + ":" + data.getInt("version"));
+            String msg = String.format("name:%s|fromPid:%s|curPid:%s", data.getString("name"), data.getInt("pid"), android.os.Process.myPid());
+            Log.i(TAG, "build String : %s", msg);
+            return new IPCString(msg);
         }
     }
 }

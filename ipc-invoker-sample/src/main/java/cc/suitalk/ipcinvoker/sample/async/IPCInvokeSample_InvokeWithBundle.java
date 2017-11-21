@@ -37,18 +37,15 @@ public class IPCInvokeSample_InvokeWithBundle {
 
     private static final String INNER_KEY_RESULT = "__result";
 
-    public static void invokeIPCLogic(String id, int type, int version, final IPCRemoteInvokeCallback<Bundle> callback) {
+    public static void invokeAsync() {
         Bundle bundle = new Bundle();
-        bundle.putString("id", id);
-        bundle.putInt("type", type);
+        bundle.putString("name", "AlbieLiang");
+        bundle.putInt("pid", android.os.Process.myPid());
         bundle.putInt("version", 0);
         IPCInvoker.invokeAsync(MainProcessIPCService.PROCESS_NAME, bundle, IPCInvokeTask_doSomething.class, new IPCInvokeCallback() {
             @Override
             public void onCallback(Bundle data) {
-                Log.i(TAG, "onCallback : %s", data);
-                if (callback != null) {
-                    callback.onCallback(data);
-                }
+                Log.i(TAG, "onCallback : %s", data.getString(INNER_KEY_RESULT));
             }
 
         });
@@ -58,14 +55,10 @@ public class IPCInvokeSample_InvokeWithBundle {
 
         @Override
         public void invoke(Bundle data, IPCInvokeCallback callback) {
-            String id = data.getString("id");
-            int debugType = data.getInt("type");
-            int version = data.getInt("version");
-            IPCSampleData result = new IPCSampleData();
-            result.result = String.format("id:%s|type:%s|version:%s", id, debugType, version);
-            // Add remote logic here
+            String name = data.getString("name");
+            int pid = data.getInt("type");
             Bundle bundle = new Bundle();
-            bundle.putParcelable(INNER_KEY_RESULT, result);
+            bundle.putString(INNER_KEY_RESULT, String.format("name:%s|fromPid:%s|curPid:%s", name, pid, android.os.Process.myPid()));
             callback.onCallback(bundle);
         }
     }

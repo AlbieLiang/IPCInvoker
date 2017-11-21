@@ -24,6 +24,7 @@ import cc.suitalk.ipcinvoker.IPCInvoker;
 import cc.suitalk.ipcinvoker.IPCRemoteSyncInvoke;
 import cc.suitalk.ipcinvoker.sample.IPCSampleData;
 import cc.suitalk.ipcinvoker.sample.service.MainProcessIPCService;
+import cc.suitalk.ipcinvoker.tools.Log;
 
 /**
  * Created by albieliang on 2017/5/14.
@@ -31,25 +32,27 @@ import cc.suitalk.ipcinvoker.sample.service.MainProcessIPCService;
 
 public class IPCInvokeSample_InvokeByTypeWithData {
 
-    public static IPCSampleData invokeIPCLogic(String id, int debugType, int pkgVersion) {
-        IPCRemoteInvoke_PrintWithData o = new IPCRemoteInvoke_PrintWithData();
-        o.id = id;
-        o.debugType = debugType;
-        o.version = pkgVersion;
-        return IPCInvoker.invokeSync(MainProcessIPCService.PROCESS_NAME, o, IPCRemoteInvoke_PrintWithData.class);
+    private static final String TAG = "IPCInvokerSample.IPCInvokeSample_InvokeByTypeWithData";
+
+    public static void invokeSync() {
+        IPCRemoteInvoke_BuildStringWithData o = new IPCRemoteInvoke_BuildStringWithData();
+        o.name = "AlbieLiang";
+        o.pid = android.os.Process.myPid();
+        o.timestamp = System.currentTimeMillis();
+        IPCSampleData result = IPCInvoker.invokeSync(MainProcessIPCService.PROCESS_NAME, o, IPCRemoteInvoke_BuildStringWithData.class);
+        Log.i(TAG, "invoke result : %s", result);
     }
 
+    private static class IPCRemoteInvoke_BuildStringWithData implements IPCRemoteSyncInvoke<IPCRemoteInvoke_BuildStringWithData, IPCSampleData>, Parcelable {
 
-    private static class IPCRemoteInvoke_PrintWithData implements IPCRemoteSyncInvoke<IPCRemoteInvoke_PrintWithData, IPCSampleData>, Parcelable {
-
-        private String id;
-        private int debugType;
-        private int version;
+        private String name;
+        private int pid;
+        private long timestamp;
 
         @Override
-        public IPCSampleData invoke(IPCRemoteInvoke_PrintWithData data) {
+        public IPCSampleData invoke(IPCRemoteInvoke_BuildStringWithData data) {
             IPCSampleData result = new IPCSampleData();
-            result.result = String.format("id:%s|type:%s|version:%s", data.id, data.debugType, data.version);
+            result.result = String.format("name:%s|pid:%s|timestamp:%s", data.name, data.pid, data.timestamp);
             return result;
         }
 
@@ -60,24 +63,24 @@ public class IPCInvokeSample_InvokeByTypeWithData {
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(id);
-            dest.writeInt(debugType);
-            dest.writeInt(version);
+            dest.writeString(name);
+            dest.writeInt(pid);
+            dest.writeLong(timestamp);
         }
 
-        public static final Creator<IPCRemoteInvoke_PrintWithData> CREATOR = new Creator<IPCRemoteInvoke_PrintWithData>() {
+        public static final Creator<IPCRemoteInvoke_BuildStringWithData> CREATOR = new Creator<IPCRemoteInvoke_BuildStringWithData>() {
             @Override
-            public IPCRemoteInvoke_PrintWithData createFromParcel(Parcel in) {
-                IPCRemoteInvoke_PrintWithData o = new IPCRemoteInvoke_PrintWithData();
-                o.id = in.readString();
-                o.debugType = in.readInt();
-                o.version = in.readInt();
+            public IPCRemoteInvoke_BuildStringWithData createFromParcel(Parcel in) {
+                IPCRemoteInvoke_BuildStringWithData o = new IPCRemoteInvoke_BuildStringWithData();
+                o.name = in.readString();
+                o.pid = in.readInt();
+                o.timestamp = in.readLong();
                 return o;
             }
 
             @Override
-            public IPCRemoteInvoke_PrintWithData[] newArray(int size) {
-                return new IPCRemoteInvoke_PrintWithData[size];
+            public IPCRemoteInvoke_BuildStringWithData[] newArray(int size) {
+                return new IPCRemoteInvoke_BuildStringWithData[size];
             }
         };
 

@@ -35,18 +35,14 @@ public class IPCInvokeSample_InvokeByTypeWithData {
 
     private static final String TAG = "IPCInvokerSample.IPCInvokeSample_InvokeByTypeWithData";
 
-    public static void invokeIPCLogic(String id, int debugType, int pkgVersion, final IPCRemoteInvokeCallback<IPCSampleData> callback) {
+    public static void invokeAsync() {
         IPCRemoteInvoke_PrintWithData o = new IPCRemoteInvoke_PrintWithData();
-        o.id = id;
-        o.debugType = debugType;
-        o.version = pkgVersion;
+        o.name = "AlbieLiang";
+        o.pid = android.os.Process.myPid();
         IPCInvoker.invokeAsync(MainProcessIPCService.PROCESS_NAME, o, IPCRemoteInvoke_PrintWithData.class, new IPCRemoteInvokeCallback<IPCSampleData>() {
             @Override
             public void onCallback(IPCSampleData data) {
                 Log.i(TAG, "onCallback : %s", data.result);
-                if (callback != null) {
-                    callback.onCallback(data);
-                }
             }
         });
     }
@@ -54,14 +50,13 @@ public class IPCInvokeSample_InvokeByTypeWithData {
 
     private static class IPCRemoteInvoke_PrintWithData implements IPCRemoteAsyncInvoke<IPCRemoteInvoke_PrintWithData, IPCSampleData>, Parcelable {
 
-        private String id;
-        private int debugType;
-        private int version;
+        private String name;
+        private int pid;
 
         @Override
         public void invoke(IPCRemoteInvoke_PrintWithData data, IPCRemoteInvokeCallback<IPCSampleData> callback) {
             IPCSampleData result = new IPCSampleData();
-            result.result = String.format("id:%s|type:%s|version:%s", data.id, data.debugType, data.version);
+            result.result = String.format("name:%s|fromPid:%s|curPid:%s", data.name, data.pid, android.os.Process.myPid());
             callback.onCallback(result);
         }
 
@@ -72,18 +67,16 @@ public class IPCInvokeSample_InvokeByTypeWithData {
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(id);
-            dest.writeInt(debugType);
-            dest.writeInt(version);
+            dest.writeString(name);
+            dest.writeInt(pid);
         }
 
         public static final Creator<IPCRemoteInvoke_PrintWithData> CREATOR = new Creator<IPCInvokeSample_InvokeByTypeWithData.IPCRemoteInvoke_PrintWithData>() {
             @Override
             public IPCInvokeSample_InvokeByTypeWithData.IPCRemoteInvoke_PrintWithData createFromParcel(Parcel in) {
                 IPCInvokeSample_InvokeByTypeWithData.IPCRemoteInvoke_PrintWithData o = new IPCInvokeSample_InvokeByTypeWithData.IPCRemoteInvoke_PrintWithData();
-                o.id = in.readString();
-                o.debugType = in.readInt();
-                o.version = in.readInt();
+                o.name = in.readString();
+                o.pid = in.readInt();
                 return o;
             }
 

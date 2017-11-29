@@ -43,13 +43,13 @@ public class XIPCObservable<InputType> {
     private final IPCInvokeClient mClient;
     private final Map<XIPCObserver<InputType>, IPCObserver> mMap;
 
-    public <T extends XIPCDispatcher<InputType>> XIPCObservable(String process, Class<T> clazz) {
+    public <T extends XIPCDispatcher<InputType>> XIPCObservable(String process, Class<T> dispatcherClass) {
         Assert.assertNotNull(process);
-        Assert.assertNotNull(clazz);
-        Class<?> tClass = ReflectUtil.getActualTypeArgument(clazz);
+        Assert.assertNotNull(dispatcherClass);
+        Class<?> tClass = ReflectUtil.getActualTypeArgument(dispatcherClass);
         Assert.assertNotNull(tClass);
         this.process = process;
-        this.event = genKey(clazz, tClass);
+        this.event = genKey(dispatcherClass, tClass);
         mClient = new IPCInvokeClient(process);
         mMap = new ConcurrentHashMap<>();
     }

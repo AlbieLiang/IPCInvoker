@@ -33,11 +33,11 @@ public class IPCObservable {
     private String event;
     private IPCInvokeClient mClient;
 
-    public <T extends IPCDispatcher> IPCObservable(String process, Class<T> clazz) {
+    public <T extends IPCDispatcher> IPCObservable(String process, Class<T> dispatcherClass) {
         Assert.assertNotNull(process);
-        Assert.assertNotNull(clazz);
+        Assert.assertNotNull(dispatcherClass);
         this.process = process;
-        this.event = clazz.getName();
+        this.event = dispatcherClass.getName();
         mClient = new IPCInvokeClient(process);
     }
 

@@ -27,7 +27,6 @@ import cc.suitalk.ipcinvoker.event.IPCEventBus;
 
 public class XIPCDispatcher<T> {
 
-
     protected String genKey(T data) {
         return XIPCObservable.genKey(getClass(), data.getClass());
     }

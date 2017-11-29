@@ -28,9 +28,9 @@ import cc.suitalk.ipcinvoker.sample.service.SupportProcessIPCService;
 
 public class IPC {
 
-    private static IPCInvokeClient sMainProcessClient = new IPCInvokeClient(MainProcessIPCService.PROCESS_NAME);
-    private static IPCInvokeClient sSupportProcessClient = new IPCInvokeClient(SupportProcessIPCService.PROCESS_NAME);
-    private static IPCInvokeClient sPushProcessClient = new IPCInvokeClient(PushProcessIPCService.PROCESS_NAME);
+    private static final IPCInvokeClient sMainProcessClient = new IPCInvokeClient(MainProcessIPCService.PROCESS_NAME);
+    private static final IPCInvokeClient sSupportProcessClient = new IPCInvokeClient(SupportProcessIPCService.PROCESS_NAME);
+    private static final IPCInvokeClient sPushProcessClient = new IPCInvokeClient(PushProcessIPCService.PROCESS_NAME);
 
     public static IPCInvokeClient getMainIPCClient() {
         return sMainProcessClient;

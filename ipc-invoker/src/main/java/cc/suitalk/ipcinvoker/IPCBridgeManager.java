@@ -142,7 +142,7 @@ class IPCBridgeManager implements IPCInvokerInitializer {
             try {
                 final Intent intent = new Intent(context, serviceClass);
                 Log.i(TAG, "bindService(bw : %s, tid : %s, intent : %s)", bw.hashCode(), Thread.currentThread().getId(), intent);
-                context.bindService(intent, bw.serviceConnection, Context.BIND_AUTO_CREATE);
+                context.bindService(intent, bw.serviceConnection, Context.BIND_AUTO_CREATE | Context.BIND_WAIVE_PRIORITY);
                 bw.connectTimeoutRunnable = new Runnable() {
                     @Override
                     public void run() {

@@ -31,4 +31,11 @@ ext {
             "developer-name" : 'Albie Liang',
             "developer-email" : 'albieliang@gmail.com',
     ]
+
+    ipcinvoker = [
+            "ipcinvoker-main" : 'cc.suitalk.android:ipc-invoker:1.1.6',
+            "ipcinvoker-extension-annotation" : 'cc.suitalk.tools:ipc-invoker-extension-annotation:1.1.6',
+            "ipcinvoker-extension" : 'cc.suitalk.tools:ipc-invoker-extension:1.1.6',
+            "ipcinvoker-ag-extension" : 'cc.suitalk.tools:ipc-invoker-ag-extension:1.1.6'
+    ]
 }

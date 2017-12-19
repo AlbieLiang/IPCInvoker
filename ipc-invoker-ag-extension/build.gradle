@@ -1,26 +1,8 @@
-/*
- *  Copyright (C) 2017-present Albie Liang. All rights reserved.
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *
- */
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 
-apply plugin: 'java-library'
-
-//apply plugin: 'java'
-apply plugin: 'application'
+apply plugin: 'groovy'
 //apply plugin: 'maven'
-//
+
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
@@ -32,58 +14,45 @@ group = "cc.suitalk.tools"            // Maven Group ID for the artifact，
 version = rootProject.ext.bintrayConfig["version"]
 archivesBaseName = 'ipc-invoker-ag-extension'
 
-// For jar config
-mainClassName = ''
-//
-//compileJava {
-//    sourceCompatibility = '1.7'
-//    targetCompatibility = '1.7'
-//}
-
-
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    compile gradleApi()
+    compile localGroovy()
 
     compile 'cc.suitalk.tools:arbitrarygen-sdk:2.0.7'
-    // https://mvnrepository.com/artifact/net.sf.json-lib/json-lib
-//    compile 'net.sf.json-lib:json-lib:2.4'
-    compile project(path: ':ipc-invoker-extension-annotation')
+    compile 'cc.suitalk.tools:arbitrarygen:2.1.0'
+    compile project(':ipc-invoker-extension-annotation')
 }
 
-sourceCompatibility = "1.7"
-targetCompatibility = "1.7"
-
-//
-//uploadArchives {
-//    repositories.mavenDeployer {
-//        // 如果你公司或者自己搭了nexus私服，那么可以将插件deploy到上面去
-//        //        repository(url: "http://10.XXX.XXX.XXX:8080/nexus/content/repositories/releases/") {
-//        //            authentication(userName: "admin", password: "admin")
-//        //        }
-//        // 如果没有私服的话，发布到本地也是ok的
-//        repository(url: "file:${project.rootDir.getAbsolutePath()}/repositories/release")
-//    }
-//}
+// 一定要记得使用交叉编译选项，因为我们可能用很高的JDK版本编译，为了让安装了低版本的同学能用上我们写的插件，必须设定source和target
+compileGroovy {
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+    options.encoding = "UTF-8"
+}
 
 jar {
     from files(sourceSets.main.output.classesDir)
-//    from configurations.runtime.asFileTree.files.collect {
+//    from configurations.runtime.asFileTree.files.collect { zipTree(it) }
     from configurations.compile.collect {
         if (it.toString().contains("ipc-invoker-extension-annotation")) {
+            println(it)
             it.isDirectory() ? it : zipTree(it)
         } else {
             "ignore-this"
         }
     }
     exclude("ignore-this")
-    baseName = archivesBaseName
-    version = this.version
 }
 
-task uploadJar(type: Copy, dependsOn: jar) {
-    from("build/libs")
-    into("../ag-template/")
-    include("${archivesBaseName}-${version}.jar")
+uploadArchives {
+    repositories.mavenDeployer {
+        // 如果你公司或者自己搭了nexus私服，那么可以将插件deploy到上面去
+        //        repository(url: "http://10.XXX.XXX.XXX:8080/nexus/content/repositories/releases/") {
+        //            authentication(userName: "admin", password: "admin")
+        //        }
+        // 如果没有私服的话，发布到本地也是ok的
+        repository(url: "file:${project.rootDir.getAbsolutePath()}/repositories/release")
+    }
 }
 
 install {
@@ -93,7 +62,7 @@ install {
             project {
                 packaging 'jar'
                 // Add your description here
-                name 'A ag-extension for IPCInvoker to generate code.'
+                name 'The gradle plugin for ArbitraryGen, ArbitraryGen is a multifunction code generator.'     //项目的描述 你可以多写一点
                 url siteUrl
                 // Set your license
                 licenses {
@@ -119,19 +88,26 @@ install {
     }
 }
 
-
 task packSourcesJar(type: Jar) {
-    from sourceSets.main.java.srcDirs
+//    from android.sourceSets.main.java.srcDirs
+//    from sourceSets.main.allJava
+    from sourceSets.main.groovy.srcDirs
     classifier = 'sources'
 }
 
-task packJavadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
+//task createGroovydoc(type: Groovydoc) {
+//    source = sourceSets.main.groovy.srcDirs
+////    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+////    classpath += project.files(groovy.getBootClasspath().join(File.pathSeparator))
+//}
+
+task packGroovydocJar(type: Jar, dependsOn: groovydoc) {
+    classifier = 'groovydoc'
+    from groovydoc.destinationDir
 }
 
 artifacts {
-    archives packJavadocJar
+    archives packGroovydocJar
     archives packSourcesJar
 }
 

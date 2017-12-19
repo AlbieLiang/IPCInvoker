@@ -27,7 +27,7 @@ import cc.suitalk.arbitrarygen.base.BaseStatement;
 import cc.suitalk.arbitrarygen.base.JavaFileObject;
 import cc.suitalk.arbitrarygen.block.TypeDefineCodeBlock;
 import cc.suitalk.arbitrarygen.core.ArgsConstants;
-import cc.suitalk.arbitrarygen.core.Core;
+import cc.suitalk.arbitrarygen.extension.AGContext;
 import cc.suitalk.arbitrarygen.extension.processoing.AGSupportedAnnotationTypes;
 import cc.suitalk.arbitrarygen.extension.processoing.AbstractAGAnnotationProcessor;
 import cc.suitalk.arbitrarygen.protocol.EnvArgsConstants;
@@ -42,7 +42,7 @@ import cc.suitalk.ipcinvoker.extension.annotation.IPCInvokeTaskManager;
 @AGSupportedAnnotationTypes({"IPCAsyncInvokeMethod", "IPCSyncInvokeMethod"})
 public class IPCInvokeTaskProcessor extends AbstractAGAnnotationProcessor {
 
-    private static final String TAG = "AG.IPCInvokerTaskAnnotationProcessor";
+    private static final String TAG = "AG.IPCInvokeTaskProcessor";
 //
 //    private static Set<String> sSupportedAnnotationTypes = new HashSet<>();
 //
@@ -56,7 +56,7 @@ public class IPCInvokeTaskProcessor extends AbstractAGAnnotationProcessor {
 //    }
 
     @Override
-    public boolean process(JSONObject env, JavaFileObject javaFileObject, TypeDefineCodeBlock typeDefineCodeBlock, Set<? extends BaseStatement> set) {
+    public boolean process(AGContext context, JSONObject env, JavaFileObject javaFileObject, TypeDefineCodeBlock typeDefineCodeBlock, Set<? extends BaseStatement> set) {
         if (typeDefineCodeBlock.getAnnotation(IPCInvokeTaskManager.class.getSimpleName()) == null) {
             Log.i(TAG, "the TypeDefineCodeBlock do not contains 'IPCInvokeTaskManager' annotation.(%s)", javaFileObject.getFileName());
             return false;
@@ -81,7 +81,7 @@ public class IPCInvokeTaskProcessor extends AbstractAGAnnotationProcessor {
                 String.format("%s$AG.java", typeDefineCodeBlock.getName().getName())));
         args.put("fileObject", javaFileObject.toJSONObject());
         args.put("methodSet", toJSONArray(set));
-        Core.exec("template-processor", args);
+        context.execProcess("template-processor", args);
         return true;
     }
 

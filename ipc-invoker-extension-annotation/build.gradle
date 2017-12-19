@@ -15,7 +15,7 @@
  *  
  */
 
-apply plugin: 'java-library'
+apply plugin: 'java'
 
 //apply plugin: 'java'
 apply plugin: 'application'
@@ -46,12 +46,22 @@ jar {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
 }
 
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
 
+uploadArchives {
+    repositories.mavenDeployer {
+        // 如果你公司或者自己搭了nexus私服，那么可以将插件deploy到上面去
+        //        repository(url: "http://10.XXX.XXX.XXX:8080/nexus/content/repositories/releases/") {
+        //            authentication(userName: "admin", password: "admin")
+        //        }
+        // 如果没有私服的话，发布到本地也是ok的
+        repository(url: "file:${project.rootDir.getAbsolutePath()}/repositories/release")
+    }
+}
 //
 //uploadArchives {
 //    repositories.mavenDeployer {

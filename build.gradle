@@ -22,6 +22,15 @@ buildscript {
     apply from : "config.gradle"
     repositories {
         jcenter()
+        if (rootProject.ext.buildConfig["debug"]) {
+            maven {
+                url "file:${project.rootDir.getAbsolutePath()}/repositories/release"
+            }
+        } else {
+            maven {
+                url 'http://central.maven.org/maven2/'
+            }
+        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.2'
@@ -29,7 +38,8 @@ buildscript {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.4.1'
 
-        classpath 'cc.suitalk.tools:arbitrarygen-plugin:2.0.7'
+        classpath 'cc.suitalk.tools:arbitrarygen-plugin:2.1.0'
+        classpath 'cc.suitalk.tools:ipc-invoker-ag-extension:1.1.7'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -40,6 +50,15 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        if (rootProject.ext.buildConfig["debug"]) {
+            maven {
+                url "file:${project.rootDir.getAbsolutePath()}/repositories/release"
+            }
+        } else {
+            maven {
+                url 'http://central.maven.org/maven2/'
+            }
+        }
     }
 }
 

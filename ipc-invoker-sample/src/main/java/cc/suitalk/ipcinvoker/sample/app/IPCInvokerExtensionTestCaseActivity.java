@@ -28,12 +28,15 @@ import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
 import cc.suitalk.ipcinvoker.sample.R;
 import cc.suitalk.ipcinvoker.sample.app.model.ThreadPool;
 import cc.suitalk.ipcinvoker.sample.extension.IPCTask$AG;
+import cc.suitalk.ipcinvoker.tools.Log;
 
 /**
  * Created by albieliang on 2017/11/18.
  */
 
 public class IPCInvokerExtensionTestCaseActivity extends AppCompatActivity {
+
+    private static final String TAG = "IPCInvokerSample.IPCInvokerExtensionTestCaseActivity";
 
     private TextView myPidTv;
 
@@ -67,6 +70,7 @@ public class IPCInvokerExtensionTestCaseActivity extends AppCompatActivity {
                     public void run() {
                         String key = getKeyEt.getText().toString();
                         final String value = IPCTask$AG.getValue(key);
+                        Log.i(TAG, "getValue(%s)", value);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -85,6 +89,7 @@ public class IPCInvokerExtensionTestCaseActivity extends AppCompatActivity {
                 IPCTask$AG.setValue(key, value, new IPCRemoteInvokeCallback<Bundle>() {
                     @Override
                     public void onCallback(final Bundle data) {
+                        Log.i(TAG, "onCallback(%s)", data);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {

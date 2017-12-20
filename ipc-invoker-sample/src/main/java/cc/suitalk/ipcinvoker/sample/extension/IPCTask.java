@@ -43,8 +43,8 @@ public class IPCTask {
     }
 
     @IPCAsyncInvokeMethod
-    public void showLoading(int id, String name, InputData data, @IPCAsyncInvokeCallback IPCRemoteInvokeCallback<ResultData> callback) {
-        Log.i(TAG, "invokeAsync(id : %s, data : %s, name : %s)", id, data, name);
+    public void showLoading(@IPCAsyncInvokeCallback IPCRemoteInvokeCallback<ResultData> callback, InputData data) {
+        Log.i(TAG, "invokeAsync(data : %s)", data);
     }
 
     @IPCAsyncInvokeMethod

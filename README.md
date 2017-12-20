@@ -1,6 +1,10 @@
 # IPCInvoker
 
-[![](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/AlbieLiang/IPCInvoker)
+[![license](http://img.shields.io/badge/license-Apache2.0-brightgreen.svg?style=flat)](https://github.com/AlbieLiang/IPCInvoker/blob/master/LICENSE)
+[![Release Version](https://img.shields.io/badge/release-1.1.7-red.svg)](https://github.com/AlbieLiang/IPCInvoker/releases)
+
+[![wiki](https://img.shields.io/badge/wiki-1.1.7-red.svg)](https://github.com/AlbieLiang/IPCInvoker/wiki) 
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/AlbieLiang/IPCInvoker/pulls)
 
 
 

@@ -71,6 +71,8 @@ public class XIPCInvoker {
     /**
      * Sync invoke, it must be invoked on WorkerThread or make sure the connection is established before invoked.
      *
+     * Call {@link cc.suitalk.ipcinvoker.IPCInvokerBoot#connectRemoteService(String)} to pre-connect remote Service.
+     *
      * @param process      remote service process name
      * @param data         data for remote process invoked, it must be a {@link Parcelable}
      * @param taskClass    remote invoke logic task class

@@ -34,35 +34,35 @@ import cc.suitalk.ipcinvoker.event.IPCObserver;
 
 public class IPCInvokeClient {
 
-    public static final String TOKEN = "Token";
-    public static final String EVENT = "Event";
+    private static final String TOKEN = "Token";
+    private static final String EVENT = "Event";
 
-    private String process;
+    private String mProcess;
 
     public IPCInvokeClient(String process) {
-        this.process = process;
+        this.mProcess = process;
     }
 
     @AnyThread
     public <T extends IPCAsyncInvokeTask> boolean invokeAsync(Bundle data, @NonNull Class<T> taskClass, final IPCInvokeCallback callback) {
-        return IPCInvoker.invokeAsync(process, data, taskClass, callback);
+        return IPCInvoker.invokeAsync(mProcess, data, taskClass, callback);
     }
 
     @AnyThread
     public <T extends IPCRemoteAsyncInvoke<InputType, ResultType>, InputType extends Parcelable, ResultType extends Parcelable>
             boolean invokeAsync(InputType data, @NonNull Class<T> taskClass, final IPCRemoteInvokeCallback<ResultType> callback) {
-        return IPCInvoker.invokeAsync(process, data, taskClass, callback);
+        return IPCInvoker.invokeAsync(mProcess, data, taskClass, callback);
     }
 
     @WorkerThread
     public <T extends IPCSyncInvokeTask> Bundle invokeSync(Bundle data, @NonNull Class<T> taskClass) {
-        return IPCInvoker.invokeSync(process, data, taskClass);
+        return IPCInvoker.invokeSync(mProcess, data, taskClass);
     }
 
     @WorkerThread
     public <T extends IPCRemoteSyncInvoke<InputType, ResultType>, InputType extends Parcelable, ResultType extends Parcelable>
             ResultType invokeSync(InputType data, @NonNull Class<T> taskClass) {
-        return IPCInvoker.invokeSync(process, data, taskClass);
+        return IPCInvoker.invokeSync(mProcess, data, taskClass);
     }
 
     @AnyThread
@@ -73,7 +73,7 @@ public class IPCInvokeClient {
         Bundle data = new Bundle();
         data.putString(TOKEN, buildToken(observer));
         data.putString(EVENT, event);
-        IPCInvoker.invokeAsync(process, data, IPCInvokeTask_RegisterIPCObserver.class, observer);
+        IPCInvoker.invokeAsync(mProcess, data, IPCInvokeTask_RegisterIPCObserver.class, observer);
         return true;
     }
 
@@ -85,7 +85,7 @@ public class IPCInvokeClient {
         Bundle data = new Bundle();
         data.putString(TOKEN, buildToken(observer));
         data.putString(EVENT, event);
-        IPCInvoker.invokeAsync(process, data, IPCInvokeTask_UnregisterIPCObserver.class, null);
+        IPCInvoker.invokeAsync(mProcess, data, IPCInvokeTask_UnregisterIPCObserver.class, null);
         return true;
     }
 

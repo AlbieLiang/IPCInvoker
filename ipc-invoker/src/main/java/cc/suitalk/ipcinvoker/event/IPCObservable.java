@@ -29,29 +29,29 @@ import cc.suitalk.ipcinvoker.annotation.NonNull;
 
 public class IPCObservable {
 
-    private String process;
-    private String event;
+    private String mProcess;
+    private String mEvent;
     private IPCInvokeClient mClient;
 
     public <T extends IPCDispatcher> IPCObservable(String process, Class<T> dispatcherClass) {
         Assert.assertNotNull(process);
         Assert.assertNotNull(dispatcherClass);
-        this.process = process;
-        this.event = dispatcherClass.getName();
-        mClient = new IPCInvokeClient(process);
+        this.mProcess = process;
+        this.mEvent = dispatcherClass.getName();
+        this.mClient = new IPCInvokeClient(process);
     }
 
     @AnyThread
     public boolean registerIPCObserver(@NonNull IPCObserver o) {
-        return mClient.registerIPCObserver(event, o);
+        return mClient.registerIPCObserver(mEvent, o);
     }
 
     @AnyThread
     public boolean unregisterIPCObserver(@NonNull IPCObserver o) {
-        return mClient.unregisterIPCObserver(event, o);
+        return mClient.unregisterIPCObserver(mEvent, o);
     }
 
     public String getProcess() {
-        return process;
+        return mProcess;
     }
 }

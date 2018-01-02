@@ -160,41 +160,9 @@ public class IPCInvokeSample_InvokeByType {
 
 上述示例中IPCString是IPCInvoker里面提供的String的Parcelable的包装类，IPCInvoker支持的跨进程调用的数据必须是可序列化的Parcelable（默认支持Bundle）。
 
-当然也可以使用自己实现的Parcelable类作为跨进程调用的数据结构，如：
+IPCInvoker支持自定义实现的Parcelable类作为跨进程调用的数据结构，同时也支持非Parcelable的扩展类型数据，详细请参考[XIPCInvoker扩展系列接口](https://github.com/AlbieLiang/IPCInvoker/wiki/XIPCInvoker%E6%89%A9%E5%B1%95%E7%B3%BB%E5%88%97%E6%8E%A5%E5%8F%A3)
 
-```java
-public class IPCSampleData implements Parcelable {
 
-    public String result;
+__此外，IPCInvoker还支持跨进程事件监听和分发等丰富的功能，详细使用说明请参考[wiki](https://github.com/AlbieLiang/IPCInvoker/wiki) ，更多使用示例请移步[Sample工程](https://github.com/AlbieLiang/IPCInvoker/tree/master/ipc-invoker-sample)__
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(result);
-    }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public static final Creator<IPCSampleData> CREATOR = new Creator<IPCSampleData>() {
-        @Override
-        public IPCSampleData createFromParcel(Parcel in) {
-            IPCSampleData o = new IPCSampleData();
-            o.result = in.readString();
-            return o;
-        }
-
-        @Override
-        public IPCSampleData[] newArray(int size) {
-            return new IPCSampleData[size];
-        }
-    };
-}
-```
-
-## 注意
-
-由于跨进程调用逻辑是通过反射的方式实现的，所以跨进程逻辑的类不能是非静态内部类，这样能有效的减少写程序时因为误引用变量而出现的bug。
-
-更多使用，请移步[Sample工程](https://github.com/AlbieLiang/IPCInvoker/tree/master/ipc-invoker-sample)

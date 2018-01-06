@@ -18,8 +18,8 @@ dependencies {
     compile gradleApi()
     compile localGroovy()
 
-    compile 'cc.suitalk.tools:arbitrarygen-sdk:2.0.7'
-    compile 'cc.suitalk.tools:arbitrarygen:2.1.0'
+    compile rootProject.ext.dependencies['arbitrarygen-sdk']
+    compile rootProject.ext.dependencies['arbitrarygen']
     compile project(':ipc-invoker-extension-annotation')
 }
 
@@ -31,17 +31,8 @@ compileGroovy {
 }
 
 jar {
-    from files(sourceSets.main.output.classesDir)
-//    from configurations.runtime.asFileTree.files.collect { zipTree(it) }
-    from configurations.compile.collect {
-        if (it.toString().contains("ipc-invoker-extension-annotation")) {
-            println(it)
-            it.isDirectory() ? it : zipTree(it)
-        } else {
-            "ignore-this"
-        }
-    }
-    exclude("ignore-this")
+    baseName = archivesBaseName
+    version = this.version
 }
 
 uploadArchives {
@@ -94,12 +85,6 @@ task packSourcesJar(type: Jar) {
     from sourceSets.main.groovy.srcDirs
     classifier = 'sources'
 }
-
-//task createGroovydoc(type: Groovydoc) {
-//    source = sourceSets.main.groovy.srcDirs
-////    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-////    classpath += project.files(groovy.getBootClasspath().join(File.pathSeparator))
-//}
 
 task packGroovydocJar(type: Jar, dependsOn: groovydoc) {
     classifier = 'groovydoc'

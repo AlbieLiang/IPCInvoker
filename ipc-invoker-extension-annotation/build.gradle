@@ -17,7 +17,6 @@
 
 apply plugin: 'java'
 
-//apply plugin: 'java'
 apply plugin: 'application'
 //apply plugin: 'maven'
 
@@ -62,29 +61,11 @@ uploadArchives {
         repository(url: "file:${project.rootDir.getAbsolutePath()}/repositories/release")
     }
 }
-//
-//uploadArchives {
-//    repositories.mavenDeployer {
-//        // 如果你公司或者自己搭了nexus私服，那么可以将插件deploy到上面去
-//        //        repository(url: "http://10.XXX.XXX.XXX:8080/nexus/content/repositories/releases/") {
-//        //            authentication(userName: "admin", password: "admin")
-//        //        }
-//        // 如果没有私服的话，发布到本地也是ok的
-//        repository(url: "file:${project.rootDir.getAbsolutePath()}/repositories/release")
-//    }
-//}
 
-//打包
 task packLibJar(type: Jar, dependsOn: classes) {
     from files(sourceSets.main.output.classesDir)
     baseName = archivesBaseName
     version = this.version
-}
-
-task uploadJar(type: Copy, dependsOn: packLibJar) {
-    from("build/libs")
-    into("../ag-template/")
-    include("${archivesBaseName}-${version}.jar")
 }
 
 install {

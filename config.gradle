@@ -38,4 +38,9 @@ ext {
             "ipcinvoker-extension" : 'cc.suitalk.tools:ipc-invoker-extension:1.1.7',
             "ipcinvoker-ag-extension" : 'cc.suitalk.tools:ipc-invoker-ag-extension:1.1.7'
     ]
+
+    dependencies = [
+            "arbitrarygen" : 'cc.suitalk.tools:arbitrarygen:2.1.0',
+            "arbitrarygen-sdk" : 'cc.suitalk.tools:arbitrarygen-sdk:2.1.0'
+    ]
 }

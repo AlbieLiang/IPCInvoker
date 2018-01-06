@@ -25,7 +25,6 @@ def siteUrl = rootProject.ext.bintrayConfig["siteUrl"]   // 项目的主页
 def gitUrl = rootProject.ext.bintrayConfig["gitUrl"]   // Git仓库的url
 group = "cc.suitalk.tools"            // Maven Group ID for the artifact，
 
-// 这个version是library的版本，更新后也需要更改这个值
 version = rootProject.ext.bintrayConfig["version"]
 archivesBaseName = 'ipc-invoker-extension'
 
@@ -57,7 +56,6 @@ dependencies {
     compile project(':ipc-invoker-extension-annotation')
 }
 
-
 uploadArchives {
     repositories.mavenDeployer {
         // 如果你公司或者自己搭了nexus私服，那么可以将插件deploy到上面去
@@ -68,6 +66,20 @@ uploadArchives {
         repository(url: "file:${project.rootDir.getAbsolutePath()}/repositories/release")
     }
 }
+//task copyDependencies(type: Copy) {
+//    from configurations.compile.collect {
+//        if (it.toString().contains("ipc-invoker-extension-annotation")) {
+//            println(it)
+//            it.isDirectory() ? it : zipTree(it)
+//        } else {
+//            "ignore-this"
+//        }
+//    }
+//    into("$buildDir/intermediates/classes/release/")
+//    exclude("ignore-this", "META-INF", "META-INF/MANIFEST.MF")
+//}
+//
+//preBuild.dependsOn copyDependencies
 
 task packSourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs

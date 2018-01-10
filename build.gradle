@@ -31,10 +31,6 @@ buildscript {
                 url 'http://central.maven.org/maven2/'
             }
         }
-
-        maven {
-            url 'https://dl.bintray.com/albieliang/maven'
-        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.2'
@@ -62,10 +58,6 @@ allprojects {
             maven {
                 url 'http://central.maven.org/maven2/'
             }
-        }
-
-        maven {
-            url 'https://dl.bintray.com/albieliang/maven'
         }
     }
 }

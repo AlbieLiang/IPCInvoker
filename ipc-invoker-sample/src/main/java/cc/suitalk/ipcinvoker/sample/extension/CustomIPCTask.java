@@ -20,7 +20,7 @@ package cc.suitalk.ipcinvoker.sample.extension;
 import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
 import cc.suitalk.ipcinvoker.extension.annotation.IPCAsyncInvokeCallback;
 import cc.suitalk.ipcinvoker.extension.annotation.IPCAsyncInvokeMethod;
-import cc.suitalk.ipcinvoker.extension.annotation.IPCInvokeTaskManager;
+import cc.suitalk.ipcinvoker.extension.annotation.IPCInvokeTask;
 import cc.suitalk.ipcinvoker.extension.annotation.IPCSyncInvokeMethod;
 import cc.suitalk.ipcinvoker.tools.Log;
 
@@ -28,7 +28,7 @@ import cc.suitalk.ipcinvoker.tools.Log;
  * Created by albieliang on 2017/10/26.
  */
 
-@IPCInvokeTaskManager(process = "cc.suitalk.ipcinvoker.sample")
+@IPCInvokeTask
 public class CustomIPCTask {
 
     private static final String TAG = "IPCSample.CustomIPCTask";

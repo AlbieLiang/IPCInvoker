@@ -27,13 +27,8 @@ import cc.suitalk.ipcinvoker.IPCSyncInvokeTask;
 import cc.suitalk.ipcinvoker.ObjectStore;
 import cc.suitalk.ipcinvoker.annotation.Singleton;
 import cc.suitalk.ipcinvoker.extension.ParameterHelper;
-import cc.suitalk.ipcinvoker.extension.annotation.IPCAsyncInvokeCallback;
 import cc.suitalk.ipcinvoker.extension.annotation.IPCAsyncInvokeMethod;
 import cc.suitalk.ipcinvoker.extension.annotation.IPCSyncInvokeMethod;
-
-
-import cc.suitalk.ipcinvoker.extension.annotation.IPCInvokeTaskManager;
-
 
 import cc.suitalk.ipcinvoker.sample.extension.CustomIPCTask;
 import cc.suitalk.ipcinvoker.sample.extension.CustomIPCTask.InputData;

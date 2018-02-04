@@ -40,8 +40,13 @@ public class IPCInvokerAGContextExtension implements AGContextExtension {
     private static final String TAG = "IPCInvoker.IPCInvokerAGContextExtension";
 
     static {
+        loadTemplate("ipc-invoker-gentask", "/res/ag-template/IPCInvokeTask.ag-template");
+//        loadTemplate("ipc-invoker-gentask-mgr", "/res/ag-template/IPCInvokeTaskMgr.ag-template");
+    }
+
+    private static void loadTemplate(String tag, String templatePath) {
         String template = "";
-        InputStream is = IPCInvokerAGContextExtension.class.getResourceAsStream("/res/ag-template/IPCInvokeTask.ag-template");
+        InputStream is = IPCInvokerAGContextExtension.class.getResourceAsStream(templatePath);
 //        Log.i(TAG, "doGet(jarPath : %s)", IPCInvokerAGContextExtension.class.getProtectionDomain().getCodeSource().getLocation().getPath());
         if (is != null) {
             template = FileOperation.read(is);
@@ -51,7 +56,7 @@ public class IPCInvokerAGContextExtension implements AGContextExtension {
             }
         }
         if (template != null && template.length() > 0) {
-            TemplateManager.getImpl().put("ipc-invoker-gentask", template);
+            TemplateManager.getImpl().put(tag, template);
         }
     }
 

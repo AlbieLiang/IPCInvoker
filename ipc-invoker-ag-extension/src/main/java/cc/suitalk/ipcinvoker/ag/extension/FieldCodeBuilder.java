@@ -27,7 +27,7 @@ import cc.suitalk.arbitrarygen.core.KeyWords;
 import cc.suitalk.arbitrarygen.statement.AnnotationStatement;
 import cc.suitalk.arbitrarygen.utils.Util;
 import cc.suitalk.ipcinvoker.extension.annotation.IPCAsyncInvokeMethod;
-import cc.suitalk.ipcinvoker.extension.annotation.IPCInvokeTaskManager;
+import cc.suitalk.ipcinvoker.extension.annotation.IPCInvokeTask;
 import cc.suitalk.ipcinvoker.extension.annotation.IPCSyncInvokeMethod;
 
 /**
@@ -62,7 +62,7 @@ public class FieldCodeBuilder {
         field.setIsStatic(true);
         field.setType(Util.createSimpleTypeName(KeyWords.V_JAVA_KEYWORDS_DATA_BASE_TYPE_STRING));
         field.setName(Util.createSimpleTypeName("PROCESS"));
-        AnnotationStatement as = typeDefineCodeBlock.getAnnotation(IPCInvokeTaskManager.class.getSimpleName());
+        AnnotationStatement as = typeDefineCodeBlock.getAnnotation(IPCInvokeTask.class.getSimpleName());
         field.setDefault("\"" + as.getArg("process").getValue() + "\"");
         return field;
     }

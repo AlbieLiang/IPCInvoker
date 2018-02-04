@@ -26,24 +26,23 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 
-import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeBridge;
-import cc.suitalk.ipcinvoker.activate.IPCInvokerInitializer;
-import cc.suitalk.ipcinvoker.annotation.NonNull;
-import cc.suitalk.ipcinvoker.annotation.WorkerThread;
-import cc.suitalk.ipcinvoker.exception.RemoteServiceNotConnectedException;
-import cc.suitalk.ipcinvoker.tools.Log;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeBridge;
+import cc.suitalk.ipcinvoker.annotation.NonNull;
+import cc.suitalk.ipcinvoker.annotation.WorkerThread;
+import cc.suitalk.ipcinvoker.exception.RemoteServiceNotConnectedException;
+import cc.suitalk.ipcinvoker.tools.Log;
+
 /**
  * Created by albieliang on 2017/5/14.
  */
 
-class IPCBridgeManager implements IPCInvokerInitializer {
+class IPCBridgeManager {
 
     private static final String TAG = "IPC.IPCBridgeManager";
 
@@ -294,7 +293,6 @@ class IPCBridgeManager implements IPCInvokerInitializer {
         }
     }
 
-    @Override
     public <T extends BaseIPCService> void addIPCService(String processName, Class<T> service) {
         mServiceClassMap.put(processName, service);
     }

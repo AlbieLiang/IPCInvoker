@@ -28,6 +28,10 @@ import cc.suitalk.ipcinvoker.extension.XParcelableTransfer;
 public abstract class DefaultInitDelegate implements IPCInvokerInitDelegate {
 
     @Override
+    public void onInitialize(IPCInvokerInitializer initializer) {
+    }
+
+    @Override
     public void onAddTypeTransfer(TypeTransferInitializer initializer) {
         initializer.addTypeTransfer(new ParcelableTransfer());
         initializer.addTypeTransfer(new IPCDataTransfer());

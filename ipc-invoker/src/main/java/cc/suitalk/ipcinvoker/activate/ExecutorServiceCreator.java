@@ -17,15 +17,12 @@
 
 package cc.suitalk.ipcinvoker.activate;
 
+import java.util.concurrent.ExecutorService;
+
 /**
- * Created by albieliang on 2017/5/28.
+ * Created by albieliang on 2018/1/24.
  */
 
-public interface IPCInvokerInitDelegate {
-
-    void onInitialize(IPCInvokerInitializer initializer);
-
-    void onAttachServiceInfo(IPCInvokerInitializer initializer);
-
-    void onAddTypeTransfer(TypeTransferInitializer initializer);
+public interface ExecutorServiceCreator {
+    ExecutorService create();
 }

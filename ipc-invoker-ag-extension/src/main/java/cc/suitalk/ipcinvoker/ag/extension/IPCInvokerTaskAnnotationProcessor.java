@@ -38,7 +38,7 @@ import cc.suitalk.arbitrarygen.utils.FileOperation;
 import cc.suitalk.arbitrarygen.utils.Log;
 import cc.suitalk.arbitrarygen.utils.Util;
 import cc.suitalk.ipcinvoker.extension.annotation.IPCAsyncInvokeMethod;
-import cc.suitalk.ipcinvoker.extension.annotation.IPCInvokeTaskManager;
+import cc.suitalk.ipcinvoker.extension.annotation.IPCInvokeTask;
 import cc.suitalk.ipcinvoker.extension.annotation.IPCSyncInvokeMethod;
 
 /**
@@ -63,8 +63,8 @@ public class IPCInvokerTaskAnnotationProcessor extends AbstractAGAnnotationProce
 
     @Override
     public boolean process(AGContext context, JSONObject env, JavaFileObject javaFileObject, TypeDefineCodeBlock typeDefineCodeBlock, Set<? extends BaseStatement> set) {
-        if (typeDefineCodeBlock.getAnnotation(IPCInvokeTaskManager.class.getSimpleName()) == null) {
-            Log.i(TAG, "the TypeDefineCodeBlock do not contains 'IPCInvokeTaskManager' annotation.(%s)", javaFileObject.getFileName());
+        if (typeDefineCodeBlock.getAnnotation(IPCInvokeTask.class.getSimpleName()) == null) {
+            Log.i(TAG, "the TypeDefineCodeBlock do not contains 'IPCInvokeTask' annotation.(%s)", javaFileObject.getFileName());
             return false;
         }
         if (set.isEmpty()) {

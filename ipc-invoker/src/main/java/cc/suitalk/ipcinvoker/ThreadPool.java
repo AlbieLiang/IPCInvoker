@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+import cc.suitalk.ipcinvoker.activate.ExecutorServiceCreator;
 import cc.suitalk.ipcinvoker.annotation.NonNull;
 import cc.suitalk.ipcinvoker.reflect.ReflectStaticFieldSmith;
 import cc.suitalk.ipcinvoker.tools.Log;
@@ -37,14 +38,15 @@ class ThreadPool {
 
     private static final String TAG = "IPC.ThreadPool";
 
-    private static final int DEFAULT_CORE_POOL_SIZE = 3;
-
     private static volatile ThreadPool sThreadPool;
-    
+
+    private static ExecutorServiceCreator sCreator = new ExecutorServiceCreatorImpl();
+
+    private static Thread.UncaughtExceptionHandler sUncaughtExceptionHandler = new UncaughtExceptionHandlerImpl();
+
     private Handler mHandler;
-    ExecutorService mExecutorService;
-    private int mCorePoolSize = DEFAULT_CORE_POOL_SIZE;
-    
+    private ExecutorService mExecutorService;
+
     private static ThreadPool getImpl() {
         if (sThreadPool == null) {
             synchronized (ThreadPool.class) {
@@ -60,34 +62,32 @@ class ThreadPool {
         return new ThreadPool();
     }
 
-    private ThreadPool() {
-        final HandlerThread handlerThread = new HandlerThread("ThreadPool#WorkerThread-" + hashCode());
-        handlerThread.start();
-        mHandler = new Handler(handlerThread.getLooper());
-        mExecutorService = Executors.newScheduledThreadPool(mCorePoolSize, new ThreadFactory() {
+    static void setExecutorServiceCreator(ExecutorServiceCreator creator) {
+        if (creator == null) {
+            return;
+        }
+        sCreator = creator;
+    }
 
-            int index = 0;
+    private ThreadPool() {
+        mHandler = createHandler();
+        mExecutorService = sCreator.create();
+        Log.i(TAG, "initialize IPCInvoker ThreadPool(hashCode : %s)", hashCode());
+    }
+
+    private Handler createHandler() {
+        final HandlerThread handlerThread = new HandlerThread("ThreadPool#WorkerThread-" + hashCode());
+        handlerThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
-            public Thread newThread(@NonNull final Runnable r) {
-                String name = "ThreadPool#Thread-" + (index++);
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ThreadLocal<Looper> tl = new ReflectStaticFieldSmith<ThreadLocal<Looper>>(Looper.class, "sThreadLocal").getWithoutThrow();
-                        if (tl != null && tl.get() == null) {
-                            Log.d(TAG, "create a new Looper ThreadLocal variable.");
-                            tl.set(handlerThread.getLooper());
-                        } else {
-                            Log.d(TAG, "ThreadLocal Looper variable is null or has set.(%s)", tl);
-                        }
-                        r.run();
-                    }
-                }, name);
-                Log.i(TAG, "newThread(thread : %s)", name);
-                return thread;
+            public void uncaughtException(Thread t, Throwable e) {
+                sUncaughtExceptionHandler.uncaughtException(t, e);
+                Log.i(TAG, "uncaughtException occurred, create a new HandlerThread.");
+                mHandler = createHandler();
             }
         });
-        Log.i(TAG, "initialize IPCInvoker ThreadPool(hashCode : %s)", hashCode());
+        handlerThread.start();
+        Log.i(TAG, "createHandlerThread(id : %d)", handlerThread.getThreadId());
+        return new Handler(handlerThread.getLooper());
     }
     
     public static boolean post(Runnable run) {
@@ -103,5 +103,73 @@ class ThreadPool {
             return false;
         }
         return getImpl().mHandler.postDelayed(run, delayMillis);
+    }
+
+    private static class ExecutorServiceCreatorImpl implements ExecutorServiceCreator {
+
+        private static final String TAG = "IPC.ExecutorServiceCreatorImpl";
+
+        private static final int DEFAULT_CORE_POOL_SIZE = 3;
+
+        private int mCorePoolSize = DEFAULT_CORE_POOL_SIZE;
+
+        HandlerThread mHandlerThread;
+
+        ExecutorServiceCreatorImpl() {
+            mHandlerThread = createHandlerThread();
+        }
+
+        @Override
+        public ExecutorService create() {
+            return Executors.newScheduledThreadPool(mCorePoolSize, new ThreadFactory() {
+
+                int index = 0;
+
+                @Override
+                public Thread newThread(@NonNull final Runnable r) {
+                    String name = "ThreadPool#Thread-" + (index++);
+                    Thread thread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ThreadLocal<Looper> tl = new ReflectStaticFieldSmith<ThreadLocal<Looper>>(Looper.class, "sThreadLocal").getWithoutThrow();
+                            if (tl != null && tl.get() == null) {
+                                Log.d(TAG, "create a new Looper ThreadLocal variable.");
+                                tl.set(mHandlerThread.getLooper());
+                            } else {
+                                Log.d(TAG, "ThreadLocal Looper variable is null or has set.(%s)", tl);
+                            }
+                            r.run();
+                        }
+                    }, name);
+                    thread.setUncaughtExceptionHandler(sUncaughtExceptionHandler);
+                    Log.i(TAG, "newThread(thread : %s)", name);
+                    return thread;
+                }
+            });
+        }
+
+        private HandlerThread createHandlerThread() {
+            final HandlerThread handlerThread = new HandlerThread("ThreadPool#InnerWorkerThread-" + hashCode());
+            handlerThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+                @Override
+                public void uncaughtException(Thread t, Throwable e) {
+                    sUncaughtExceptionHandler.uncaughtException(t, e);
+                    Log.i(TAG, "uncaughtException occurred, create a new HandlerThread.");
+                    mHandlerThread = createHandlerThread();
+                }
+            });
+            handlerThread.start();
+            Log.i(TAG, "createHandlerThread(id : %d)", handlerThread.getThreadId());
+            return handlerThread;
+        }
+
+    }
+
+    private static class UncaughtExceptionHandlerImpl implements Thread.UncaughtExceptionHandler {
+
+        @Override
+        public void uncaughtException(Thread t, Throwable e) {
+            Log.e(TAG, "uncaughtException(thread : %d), %s", t.getId(), e);
+        }
     }
 }

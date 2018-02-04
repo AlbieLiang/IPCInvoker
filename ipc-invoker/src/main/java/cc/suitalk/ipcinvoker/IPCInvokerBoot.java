@@ -21,12 +21,15 @@ import android.app.Application;
 
 import junit.framework.Assert;
 
+import cc.suitalk.ipcinvoker.activate.ExecutorServiceCreator;
 import cc.suitalk.ipcinvoker.activate.IPCInvokerInitDelegate;
+import cc.suitalk.ipcinvoker.activate.IPCInvokerInitializer;
 import cc.suitalk.ipcinvoker.activate.TypeTransferInitializer;
 import cc.suitalk.ipcinvoker.annotation.NonNull;
 import cc.suitalk.ipcinvoker.extension.BaseTypeTransfer;
 import cc.suitalk.ipcinvoker.extension.ObjectTypeTransfer;
 import cc.suitalk.ipcinvoker.tools.Log;
+import cc.suitalk.ipcinvoker.tools.log.ILogPrinter;
 
 /**
  * Created by albieliang on 2017/7/8.
@@ -39,13 +42,30 @@ public class IPCInvokerBoot {
     public static void setup(@NonNull Application application, @NonNull IPCInvokerInitDelegate delegate) {
         Assert.assertNotNull(application);
         IPCInvokeLogic.setContext(application);
+        final IPCInvokerInitializer initializer = new IPCInvokerInitializer() {
+            @Override
+            public <T extends BaseIPCService> void addIPCService(String processName, Class<T> service) {
+                IPCBridgeManager.getImpl().addIPCService(processName, service);
+            }
+
+            @Override
+            public void setLogPrinter(ILogPrinter printer) {
+                Log.setLogPrinter(printer);
+            }
+
+            @Override
+            public void setExecutorServiceCreator(ExecutorServiceCreator creator) {
+                ThreadPool.setExecutorServiceCreator(creator);
+            }
+        };
+        delegate.onInitialize(initializer);
         delegate.onAddTypeTransfer(new TypeTransferInitializer() {
             @Override
             public void addTypeTransfer(@NonNull BaseTypeTransfer transfer) {
                 ObjectTypeTransfer.addTypeTransfer(transfer);
             }
         });
-        delegate.onAttachServiceInfo(IPCBridgeManager.getImpl());
+        delegate.onAttachServiceInfo(initializer);
         Log.i(TAG, "setup IPCInvoker(process : %s, application : %s)", IPCInvokeLogic.getCurrentProcessName(), application.hashCode());
     }
 

@@ -33,7 +33,7 @@ import cc.suitalk.arbitrarygen.extension.processoing.AbstractAGAnnotationProcess
 import cc.suitalk.arbitrarygen.protocol.EnvArgsConstants;
 import cc.suitalk.arbitrarygen.utils.Log;
 import cc.suitalk.arbitrarygen.utils.Util;
-import cc.suitalk.ipcinvoker.extension.annotation.IPCInvokeTaskManager;
+import cc.suitalk.ipcinvoker.extension.annotation.IPCInvokeTask;
 
 /**
  * Created by albieliang on 2017/11/14.
@@ -57,8 +57,8 @@ public class IPCInvokeTaskProcessor extends AbstractAGAnnotationProcessor {
 
     @Override
     public boolean process(AGContext context, JSONObject env, JavaFileObject javaFileObject, TypeDefineCodeBlock typeDefineCodeBlock, Set<? extends BaseStatement> set) {
-        if (typeDefineCodeBlock.getAnnotation(IPCInvokeTaskManager.class.getSimpleName()) == null) {
-            Log.i(TAG, "the TypeDefineCodeBlock do not contains 'IPCInvokeTaskManager' annotation.(%s)", javaFileObject.getFileName());
+        if (typeDefineCodeBlock.getAnnotation(IPCInvokeTask.class.getSimpleName()) == null) {
+            Log.i(TAG, "the TypeDefineCodeBlock do not contains 'IPCInvokeTask' annotation.(%s)", javaFileObject.getFileName());
             return false;
         }
         if (set.isEmpty()) {

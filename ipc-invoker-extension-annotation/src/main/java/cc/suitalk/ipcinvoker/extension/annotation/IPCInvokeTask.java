@@ -30,6 +30,6 @@ import java.lang.annotation.Target;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface IPCInvokeTaskManager {
-    String process();
+public @interface IPCInvokeTask {
+    String process() default "";
 }

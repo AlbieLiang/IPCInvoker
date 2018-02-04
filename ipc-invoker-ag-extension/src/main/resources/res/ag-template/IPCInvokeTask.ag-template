@@ -52,15 +52,16 @@ import cc.suitalk.ipcinvoker.extension.annotation.IPCSyncInvokeMethod;
 import <%=_import%>;
 <%}%>
 <%var _class = fileObject._class[0];%>
-<% for (var i = 0; i < _class.subClass.length; i++) {
-    var subClass = _class.subClass[i];
-    var _import = fileObject._package + "." + _class._name + "." + subClass._name;
-    if (subClass._modifier != "public" || !subClass._static || importedSet.indexOf(_import) >= 0) {
-        continue;
-    }
-    %>
+<% if (_class.subClass) {
+    for (var i = 0; i < _class.subClass.length; i++) {
+        var subClass = _class.subClass[i];
+        var _import = fileObject._package + "." + _class._name + "." + subClass._name;
+        if (subClass._modifier != "public" || !subClass._static || importedSet.indexOf(_import) >= 0) {
+            continue;
+        }%>
 import <%=_import%>;
-<% }%>
+   <%}
+}%>
 import cc.suitalk.ipcinvoker.tools.Log;
 
 /**
@@ -72,12 +73,19 @@ public class <%=_class._name%>$AG {
 
     private static final String TAG = "AG.<%=_class._name%>$AG";
 
-    public static final String PROCESS = "<%=_class._annotation.IPCInvokeTaskManager.process%>";
-
     public static final Class<?> TARGET_CLASS = <%=_class._name%>.class;
 
     private static final String KEY_INVOKE_METHOD = "__invoke_method";
+    <% var isMgr = _class._annotation.IPCInvokeTask.process && _class._annotation.IPCInvokeTask.process != "" && _class._annotation.IPCInvokeTask.process != null;%>
+    <% if (!isMgr) {%>
+    private String process;
 
+    public <%=_class._name%>$AG(String process) {
+        this.process = process;
+    }
+    <% } else { %>
+    private <%=isMgr ? "static " : "" %>String process = "<%=_class._annotation.IPCInvokeTask.process%>";
+    <% }%>
     <% for (var i = 0; i < methodSet.length; i++) {
         var method = methodSet[i];
         if (method._annotation.IPCAsyncInvokeMethod) {%>
@@ -115,7 +123,7 @@ public class <%=_class._name%>$AG {
                 }
             }
         }%>
-    <%=method._modifier%> static <%=method._final ? "final " : ""%><%=method._type%> <%=method._name%>(<%=argsStr%>) {
+    <%=method._modifier%> <%=isMgr ? "static " : "" %><%=method._final ? "final " : ""%><%=method._type%> <%=method._name%>(<%=argsStr%>) {
         Log.d(TAG, "<%=method._name%>(<%=logFormatStr%>)"<%=logArgsStr%>);
         Bundle bundle = new Bundle();
         bundle.putInt(KEY_INVOKE_METHOD, <%=method._annotation.IPCAsyncInvokeMethod ? "A" : ""%>SYNC_INVOKE_METHOD_<%=method._name%>);
@@ -144,9 +152,9 @@ public class <%=_class._name%>$AG {
             };
         }
         <% }%>
-        IPCInvoker.invokeAsync(PROCESS, bundle, IPCAsyncInvokeTaskImpl.class, __callback);
+        IPCInvoker.invokeAsync(getProcess(), bundle, IPCAsyncInvokeTaskImpl.class, __callback);
         <% } else {%>
-        Bundle result = IPCInvoker.invokeSync(PROCESS, bundle, IPCSyncInvokeTaskImpl.class);
+        Bundle result = IPCInvoker.invokeSync(getProcess(), bundle, IPCSyncInvokeTaskImpl.class);
         if (result == null) {
             // Get width fallback
             return null;
@@ -169,6 +177,10 @@ public class <%=_class._name%>$AG {
             }
         }
         return task;
+    }
+
+    private <%=isMgr ? "static " : "" %>String getProcess() {
+        return process;
     }
 
     @Singleton

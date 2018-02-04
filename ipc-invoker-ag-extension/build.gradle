@@ -11,7 +11,7 @@ def gitUrl = rootProject.ext.bintrayConfig["gitUrl"]   // Git仓库的url
 group = "cc.suitalk.tools"            // Maven Group ID for the artifact，
 
 // 这个version是library的版本，更新后也需要更改这个值
-version = rootProject.ext.bintrayConfig["version"]
+version = rootProject.ext.agExtensionConfig["version"]
 archivesBaseName = 'ipc-invoker-ag-extension'
 
 dependencies {
@@ -53,7 +53,7 @@ install {
             project {
                 packaging 'jar'
                 // Add your description here
-                name 'The gradle plugin for ArbitraryGen, ArbitraryGen is a multifunction code generator.'     //项目的描述 你可以多写一点
+                name 'A code generator gradle plugin for IPCInvoker, extends from ArbitraryGen.'
                 url siteUrl
                 // Set your license
                 licenses {

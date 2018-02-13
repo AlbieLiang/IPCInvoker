@@ -42,7 +42,7 @@ uploadArchives {
         //            authentication(userName: "admin", password: "admin")
         //        }
         // 如果没有私服的话，发布到本地也是ok的
-        repository(url: "file:${project.rootDir.getAbsolutePath()}/repositories/release")
+        repository(url: "file:${project.rootDir.getParentFile().getAbsolutePath()}/repositories/release")
     }
 }
 

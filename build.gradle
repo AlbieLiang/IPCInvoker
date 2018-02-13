@@ -24,11 +24,7 @@ buildscript {
         jcenter()
         if (rootProject.ext.buildConfig["debug"]) {
             maven {
-                url "file:${project.rootDir.getAbsolutePath()}/repositories/release"
-            }
-        } else {
-            maven {
-                url 'http://central.maven.org/maven2/'
+                url "file:${project.rootDir.getParentFile().getAbsolutePath()}/repositories/release"
             }
         }
     }
@@ -52,11 +48,7 @@ allprojects {
         jcenter()
         if (rootProject.ext.buildConfig["debug"]) {
             maven {
-                url "file:${project.rootDir.getAbsolutePath()}/repositories/release"
-            }
-        } else {
-            maven {
-                url 'http://central.maven.org/maven2/'
+                url "file:${project.rootDir.getParentFile().getAbsolutePath()}/repositories/release"
             }
         }
     }

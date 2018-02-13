@@ -15,14 +15,11 @@
  *
  */
 
-
-apply from : "config.gradle"
-
 buildscript {
     apply from : "config.gradle"
     repositories {
         jcenter()
-        if (rootProject.ext.buildConfig["debug"]) {
+        if (buildConfig.debug) {
             maven {
                 url "file:${project.rootDir.getParentFile().getAbsolutePath()}/repositories/release"
             }
@@ -44,9 +41,10 @@ buildscript {
 }
 
 allprojects {
+    apply from : "$rootDir/config.gradle"
     repositories {
         jcenter()
-        if (rootProject.ext.buildConfig["debug"]) {
+        if (buildConfig.debug) {
             maven {
                 url "file:${project.rootDir.getParentFile().getAbsolutePath()}/repositories/release"
             }

@@ -21,22 +21,20 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-def siteUrl = rootProject.ext.bintrayConfig["siteUrl"]   // 项目的主页
-def gitUrl = rootProject.ext.bintrayConfig["gitUrl"]   // Git仓库的url
 group = "cc.suitalk.tools"            // Maven Group ID for the artifact，
 
-version = rootProject.ext.bintrayConfig["version"]
+version = bintrayConfig.version
 archivesBaseName = 'ipc-invoker-extension'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion buildConfig.compileSdkVersion
+    buildToolsVersion buildConfig.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion buildConfig.minSdkVersion
+        targetSdkVersion buildConfig.targetSdkVersion
+        versionCode buildConfig.versionCode
+        versionName buildConfig.versionName
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -66,6 +64,39 @@ uploadArchives {
         repository(url: "file:${project.rootDir.getParentFile().getAbsolutePath()}/repositories/release")
     }
 }
+install {
+    repositories.mavenInstaller {
+        // This generates POM.xml with proper parameters
+        pom {
+            project {
+                packaging 'jar'
+                // Add your description here
+                name 'A code generator gradle plugin for IPCInvoker, extends from ArbitraryGen.'
+                url bintrayConfig.siteUrl
+                // Set your license
+                licenses {
+                    license {
+                        name bintrayConfig.licenseName
+                        url bintrayConfig.licenseUrl
+                    }
+                }
+                developers {
+                    developer {
+                        id bintrayConfig.developerId
+                        name bintrayConfig.developerName
+                        email bintrayConfig.developerEmail
+                    }
+                }
+                scm {
+                    connection bintrayConfig.gitUrl
+                    developerConnection bintrayConfig.gitUrl
+                    url bintrayConfig.siteUrl
+                }
+            }
+        }
+    }
+}
+
 //task copyDependencies(type: Copy) {
 //    from configurations.compile.collect {
 //        if (it.toString().contains("ipc-invoker-extension-annotation")) {
@@ -119,8 +150,8 @@ if (file.isFile()) {
         pkg {
             repo = "maven"          //这个应该是传到maven的仓库的
             name = archivesBaseName    //发布的项目名字
-            websiteUrl = siteUrl
-            vcsUrl = gitUrl
+            websiteUrl = bintrayConfig.siteUrl
+            vcsUrl = bintrayConfig.gitUrl
             licenses = ["Apache-2.0"]
             publish = true
         }

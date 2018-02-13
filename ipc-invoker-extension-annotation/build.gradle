@@ -23,21 +23,14 @@ apply plugin: 'application'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-def siteUrl = rootProject.ext.bintrayConfig["siteUrl"]   // 项目的主页
-def gitUrl = rootProject.ext.bintrayConfig["gitUrl"]   // Git仓库的url
 group = "cc.suitalk.tools"            // Maven Group ID for the artifact，
 
 // 这个version是library的版本，更新后也需要更改这个值
-version = rootProject.ext.bintrayConfig["version"]
+version = bintrayConfig.version
 archivesBaseName = 'ipc-invoker-extension-annotation'
 
 // For jar config
 mainClassName = ''
-//
-//compileJava {
-//    sourceCompatibility = '1.7'
-//    targetCompatibility = '1.7'
-//}
 
 jar {
     baseName = archivesBaseName
@@ -53,11 +46,6 @@ targetCompatibility = "1.7"
 
 uploadArchives {
     repositories.mavenDeployer {
-        // 如果你公司或者自己搭了nexus私服，那么可以将插件deploy到上面去
-        //        repository(url: "http://10.XXX.XXX.XXX:8080/nexus/content/repositories/releases/") {
-        //            authentication(userName: "admin", password: "admin")
-        //        }
-        // 如果没有私服的话，发布到本地也是ok的
         repository(url: "file:${project.rootDir.getParentFile().getAbsolutePath()}/repositories/release")
     }
 }
@@ -76,25 +64,25 @@ install {
                 packaging 'jar'
                 // Add your description here
                 name 'A ag-extension for IPCInvoker to generate code.'
-                url siteUrl
+                url bintrayConfig.siteUrl
                 // Set your license
                 licenses {
                     license {
-                        name rootProject.ext.bintrayConfig["license-name"]
-                        url rootProject.ext.bintrayConfig["license-url"]
+                        name bintrayConfig.licenseName
+                        url bintrayConfig.licenseUrl
                     }
                 }
                 developers {
                     developer {
-                        id rootProject.ext.bintrayConfig["developer-id"]
-                        name rootProject.ext.bintrayConfig["developer-name"]
-                        email rootProject.ext.bintrayConfig["developer-email"]
+                        id bintrayConfig.developerId
+                        name bintrayConfig.developerName
+                        email bintrayConfig.developerEmail
                     }
                 }
                 scm {
-                    connection gitUrl
-                    developerConnection gitUrl
-                    url siteUrl
+                    connection bintrayConfig.gitUrl
+                    developerConnection bintrayConfig.gitUrl
+                    url bintrayConfig.siteUrl
                 }
             }
         }
@@ -129,8 +117,8 @@ if (file.isFile()) {
         pkg {
             repo = "maven"          //这个应该是传到maven的仓库的
             name = archivesBaseName    //发布的项目名字
-            websiteUrl = siteUrl
-            vcsUrl = gitUrl
+            websiteUrl = bintrayConfig.siteUrl
+            vcsUrl = bintrayConfig.gitUrl
             licenses = ["Apache-2.0"]
             publish = true
         }

@@ -45,7 +45,8 @@ class ThreadPool {
     private static Thread.UncaughtExceptionHandler sUncaughtExceptionHandler = new UncaughtExceptionHandlerImpl();
 
     private Handler mHandler;
-    private ExecutorService mExecutorService;
+
+    ExecutorService mExecutorService;
 
     private static ThreadPool getImpl() {
         if (sThreadPool == null) {

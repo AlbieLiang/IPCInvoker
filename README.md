@@ -113,7 +113,7 @@ public class IPCInvokeSample_InvokeByType {
         Log.i(TAG, "invoke result : %s", result);
     }
 
-    private static class IPCRemoteInvoke_BuildString implements IPCRemoteSyncInvoke<Bundle, IPCString> {
+    private static class IPCRemoteInvoke_BuildString implements IPCSyncInvokeTask<Bundle, IPCString> {
 
         @Override
         public IPCString invoke(Bundle data) {
@@ -139,7 +139,7 @@ public class IPCInvokeSample_InvokeByType {
         Bundle bundle = new Bundle();
         bundle.putString("name", "AlbieLiang");
         bundle.putInt("pid", android.os.Process.myPid());
-        IPCInvoker.invokeAsync(PushProcessIPCService.PROCESS_NAME, bundle, IPCRemoteInvoke_PrintSomething.class, new IPCRemoteInvokeCallback<IPCString>() {
+        IPCInvoker.invokeAsync(PushProcessIPCService.PROCESS_NAME, bundle, IPCRemoteInvoke_PrintSomething.class, new IPCInvokeCallback<IPCString>() {
             @Override
             public void onCallback(IPCString data) {
                 Log.i(TAG, "onCallback : %s", data.value);
@@ -147,10 +147,10 @@ public class IPCInvokeSample_InvokeByType {
         });
     }
 
-    private static class IPCRemoteInvoke_PrintSomething implements IPCRemoteAsyncInvoke<Bundle, IPCString> {
+    private static class IPCRemoteInvoke_PrintSomething implements IPCAsyncInvokeTask<Bundle, IPCString> {
 
         @Override
-        public void invoke(Bundle data, IPCRemoteInvokeCallback<IPCString> callback) {
+        public void invoke(Bundle data, IPCInvokeCallback<IPCString> callback) {
             String result = String.format("name:%s|fromPid:%s|curPid:%s", data.getString("name"), data.getInt("pid"), android.os.Process.myPid());
             callback.onCallback(new IPCString(result));
         }

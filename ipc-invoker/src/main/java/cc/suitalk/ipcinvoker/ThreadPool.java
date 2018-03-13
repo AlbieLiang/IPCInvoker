@@ -22,8 +22,10 @@ import android.os.HandlerThread;
 import android.os.Looper;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import cc.suitalk.ipcinvoker.activate.ExecutorServiceCreator;
 import cc.suitalk.ipcinvoker.annotation.NonNull;
@@ -122,7 +124,7 @@ class ThreadPool {
 
         @Override
         public ExecutorService create() {
-            return Executors.newScheduledThreadPool(mCorePoolSize, new ThreadFactory() {
+            ThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(mCorePoolSize, new ThreadFactory() {
 
                 int index = 0;
 
@@ -147,6 +149,14 @@ class ThreadPool {
                     return thread;
                 }
             });
+            executor.setMaximumPoolSize((int) (mCorePoolSize * 1.5));
+            executor.setRejectedExecutionHandler(new RejectedExecutionHandler() {
+                @Override
+                public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                    Log.w(TAG, "on rejectedExecution(r : %s)", r);
+                }
+            });
+            return executor;
         }
 
         private HandlerThread createHandlerThread() {

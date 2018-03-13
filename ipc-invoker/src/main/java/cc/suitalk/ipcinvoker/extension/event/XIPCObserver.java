@@ -17,11 +17,11 @@
 
 package cc.suitalk.ipcinvoker.extension.event;
 
-import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
+import cc.suitalk.ipcinvoker.IPCInvokeCallback;
 
 /**
  * Created by albieliang on 2017/7/20.
  */
 
-public interface XIPCObserver<T> extends IPCRemoteInvokeCallback<T> {
+public interface XIPCObserver<T> extends IPCInvokeCallback<T> {
 }

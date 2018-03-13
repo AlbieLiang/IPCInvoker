@@ -44,23 +44,13 @@ public class IPCInvokeClient {
     }
 
     @AnyThread
-    public <T extends IPCAsyncInvokeTask> boolean invokeAsync(Bundle data, @NonNull Class<T> taskClass, final IPCInvokeCallback callback) {
-        return IPCInvoker.invokeAsync(mProcess, data, taskClass, callback);
-    }
-
-    @AnyThread
-    public <T extends IPCRemoteAsyncInvoke<InputType, ResultType>, InputType extends Parcelable, ResultType extends Parcelable>
-            boolean invokeAsync(InputType data, @NonNull Class<T> taskClass, final IPCRemoteInvokeCallback<ResultType> callback) {
+    public <T extends IPCAsyncInvokeTask<InputType, ResultType>, InputType extends Parcelable, ResultType extends Parcelable>
+            boolean invokeAsync(InputType data, @NonNull Class<T> taskClass, final IPCInvokeCallback<ResultType> callback) {
         return IPCInvoker.invokeAsync(mProcess, data, taskClass, callback);
     }
 
     @WorkerThread
-    public <T extends IPCSyncInvokeTask> Bundle invokeSync(Bundle data, @NonNull Class<T> taskClass) {
-        return IPCInvoker.invokeSync(mProcess, data, taskClass);
-    }
-
-    @WorkerThread
-    public <T extends IPCRemoteSyncInvoke<InputType, ResultType>, InputType extends Parcelable, ResultType extends Parcelable>
+    public <T extends IPCSyncInvokeTask<InputType, ResultType>, InputType extends Parcelable, ResultType extends Parcelable>
             ResultType invokeSync(InputType data, @NonNull Class<T> taskClass) {
         return IPCInvoker.invokeSync(mProcess, data, taskClass);
     }
@@ -93,10 +83,10 @@ public class IPCInvokeClient {
         return "Token#IPCObserver#" + o.hashCode();
     }
 
-    private static class IPCInvokeTask_RegisterIPCObserver implements IPCRemoteAsyncInvoke<Bundle, Bundle> {
+    private static class IPCInvokeTask_RegisterIPCObserver implements IPCAsyncInvokeTask<Bundle, Bundle> {
 
         @Override
-        public void invoke(Bundle data, final IPCRemoteInvokeCallback<Bundle> callback) {
+        public void invoke(Bundle data, final IPCInvokeCallback<Bundle> callback) {
             final String token = data.getString(TOKEN);
             final String event = data.getString(EVENT);
             IPCEventBus.getImpl().registerIPCObserver(event, new IPCObserverProxy(token) {
@@ -108,10 +98,10 @@ public class IPCInvokeClient {
         }
     }
 
-    private static class IPCInvokeTask_UnregisterIPCObserver implements IPCRemoteAsyncInvoke<Bundle, Bundle> {
+    private static class IPCInvokeTask_UnregisterIPCObserver implements IPCAsyncInvokeTask<Bundle, Bundle> {
 
         @Override
-        public void invoke(Bundle data, final IPCRemoteInvokeCallback callback) {
+        public void invoke(Bundle data, final IPCInvokeCallback callback) {
             final String token = data.getString(TOKEN);
             final String event = data.getString(EVENT);
             IPCEventBus.getImpl().unregisterIPCObserver(event, new IPCObserverProxy(token) {

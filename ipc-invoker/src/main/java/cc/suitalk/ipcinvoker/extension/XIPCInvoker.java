@@ -20,10 +20,10 @@ package cc.suitalk.ipcinvoker.extension;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import cc.suitalk.ipcinvoker.IPCInvokeCallback;
 import cc.suitalk.ipcinvoker.IPCInvoker;
-import cc.suitalk.ipcinvoker.IPCRemoteAsyncInvoke;
-import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
-import cc.suitalk.ipcinvoker.IPCRemoteSyncInvoke;
+import cc.suitalk.ipcinvoker.IPCAsyncInvokeTask;
+import cc.suitalk.ipcinvoker.IPCSyncInvokeTask;
 import cc.suitalk.ipcinvoker.ObjectStore;
 import cc.suitalk.ipcinvoker.annotation.AnyThread;
 import cc.suitalk.ipcinvoker.annotation.NonNull;
@@ -45,15 +45,15 @@ public class XIPCInvoker {
      * @param data         data for remote process invoked, it must be a {@link Parcelable}
      * @param taskClass    remote invoke logic task class
      * @param callback     callback on current process after IPC invoked finished and initiative callback.
-     * @param <T>          the class implements {@link IPCRemoteAsyncInvoke} interface
+     * @param <T>          the class implements {@link IPCAsyncInvokeTask} interface
      * @param <InputType>  the class extends {@link Parcelable}
      * @param <ResultType> the class extends {@link Parcelable}
      */
     @AnyThread
-    public static <T extends IPCRemoteAsyncInvoke<InputType, ResultType>, InputType, ResultType>
-            void invokeAsync(final String process, final InputType data, @NonNull final Class<T> taskClass, final IPCRemoteInvokeCallback<ResultType> callback) {
+    public static <T extends IPCAsyncInvokeTask<InputType, ResultType>, InputType, ResultType>
+            void invokeAsync(final String process, final InputType data, @NonNull final Class<T> taskClass, final IPCInvokeCallback<ResultType> callback) {
         IPCInvoker.invokeAsync(process, new WrapperParcelable(taskClass.getName(), data),
-                IPCAsyncInvokeTaskProxy.class, new IPCRemoteInvokeCallback<WrapperParcelable>() {
+                IPCAsyncInvokeTaskProxy.class, new IPCInvokeCallback<WrapperParcelable>() {
                     @Override
                     public void onCallback(WrapperParcelable data) {
                         if (callback != null) {
@@ -76,13 +76,13 @@ public class XIPCInvoker {
      * @param process      remote service process name
      * @param data         data for remote process invoked, it must be a {@link Parcelable}
      * @param taskClass    remote invoke logic task class
-     * @param <T>          the class implements {@link IPCRemoteSyncInvoke} interface
+     * @param <T>          the class implements {@link IPCSyncInvokeTask} interface
      * @param <InputType>  the class extends {@link Parcelable}
      * @param <ResultType> the class extends {@link Parcelable}
      * @return the cross-process invoke result.
      */
     @WorkerThread
-    public static <T extends IPCRemoteSyncInvoke<InputType, ResultType>, InputType, ResultType>
+    public static <T extends IPCSyncInvokeTask<InputType, ResultType>, InputType, ResultType>
             ResultType invokeSync(String process, InputType data, @NonNull Class<T> taskClass) {
         WrapperParcelable parcelable = IPCInvoker.invokeSync(process, new WrapperParcelable(taskClass.getName(), data), IPCSyncInvokeTaskProxy.class);
         if (parcelable == null) {
@@ -92,7 +92,7 @@ public class XIPCInvoker {
         return (ResultType) parcelable.getTarget();
     }
 
-    private static class IPCSyncInvokeTaskProxy implements IPCRemoteSyncInvoke<WrapperParcelable, WrapperParcelable> {
+    private static class IPCSyncInvokeTaskProxy implements IPCSyncInvokeTask<WrapperParcelable, WrapperParcelable> {
 
         @Override
         public WrapperParcelable invoke(WrapperParcelable data) {
@@ -102,7 +102,7 @@ public class XIPCInvoker {
                 Log.e(TAG, "proxy SyncInvoke failed, class is null or nil.");
                 return new WrapperParcelable(null, null);
             }
-            IPCRemoteSyncInvoke task = ObjectStore.get(clazz, IPCRemoteSyncInvoke.class);
+            IPCSyncInvokeTask task = ObjectStore.get(clazz, IPCSyncInvokeTask.class);
             if (task == null) {
                 Log.w(TAG, "proxy SyncInvoke failed, newInstance(%s) return null.", clazz);
                 return new WrapperParcelable(null, null);
@@ -111,24 +111,24 @@ public class XIPCInvoker {
         }
     }
 
-    private static class IPCAsyncInvokeTaskProxy implements IPCRemoteAsyncInvoke<WrapperParcelable, WrapperParcelable> {
+    private static class IPCAsyncInvokeTaskProxy implements IPCAsyncInvokeTask<WrapperParcelable, WrapperParcelable> {
 
         private static final String TAG = "IPC.IPCAsyncInvokeTaskProxy";
 
         @Override
-        public void invoke(WrapperParcelable data, final IPCRemoteInvokeCallback<WrapperParcelable> callback) {
+        public void invoke(WrapperParcelable data, final IPCInvokeCallback<WrapperParcelable> callback) {
             Object remoteData = data.getTarget();
             String clazz = data.getTaskClass();
             if (clazz == null || clazz.length() == 0) {
                 Log.e(TAG, "proxy AsyncInvoke failed, class is null or nil.");
                 return;
             }
-            IPCRemoteAsyncInvoke task = ObjectStore.get(clazz, IPCRemoteAsyncInvoke.class);
+            IPCAsyncInvokeTask task = ObjectStore.get(clazz, IPCAsyncInvokeTask.class);
             if (task == null) {
                 Log.w(TAG, "proxy AsyncInvoke failed, newInstance(%s) return null.", clazz);
                 return;
             }
-            task.invoke(remoteData, new IPCRemoteInvokeCallback() {
+            task.invoke(remoteData, new IPCInvokeCallback() {
                 @Override
                 public void onCallback(Object data) {
                     if (callback != null) {

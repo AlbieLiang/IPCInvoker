@@ -26,7 +26,7 @@ import cc.suitalk.ipcinvoker.tools.Log;
  * 
  * @author AlbieLiang
  *
- * @param <FieldType>
+ * @param <FieldType> field type
  */
 public class ReflectStaticFieldSmith<FieldType> {
 	

@@ -95,11 +95,11 @@ public class InnerClassCodeBuilder {
                     new NormalStatement(String.format("final int %s = ParameterHelper.get(__data, \"%s\");", value, value)));
         }
         plainCodeBlock.addStatement(new NormalStatement("final CustomIPCTask __task = getTarget();"));
-        plainCodeBlock.addStatement(new NormalStatement("IPCRemoteInvokeCallback __callbackProxy = null;"));
+        plainCodeBlock.addStatement(new NormalStatement("IPCInvokeCallback<Bundle> __callbackProxy = null;"));
         // TODO: 2017/11/13 albieliang
         boolean needCallback = false;
         plainCodeBlock.addStatement(new NormalStatement(String.format("if (__callback != null) {\n" +
-                "        __callbackProxy = new IPCRemoteInvokeCallback<ResultData>() {\n" +
+                "        __callbackProxy = new IPCInvokeCallback<ResultData>() {\n" +
                 "            @Override\n" +
                 "            public void onCallback(ResultData data) {\n" +
                 "                Bundle result = new Bundle();\n" +

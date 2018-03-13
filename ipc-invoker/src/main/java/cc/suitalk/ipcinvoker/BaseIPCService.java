@@ -21,6 +21,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.os.Process;
 import android.os.RemoteException;
 
@@ -37,6 +38,9 @@ public abstract class BaseIPCService extends Service {
 
     private static final String TAG = "IPC.BaseIPCService";
 
+    protected static final String INNER_KEY_REMOTE_TASK_DATA = "__remote_task_data";
+    protected static final String INNER_KEY_REMOTE_TASK_RESULT_DATA = "__remote_task_result_data";
+
     private volatile boolean mNeedKillSelf;
 
     private volatile boolean mHasConnectting;
@@ -49,27 +53,29 @@ public abstract class BaseIPCService extends Service {
                 Log.e(TAG, "invokeAsync failed, class is null or nil.");
                 return;
             }
+            if (data == null) {
+                Log.e(TAG, "invokeAsync failed, data is null.");
+                return;
+            }
+            data.setClassLoader(BaseIPCService.class.getClassLoader());
+            final Parcelable remoteData = data.getParcelable(INNER_KEY_REMOTE_TASK_DATA);
             IPCAsyncInvokeTask task = ObjectStore.get(clazz, IPCAsyncInvokeTask.class);
             if (task == null) {
                 Log.e(TAG, "invokeAsync failed, can not newInstance by class %s.", clazz);
                 return;
             }
             final IPCAsyncInvokeTask finalTask = task;
-            if (data != null) {
-                data.setClassLoader(BaseIPCService.class.getClassLoader());
-            }
             ThreadPool.post(new Runnable() {
                 @Override
                 public void run() {
-                    finalTask.invoke(data, new IPCInvokeCallback() {
+                    finalTask.invoke(remoteData, new IPCInvokeCallback<Parcelable>() {
                         @Override
-                        public void onCallback(Bundle data) {
+                        public void onCallback(Parcelable data) {
                             if (callback != null) {
                                 try {
-                                    if (data != null) {
-                                        data.setClassLoader(BaseIPCService.class.getClassLoader());
-                                    }
-                                    callback.onCallback(data);
+                                    Bundle resData = new Bundle();
+                                    resData.putParcelable(INNER_KEY_REMOTE_TASK_RESULT_DATA, data);
+                                    callback.onCallback(resData);
                                 } catch (RemoteException e) {
                                     Log.e(TAG, "%s", e);
                                 }
@@ -84,18 +90,23 @@ public abstract class BaseIPCService extends Service {
         @Override
         public Bundle invokeSync(Bundle data, String clazz) throws RemoteException {
             if (clazz == null || clazz.length() == 0) {
-                Log.e(TAG, "invokeAsync failed, class is null or nil.");
+                Log.e(TAG, "invokeSync failed, class is null or nil.");
                 return null;
             }
-            IPCSyncInvokeTask task = ObjectStore.get(clazz, IPCSyncInvokeTask.class);
+            if (data == null) {
+                Log.e(TAG, "invokeSync failed, data is null.");
+                return null;
+            }
+            IPCSyncInvokeTask<Parcelable, Parcelable> task = ObjectStore.get(clazz, IPCSyncInvokeTask.class);
             if (task == null) {
                 Log.e(TAG, "invokeSync failed, can not newInstance by class %s.", clazz);
                 return null;
             }
-            if (data != null) {
-                data.setClassLoader(BaseIPCService.class.getClassLoader());
-            }
-            return task.invoke(data);
+            data.setClassLoader(BaseIPCService.class.getClassLoader());
+            final Parcelable remoteData = data.getParcelable(INNER_KEY_REMOTE_TASK_DATA);
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(INNER_KEY_REMOTE_TASK_RESULT_DATA, task.invoke(remoteData));
+            return bundle;
         }
     };
 

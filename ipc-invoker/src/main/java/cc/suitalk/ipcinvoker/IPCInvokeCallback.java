@@ -17,13 +17,10 @@
 
 package cc.suitalk.ipcinvoker;
 
-import android.os.Bundle;
-
 /**
- * Created by albieliang on 2017/5/15.
+ * Created by albieliang on 2017/5/28.
  */
 
-public interface IPCInvokeCallback {
-
-    void onCallback(Bundle data);
+public interface IPCInvokeCallback<T> {
+    void onCallback(T data);
 }

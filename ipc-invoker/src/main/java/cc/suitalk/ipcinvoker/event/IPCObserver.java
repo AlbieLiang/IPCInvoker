@@ -19,11 +19,11 @@ package cc.suitalk.ipcinvoker.event;
 
 import android.os.Bundle;
 
-import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
+import cc.suitalk.ipcinvoker.IPCInvokeCallback;
 
 /**
  * Created by albieliang on 2017/6/18.
  */
 
-public interface IPCObserver extends IPCRemoteInvokeCallback<Bundle> {
+public interface IPCObserver extends IPCInvokeCallback<Bundle> {
 }

@@ -17,13 +17,10 @@
 
 package cc.suitalk.ipcinvoker;
 
-import android.os.Bundle;
-
 /**
- * Created by albieliang on 2017/5/13.
+ * Created by albieliang on 2017/5/28.
  */
 
-public interface IPCSyncInvokeTask {
-
-    Bundle invoke(Bundle data);
+public interface IPCSyncInvokeTask<InputType, ResultType> {
+    ResultType invoke(InputType data);
 }

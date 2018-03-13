@@ -20,9 +20,8 @@ package <%=fileObject._package%>;
 import android.os.Bundle;
 
 import cc.suitalk.ipcinvoker.IPCAsyncInvokeTask;
-import cc.suitalk.ipcinvoker.IPCInvokeCallback;
 import cc.suitalk.ipcinvoker.IPCInvoker;
-import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
+import cc.suitalk.ipcinvoker.IPCInvokeCallback;
 import cc.suitalk.ipcinvoker.IPCSyncInvokeTask;
 import cc.suitalk.ipcinvoker.ObjectStore;
 import cc.suitalk.ipcinvoker.annotation.Singleton;
@@ -32,9 +31,8 @@ import cc.suitalk.ipcinvoker.extension.annotation.IPCAsyncInvokeMethod;
 import cc.suitalk.ipcinvoker.extension.annotation.IPCSyncInvokeMethod;
 <% var importedSet = ["android.os.Bundle",
                       "cc.suitalk.ipcinvoker.IPCAsyncInvokeTask",
-                      "cc.suitalk.ipcinvoker.IPCInvokeCallback",
                       "cc.suitalk.ipcinvoker.IPCInvoker",
-                      "cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback",
+                      "cc.suitalk.ipcinvoker.IPCInvokeCallback",
                       "cc.suitalk.ipcinvoker.IPCSyncInvokeTask",
                       "cc.suitalk.ipcinvoker.ObjectStore",
                       "cc.suitalk.ipcinvoker.annotation.Singleton",
@@ -137,10 +135,10 @@ public class <%=_class._name%>$AG {
            if (method._annotation.IPCAsyncInvokeMethod) {
         %>
         // Callback
-        IPCInvokeCallback __callback = null;
+        IPCInvokeCallback<Bundle> __callback = null;
         <% if (callbackArg) {%>
         if (<%=callbackArg._name%> != null) {
-            __callback = new IPCInvokeCallback() {
+            __callback = new IPCInvokeCallback<Bundle>() {
 
                 @Override
                 public void onCallback(Bundle data) {
@@ -184,10 +182,10 @@ public class <%=_class._name%>$AG {
     }
 
     @Singleton
-    private static final class IPCAsyncInvokeTaskImpl implements IPCAsyncInvokeTask {
+    private static final class IPCAsyncInvokeTaskImpl implements IPCAsyncInvokeTask<Bundle, Bundle> {
 
         @Override
-        public void invoke(Bundle __data, final IPCInvokeCallback __callback) {
+        public void invoke(Bundle __data, final IPCInvokeCallback<Bundle> __callback) {
             int invokeMethod = __data.getInt(KEY_INVOKE_METHOD);
             switch (invokeMethod) {
                 <% for (var i = 0; i < methodSet.length; i++) {
@@ -222,9 +220,9 @@ public class <%=_class._name%>$AG {
                     final <%=_class._name%> __task = getTarget();
                     <% if (hasCallback) {%>
                     // Create callback proxy
-                    IPCRemoteInvokeCallback __callbackProxy = null;
+                    IPCInvokeCallback __callbackProxy = null;
                     if (__callback != null) {
-                        __callbackProxy = new IPCRemoteInvokeCallback() {
+                        __callbackProxy = new IPCInvokeCallback() {
                             @Override
                             public void onCallback(Object data) {
                                 Bundle result = new Bundle();
@@ -244,7 +242,7 @@ public class <%=_class._name%>$AG {
     }
 
     @Singleton
-    private static final class IPCSyncInvokeTaskImpl implements IPCSyncInvokeTask {
+    private static final class IPCSyncInvokeTaskImpl implements IPCSyncInvokeTask<Bundle, Bundle> {
 
         @Override
         public Bundle invoke(Bundle __data) {

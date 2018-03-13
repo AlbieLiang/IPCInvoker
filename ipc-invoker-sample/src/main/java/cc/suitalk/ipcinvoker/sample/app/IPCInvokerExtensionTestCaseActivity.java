@@ -24,7 +24,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
+import cc.suitalk.ipcinvoker.IPCInvokeCallback;
 import cc.suitalk.ipcinvoker.sample.R;
 import cc.suitalk.ipcinvoker.sample.app.model.ThreadPool;
 import cc.suitalk.ipcinvoker.sample.extension.IPCTask$AG;
@@ -86,7 +86,7 @@ public class IPCInvokerExtensionTestCaseActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String key = putKeyEt.getText().toString();
                 String value = putValueEt.getText().toString();
-                IPCTask$AG.setValue(key, value, new IPCRemoteInvokeCallback<Bundle>() {
+                IPCTask$AG.setValue(key, value, new IPCInvokeCallback<Bundle>() {
                     @Override
                     public void onCallback(final Bundle data) {
                         Log.i(TAG, "onCallback(%s)", data);

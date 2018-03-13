@@ -20,7 +20,7 @@ package cc.suitalk.ipcinvoker.sample.sync;
 import android.os.Bundle;
 
 import cc.suitalk.ipcinvoker.IPCInvoker;
-import cc.suitalk.ipcinvoker.IPCRemoteSyncInvoke;
+import cc.suitalk.ipcinvoker.IPCSyncInvokeTask;
 import cc.suitalk.ipcinvoker.sample.service.PushProcessIPCService;
 import cc.suitalk.ipcinvoker.tools.Log;
 import cc.suitalk.ipcinvoker.type.IPCString;
@@ -41,7 +41,7 @@ public class IPCInvokeSample_InvokeByType {
         Log.i(TAG, "invoke result : %s", result);
     }
 
-    private static class IPCRemoteInvoke_BuildString implements IPCRemoteSyncInvoke<Bundle, IPCString> {
+    private static class IPCRemoteInvoke_BuildString implements IPCSyncInvokeTask<Bundle, IPCString> {
 
         @Override
         public IPCString invoke(Bundle data) {

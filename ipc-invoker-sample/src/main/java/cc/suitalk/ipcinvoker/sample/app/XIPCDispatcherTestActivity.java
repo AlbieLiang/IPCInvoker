@@ -25,8 +25,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import cc.suitalk.ipcinvoker.IPCInvokeLogic;
-import cc.suitalk.ipcinvoker.IPCRemoteAsyncInvoke;
-import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
+import cc.suitalk.ipcinvoker.IPCAsyncInvokeTask;
+import cc.suitalk.ipcinvoker.IPCInvokeCallback;
 import cc.suitalk.ipcinvoker.annotation.Singleton;
 import cc.suitalk.ipcinvoker.extension.event.XIPCDispatcher;
 import cc.suitalk.ipcinvoker.extension.event.XIPCObserver;
@@ -93,10 +93,10 @@ public class XIPCDispatcherTestActivity extends AppCompatActivity {
     }
 
     @Singleton
-    private static class IPCInvokeTask_PublishEvent implements IPCRemoteAsyncInvoke<Bundle, Bundle> {
+    private static class IPCInvokeTask_PublishEvent implements IPCAsyncInvokeTask<Bundle, Bundle> {
 
         @Override
-        public void invoke(Bundle data, IPCRemoteInvokeCallback<Bundle> callback) {
+        public void invoke(Bundle data, IPCInvokeCallback<Bundle> callback) {
             XIPCDispatcherImpl dispatcher = new XIPCDispatcherImpl();
             IPCString event = new IPCString();
             event.value = String.format("current process name : %s, task : %s, pid : %s, time : %s",

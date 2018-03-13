@@ -17,7 +17,7 @@
 
 package cc.suitalk.ipcinvoker.sample.extension;
 
-import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
+import cc.suitalk.ipcinvoker.IPCInvokeCallback;
 import cc.suitalk.ipcinvoker.extension.annotation.IPCAsyncInvokeCallback;
 import cc.suitalk.ipcinvoker.extension.annotation.IPCAsyncInvokeMethod;
 import cc.suitalk.ipcinvoker.extension.annotation.IPCInvokeTask;
@@ -38,7 +38,7 @@ public class CustomIPCTask {
     }
 
     @IPCAsyncInvokeMethod
-    public void showLoading(int id, String name, InputData data, @IPCAsyncInvokeCallback IPCRemoteInvokeCallback<ResultData> callback) {
+    public void showLoading(int id, String name, InputData data, @IPCAsyncInvokeCallback IPCInvokeCallback<ResultData> callback) {
         Log.i(TAG, "invokeAsync(id : %s, data : %s, name : %s)", id, data, name);
     }
 

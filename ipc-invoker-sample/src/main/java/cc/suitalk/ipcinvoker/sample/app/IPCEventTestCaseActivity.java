@@ -25,7 +25,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import cc.suitalk.ipcinvoker.IPCInvokeLogic;
-import cc.suitalk.ipcinvoker.IPCRemoteSyncInvoke;
+import cc.suitalk.ipcinvoker.IPCSyncInvokeTask;
 import cc.suitalk.ipcinvoker.ThreadCaller;
 import cc.suitalk.ipcinvoker.event.IPCObserver;
 import cc.suitalk.ipcinvoker.sample.IPCSampleData;
@@ -130,7 +130,7 @@ public class IPCEventTestCaseActivity extends AppCompatActivity {
 
     }
 
-    private static class IPCInvokeTask_PublishEvent implements IPCRemoteSyncInvoke<Bundle, Bundle> {
+    private static class IPCInvokeTask_PublishEvent implements IPCSyncInvokeTask<Bundle, Bundle> {
 
         @Override
         public Bundle invoke(Bundle data) {

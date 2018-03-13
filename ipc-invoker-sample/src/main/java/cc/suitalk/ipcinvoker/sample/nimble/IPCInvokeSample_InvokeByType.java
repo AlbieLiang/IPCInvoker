@@ -17,8 +17,8 @@
 
 package cc.suitalk.ipcinvoker.sample.nimble;
 
-import cc.suitalk.ipcinvoker.IPCRemoteAsyncInvoke;
-import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
+import cc.suitalk.ipcinvoker.IPCAsyncInvokeTask;
+import cc.suitalk.ipcinvoker.IPCInvokeCallback;
 import cc.suitalk.ipcinvoker.extension.XIPCInvoker;
 import cc.suitalk.ipcinvoker.sample.service.PushProcessIPCService;
 import cc.suitalk.ipcinvoker.tools.Log;
@@ -36,7 +36,7 @@ public class IPCInvokeSample_InvokeByType {
         TestType data = new TestType();
         data.key = "wx-developer";
         data.value = "AlbieLiang";
-        XIPCInvoker.invokeAsync(PushProcessIPCService.PROCESS_NAME, data, IPCRemoteInvoke_PrintSomething.class, new IPCRemoteInvokeCallback<IPCString>() {
+        XIPCInvoker.invokeAsync(PushProcessIPCService.PROCESS_NAME, data, IPCRemoteInvoke_PrintSomething.class, new IPCInvokeCallback<IPCString>() {
 
             @Override
             public void onCallback(IPCString data) {
@@ -45,10 +45,10 @@ public class IPCInvokeSample_InvokeByType {
         });
     }
 
-    private static class IPCRemoteInvoke_PrintSomething implements IPCRemoteAsyncInvoke<TestType, IPCString> {
+    private static class IPCRemoteInvoke_PrintSomething implements IPCAsyncInvokeTask<TestType, IPCString> {
 
         @Override
-        public void invoke(TestType data, IPCRemoteInvokeCallback<IPCString> callback) {
+        public void invoke(TestType data, IPCInvokeCallback<IPCString> callback) {
             callback.onCallback(new IPCString(data.key + ":" + data.value));
         }
     }

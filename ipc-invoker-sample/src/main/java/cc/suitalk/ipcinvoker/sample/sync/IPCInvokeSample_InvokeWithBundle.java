@@ -44,7 +44,7 @@ public class IPCInvokeSample_InvokeWithBundle {
         Log.i(TAG, "invoke result : %s", data.result);
     }
 
-    private static class IPCInvokeTask_doSomething implements IPCSyncInvokeTask {
+    private static class IPCInvokeTask_doSomething implements IPCSyncInvokeTask<Bundle, Bundle> {
         @Override
         public Bundle invoke(Bundle data) {
             String name = data.getString("name");

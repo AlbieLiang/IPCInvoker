@@ -17,11 +17,9 @@
 
 package cc.suitalk.ipcinvoker.sample.async;
 
-import android.os.Bundle;
-
+import cc.suitalk.ipcinvoker.IPCAsyncInvokeTask;
+import cc.suitalk.ipcinvoker.IPCInvokeCallback;
 import cc.suitalk.ipcinvoker.IPCInvoker;
-import cc.suitalk.ipcinvoker.IPCRemoteAsyncInvoke;
-import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
 import cc.suitalk.ipcinvoker.sample.service.PushProcessIPCService;
 import cc.suitalk.ipcinvoker.tools.Log;
 import cc.suitalk.ipcinvoker.type.IPCLong;
@@ -37,16 +35,16 @@ public class IPCInvokeSample_InvokeAsync {
     public static void invokeAsync() {
         IPCLong data = new IPCLong(System.nanoTime());
         IPCInvoker.invokeAsync(PushProcessIPCService.PROCESS_NAME, data,
-                IPCRemoteInvoke_PrintSomething.class, new IPCRemoteInvokeCallback<IPCString>() {
+                IPCRemoteInvoke_PrintSomething.class, new IPCInvokeCallback<IPCString>() {
             @Override
             public void onCallback(IPCString data) {
                 Log.i(TAG, "onCallback : %s", data.value);
             }
         });
     }
-    private static class IPCRemoteInvoke_PrintSomething implements IPCRemoteAsyncInvoke<IPCLong, IPCString> {
+    private static class IPCRemoteInvoke_PrintSomething implements IPCAsyncInvokeTask<IPCLong, IPCString> {
         @Override
-        public void invoke(IPCLong data, IPCRemoteInvokeCallback<IPCString> callback) {
+        public void invoke(IPCLong data, IPCInvokeCallback<IPCString> callback) {
             String result = String.format("data:%s|curPid:%s", data, android.os.Process.myPid());
             callback.onCallback(new IPCString(result));
         }

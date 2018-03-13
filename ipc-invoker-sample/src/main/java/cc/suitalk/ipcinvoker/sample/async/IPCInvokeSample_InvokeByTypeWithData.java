@@ -20,9 +20,9 @@ package cc.suitalk.ipcinvoker.sample.async;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import cc.suitalk.ipcinvoker.IPCAsyncInvokeTask;
+import cc.suitalk.ipcinvoker.IPCInvokeCallback;
 import cc.suitalk.ipcinvoker.IPCInvoker;
-import cc.suitalk.ipcinvoker.IPCRemoteAsyncInvoke;
-import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
 import cc.suitalk.ipcinvoker.sample.IPCSampleData;
 import cc.suitalk.ipcinvoker.sample.service.MainProcessIPCService;
 import cc.suitalk.ipcinvoker.tools.Log;
@@ -39,7 +39,7 @@ public class IPCInvokeSample_InvokeByTypeWithData {
         IPCRemoteInvoke_PrintWithData o = new IPCRemoteInvoke_PrintWithData();
         o.name = "AlbieLiang";
         o.pid = android.os.Process.myPid();
-        IPCInvoker.invokeAsync(MainProcessIPCService.PROCESS_NAME, o, IPCRemoteInvoke_PrintWithData.class, new IPCRemoteInvokeCallback<IPCSampleData>() {
+        IPCInvoker.invokeAsync(MainProcessIPCService.PROCESS_NAME, o, IPCRemoteInvoke_PrintWithData.class, new IPCInvokeCallback<IPCSampleData>() {
             @Override
             public void onCallback(IPCSampleData data) {
                 Log.i(TAG, "onCallback : %s", data.result);
@@ -48,13 +48,13 @@ public class IPCInvokeSample_InvokeByTypeWithData {
     }
 
 
-    private static class IPCRemoteInvoke_PrintWithData implements IPCRemoteAsyncInvoke<IPCRemoteInvoke_PrintWithData, IPCSampleData>, Parcelable {
+    private static class IPCRemoteInvoke_PrintWithData implements IPCAsyncInvokeTask<IPCRemoteInvoke_PrintWithData, IPCSampleData>, Parcelable {
 
         private String name;
         private int pid;
 
         @Override
-        public void invoke(IPCRemoteInvoke_PrintWithData data, IPCRemoteInvokeCallback<IPCSampleData> callback) {
+        public void invoke(IPCRemoteInvoke_PrintWithData data, IPCInvokeCallback<IPCSampleData> callback) {
             IPCSampleData result = new IPCSampleData();
             result.result = String.format("name:%s|fromPid:%s|curPid:%s", data.name, data.pid, android.os.Process.myPid());
             callback.onCallback(result);

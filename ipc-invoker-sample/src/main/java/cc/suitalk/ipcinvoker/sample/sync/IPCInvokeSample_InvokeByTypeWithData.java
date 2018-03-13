@@ -21,7 +21,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import cc.suitalk.ipcinvoker.IPCInvoker;
-import cc.suitalk.ipcinvoker.IPCRemoteSyncInvoke;
+import cc.suitalk.ipcinvoker.IPCSyncInvokeTask;
 import cc.suitalk.ipcinvoker.sample.IPCSampleData;
 import cc.suitalk.ipcinvoker.sample.service.MainProcessIPCService;
 import cc.suitalk.ipcinvoker.tools.Log;
@@ -43,7 +43,7 @@ public class IPCInvokeSample_InvokeByTypeWithData {
         Log.i(TAG, "invoke result : %s", result);
     }
 
-    private static class IPCRemoteInvoke_BuildStringWithData implements IPCRemoteSyncInvoke<IPCRemoteInvoke_BuildStringWithData, IPCSampleData>, Parcelable {
+    private static class IPCRemoteInvoke_BuildStringWithData implements IPCSyncInvokeTask<IPCRemoteInvoke_BuildStringWithData, IPCSampleData>, Parcelable {
 
         private String name;
         private int pid;

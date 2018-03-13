@@ -25,7 +25,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import cc.suitalk.ipcinvoker.IPCInvoker;
-import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
+import cc.suitalk.ipcinvoker.IPCInvokeCallback;
 import cc.suitalk.ipcinvoker.sample.R;
 import cc.suitalk.ipcinvoker.sample.app.ipctask.IPCInvokeTask_GetValue;
 import cc.suitalk.ipcinvoker.sample.app.ipctask.IPCInvokeTask_PutValue;
@@ -100,7 +100,7 @@ public class BaseSampleActivity extends AppCompatActivity {
                 putValue.key = key;
                 putValue.value = value;
 
-                IPCInvoker.invokeAsync(remoteProcessName, putValue, IPCInvokeTask_PutValue.class, new IPCRemoteInvokeCallback<Bundle>() {
+                IPCInvoker.invokeAsync(remoteProcessName, putValue, IPCInvokeTask_PutValue.class, new IPCInvokeCallback<Bundle>() {
                     @Override
                     public void onCallback(final Bundle data) {
                         runOnUiThread(new Runnable() {

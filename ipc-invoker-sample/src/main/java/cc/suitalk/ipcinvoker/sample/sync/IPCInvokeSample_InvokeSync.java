@@ -18,7 +18,7 @@
 package cc.suitalk.ipcinvoker.sample.sync;
 
 import cc.suitalk.ipcinvoker.IPCInvoker;
-import cc.suitalk.ipcinvoker.IPCRemoteSyncInvoke;
+import cc.suitalk.ipcinvoker.IPCSyncInvokeTask;
 import cc.suitalk.ipcinvoker.sample.service.PushProcessIPCService;
 import cc.suitalk.ipcinvoker.tools.Log;
 import cc.suitalk.ipcinvoker.type.IPCLong;
@@ -36,7 +36,7 @@ public class IPCInvokeSample_InvokeSync {
                 new IPCLong(System.nanoTime()), IPCRemoteInvoke_BuildString.class);
         Log.i(TAG, "invoke result : %s", result);
     }
-    private static class IPCRemoteInvoke_BuildString implements IPCRemoteSyncInvoke<IPCLong, IPCString> {
+    private static class IPCRemoteInvoke_BuildString implements IPCSyncInvokeTask<IPCLong, IPCString> {
         @Override
         public IPCString invoke(IPCLong data) {
             String msg = String.format("data:%s|curPid:%s", data, android.os.Process.myPid());

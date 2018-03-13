@@ -20,7 +20,7 @@ package cc.suitalk.ipcinvoker.sample.extension;
 import android.os.Bundle;
 
 import cc.suitalk.ipcinvoker.IPCInvokeLogic;
-import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
+import cc.suitalk.ipcinvoker.IPCInvokeCallback;
 import cc.suitalk.ipcinvoker.annotation.Singleton;
 import cc.suitalk.ipcinvoker.extension.annotation.IPCAsyncInvokeCallback;
 import cc.suitalk.ipcinvoker.extension.annotation.IPCAsyncInvokeMethod;
@@ -43,12 +43,12 @@ public class IPCTask {
     }
 
     @IPCAsyncInvokeMethod
-    public void showLoading(@IPCAsyncInvokeCallback IPCRemoteInvokeCallback<ResultData> callback, InputData data) {
+    public void showLoading(@IPCAsyncInvokeCallback IPCInvokeCallback<ResultData> callback, InputData data) {
         Log.i(TAG, "invokeAsync(data : %s)", data);
     }
 
     @IPCAsyncInvokeMethod
-    public void setValue(String key, String value, @IPCAsyncInvokeCallback IPCRemoteInvokeCallback<Bundle> callback) {
+    public void setValue(String key, String value, @IPCAsyncInvokeCallback IPCInvokeCallback<Bundle> callback) {
         Log.d(TAG, "setValue(key : %s, value : %s)", key, value);
         DataCenter.getImpl().putString(key, value);
         Bundle result = new Bundle();

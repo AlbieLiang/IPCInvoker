@@ -22,7 +22,6 @@ import android.os.Bundle;
 import cc.suitalk.ipcinvoker.IPCAsyncInvokeTask;
 import cc.suitalk.ipcinvoker.IPCInvokeCallback;
 import cc.suitalk.ipcinvoker.IPCInvoker;
-import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
 import cc.suitalk.ipcinvoker.IPCSyncInvokeTask;
 import cc.suitalk.ipcinvoker.ObjectStore;
 import cc.suitalk.ipcinvoker.annotation.Singleton;
@@ -79,7 +78,7 @@ public class CustomIPCTask$AG {
     }
 
     @IPCAsyncInvokeMethod
-    public static void showLoading(final int id, final String name, final InputData data, final IPCRemoteInvokeCallback<ResultData> callback) {
+    public static void showLoading(final int id, final String name, final InputData data, final IPCInvokeCallback<ResultData> callback) {
         Log.d(TAG, "showLoading(id : %s, name : %s, data : %s, callback : %s)", id, name, data, callback);
         Bundle bundle = new Bundle();
         bundle.putInt(KEY_INVOKE_METHOD, ASYNC_INVOKE_METHOD_showLoading);
@@ -89,10 +88,10 @@ public class CustomIPCTask$AG {
         ParameterHelper.put(bundle, "name", name);
         ParameterHelper.put(bundle, "data", data);
         // Callback
-        IPCInvokeCallback __callback = null;
+        IPCInvokeCallback<Bundle> __callback = null;
 
         if (callback != null) {
-            __callback = new IPCInvokeCallback() {
+            __callback = new IPCInvokeCallback<Bundle>() {
 
                 @Override
                 public void onCallback(Bundle data) {
@@ -140,10 +139,10 @@ public class CustomIPCTask$AG {
     }
 
     @Singleton
-    private static final class IPCAsyncInvokeTaskImpl implements IPCAsyncInvokeTask {
+    private static final class IPCAsyncInvokeTaskImpl implements IPCAsyncInvokeTask<Bundle, Bundle> {
 
         @Override
-        public void invoke(Bundle __data, final IPCInvokeCallback __callback) {
+        public void invoke(Bundle __data, final IPCInvokeCallback<Bundle> __callback) {
             int invokeMethod = __data.getInt(KEY_INVOKE_METHOD);
             switch (invokeMethod) {
 
@@ -157,9 +156,9 @@ public class CustomIPCTask$AG {
                     final CustomIPCTask __task = getTarget();
 
                     // Create callback proxy
-                    IPCRemoteInvokeCallback __callbackProxy = null;
+                    IPCInvokeCallback __callbackProxy = null;
                     if (__callback != null) {
-                        __callbackProxy = new IPCRemoteInvokeCallback() {
+                        __callbackProxy = new IPCInvokeCallback() {
                             @Override
                             public void onCallback(Object data) {
                                 Bundle result = new Bundle();
@@ -191,7 +190,7 @@ public class CustomIPCTask$AG {
     }
 
     @Singleton
-    private static final class IPCSyncInvokeTaskImpl implements IPCSyncInvokeTask {
+    private static final class IPCSyncInvokeTaskImpl implements IPCSyncInvokeTask<Bundle, Bundle> {
 
         @Override
         public Bundle invoke(Bundle __data) {

@@ -22,8 +22,6 @@ import android.os.Bundle;
 import cc.suitalk.ipcinvoker.IPCAsyncInvokeTask;
 import cc.suitalk.ipcinvoker.IPCInvokeCallback;
 import cc.suitalk.ipcinvoker.IPCInvoker;
-import cc.suitalk.ipcinvoker.IPCRemoteInvokeCallback;
-import cc.suitalk.ipcinvoker.sample.IPCSampleData;
 import cc.suitalk.ipcinvoker.sample.service.MainProcessIPCService;
 import cc.suitalk.ipcinvoker.tools.Log;
 
@@ -42,7 +40,7 @@ public class IPCInvokeSample_InvokeWithBundle {
         bundle.putString("name", "AlbieLiang");
         bundle.putInt("pid", android.os.Process.myPid());
         bundle.putInt("version", 0);
-        IPCInvoker.invokeAsync(MainProcessIPCService.PROCESS_NAME, bundle, IPCInvokeTask_doSomething.class, new IPCInvokeCallback() {
+        IPCInvoker.invokeAsync(MainProcessIPCService.PROCESS_NAME, bundle, IPCInvokeTask_doSomething.class, new IPCInvokeCallback<Bundle>() {
             @Override
             public void onCallback(Bundle data) {
                 Log.i(TAG, "onCallback : %s", data.getString(INNER_KEY_RESULT));
@@ -51,10 +49,10 @@ public class IPCInvokeSample_InvokeWithBundle {
         });
     }
 
-    private static class IPCInvokeTask_doSomething implements IPCAsyncInvokeTask {
+    private static class IPCInvokeTask_doSomething implements IPCAsyncInvokeTask<Bundle, Bundle> {
 
         @Override
-        public void invoke(Bundle data, IPCInvokeCallback callback) {
+        public void invoke(Bundle data, IPCInvokeCallback<Bundle> callback) {
             String name = data.getString("name");
             int pid = data.getInt("type");
             Bundle bundle = new Bundle();
@@ -62,5 +60,4 @@ public class IPCInvokeSample_InvokeWithBundle {
             callback.onCallback(bundle);
         }
     }
-
 }

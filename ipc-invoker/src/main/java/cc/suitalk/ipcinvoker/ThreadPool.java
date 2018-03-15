@@ -89,8 +89,14 @@ class ThreadPool {
             }
         });
         handlerThread.start();
-        Log.i(TAG, "createHandlerThread(id : %d)", handlerThread.getThreadId());
-        return new Handler(handlerThread.getLooper());
+        Handler handler = new Handler(handlerThread.getLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Log.i(TAG, "createHandlerThread(id : %d)", handlerThread.getThreadId());
+            }
+        });
+        return handler;
     }
     
     public static boolean post(Runnable run) {
@@ -170,7 +176,7 @@ class ThreadPool {
                 }
             });
             handlerThread.start();
-            Log.i(TAG, "createHandlerThread(id : %d)", handlerThread.getThreadId());
+            Log.i(TAG, "createHandlerThread(hash : %d)", handlerThread.hashCode());
             return handlerThread;
         }
 

@@ -28,6 +28,7 @@ import android.os.RemoteException;
 import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeBridge;
 import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeCallback;
 import cc.suitalk.ipcinvoker.annotation.Nullable;
+import cc.suitalk.ipcinvoker.recycle.ObjectRecycler;
 import cc.suitalk.ipcinvoker.tools.Log;
 
 /**
@@ -40,6 +41,7 @@ public abstract class BaseIPCService extends Service {
 
     protected static final String INNER_KEY_REMOTE_TASK_DATA = "__remote_task_data";
     protected static final String INNER_KEY_REMOTE_TASK_RESULT_DATA = "__remote_task_result_data";
+    protected static final String INNER_KEY_COMMAND_RELEASE_REF = "__command_release_ref";
 
     private volatile boolean mNeedKillSelf;
 
@@ -68,20 +70,7 @@ public abstract class BaseIPCService extends Service {
             ThreadPool.post(new Runnable() {
                 @Override
                 public void run() {
-                    finalTask.invoke(remoteData, new IPCInvokeCallback<Parcelable>() {
-                        @Override
-                        public void onCallback(Parcelable data) {
-                            if (callback != null) {
-                                try {
-                                    Bundle resData = new Bundle();
-                                    resData.putParcelable(INNER_KEY_REMOTE_TASK_RESULT_DATA, data);
-                                    callback.onCallback(resData);
-                                } catch (RemoteException e) {
-                                    Log.e(TAG, "%s", e);
-                                }
-                            }
-                        }
-                    });
+                    finalTask.invoke(remoteData, new IPCInvokeCallbackProxy(callback));
                 }
             });
             return;
@@ -164,5 +153,79 @@ public abstract class BaseIPCService extends Service {
                 Process.killProcess(Process.myPid());
             }
         }, 2 * 1000);
+    }
+
+    private static class IPCInvokeCallbackProxy implements IPCInvokeCallback<Bundle> {
+
+        private static final String TAG = "IPC.IPCInvokeCallbackProxy";
+
+        AIDL_IPCInvokeCallback callback;
+
+        public IPCInvokeCallbackProxy(AIDL_IPCInvokeCallback callback) {
+            this.callback = callback;
+            if (callback != null) {
+                Log.i(TAG, "keep ref of callback(%s)", callback.hashCode());
+                ObjectRecycler.keepRef(callback);
+            }
+        }
+
+        @Override
+        public void onCallback(Bundle data) {
+            if (callback == null) {
+                return;
+            }
+            Log.i(TAG, "onCallback(%s)", callback.hashCode());
+            try {
+                Bundle resData = new Bundle();
+                resData.putParcelable(INNER_KEY_REMOTE_TASK_RESULT_DATA, data);
+                callback.onCallback(resData);
+            } catch (RemoteException e) {
+                Log.e(TAG, "%s", android.util.Log.getStackTraceString(e));
+            }
+        }
+
+        @Override
+        protected void finalize() throws Throwable {
+            try {
+                // TODO: 2018/3/14 Delete
+                Log.i(TAG, "finalize(%s)", hashCode());
+                if (callback != null) {
+                    Log.i(TAG, "finalize, release callback(%s)", callback.hashCode());
+                    ThreadPool.post(new ReleaseRefRunnable(callback));
+                    callback = null;
+                }
+            } finally {
+                super.finalize();
+            }
+        }
+
+        private static class ReleaseRefRunnable implements Runnable {
+
+            private static final Bundle sReleaseRef = new Bundle();
+
+            static {
+                sReleaseRef.putBoolean(INNER_KEY_COMMAND_RELEASE_REF, true);
+            }
+
+            AIDL_IPCInvokeCallback callback;
+
+            ReleaseRefRunnable(AIDL_IPCInvokeCallback callback) {
+                this.callback = callback;
+            }
+
+            @Override
+            public void run() {
+                try {
+                    Log.i(TAG, "notify release ref of callback(%s).", callback.hashCode());
+                    callback.onCallback(sReleaseRef);
+                    ObjectRecycler.releaseRef(callback);
+                    callback = null;
+                } catch (RemoteException e) {
+                    Log.e(TAG, "notify release ref error, %s", android.util.Log.getStackTraceString(e));
+                } catch (Exception e) {
+                    Log.e(TAG, "notify release ref error, %s\n %s", e.getMessage(), android.util.Log.getStackTraceString(e));
+                }
+            }
+        }
     }
 }

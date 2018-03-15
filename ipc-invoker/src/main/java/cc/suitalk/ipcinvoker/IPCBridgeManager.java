@@ -25,6 +25,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.RemoteException;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,6 +37,8 @@ import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeBridge;
 import cc.suitalk.ipcinvoker.annotation.NonNull;
 import cc.suitalk.ipcinvoker.annotation.WorkerThread;
 import cc.suitalk.ipcinvoker.exception.RemoteServiceNotConnectedException;
+import cc.suitalk.ipcinvoker.recycle.DeathRecipientImpl;
+import cc.suitalk.ipcinvoker.recycle.ObjectRecycler;
 import cc.suitalk.ipcinvoker.tools.Log;
 
 /**
@@ -121,6 +124,11 @@ class IPCBridgeManager {
                     } else {
                         Log.i(TAG, "onServiceConnected(%s)", bw.hashCode());
                         bw.bridge = AIDL_IPCInvokeBridge.Stub.asInterface(service);
+                        try {
+                            service.linkToDeath(new DeathRecipientImpl(process), 0);
+                        } catch (RemoteException e) {
+                            Log.e(TAG, "binder register linkToDeath listener error, %s", android.util.Log.getStackTraceString(e));
+                        }
                     }
                     if (bw.connectTimeoutRunnable != null) {
                         mHandler.removeCallbacks(bw.connectTimeoutRunnable);
@@ -136,6 +144,7 @@ class IPCBridgeManager {
                 public void onServiceDisconnected(ComponentName name) {
                     Log.i(TAG, "onServiceDisconnected(%s, tid : %s)", bw.hashCode(), Thread.currentThread().getId());
                     releaseIPCBridge(process);
+                    ObjectRecycler.recycleAll(process);
                 }
             };
             try {

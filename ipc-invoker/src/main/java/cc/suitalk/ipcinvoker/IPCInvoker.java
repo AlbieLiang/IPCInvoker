@@ -26,6 +26,8 @@ import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeCallback;
 import cc.suitalk.ipcinvoker.annotation.AnyThread;
 import cc.suitalk.ipcinvoker.annotation.NonNull;
 import cc.suitalk.ipcinvoker.annotation.WorkerThread;
+import cc.suitalk.ipcinvoker.recycle.ObjectRecycler;
+import cc.suitalk.ipcinvoker.recycle.Recyclable;
 import cc.suitalk.ipcinvoker.tools.Log;
 
 /**
@@ -79,17 +81,7 @@ public class IPCInvoker {
                 try {
                     AIDL_IPCInvokeCallback invokeCallback = null;
                     if (callback != null) {
-                        invokeCallback = new AIDL_IPCInvokeCallback.Stub() {
-                            @Override
-                            public void onCallback(Bundle data) throws RemoteException {
-                                if (data == null) {
-                                    callback.onCallback(null);
-                                    return;
-                                }
-                                data.setClassLoader(IPCInvoker.class.getClassLoader());
-                                callback.onCallback((ResultType) data.getParcelable(BaseIPCService.INNER_KEY_REMOTE_TASK_RESULT_DATA));
-                            }
-                        };
+                        invokeCallback = new IPCInvokeCallbackWrapper(process, callback);
                     }
                     bridge.invokeAsync(buildBundle(data, taskClass), taskClass.getName(), invokeCallback);
                     return;
@@ -156,4 +148,54 @@ public class IPCInvoker {
 //        bundle.putString(BaseIPCService.INNER_KEY_REMOTE_TASK_CLASS, taskClass.getName());
         return bundle;
     }
+
+    private static class IPCInvokeCallbackWrapper extends AIDL_IPCInvokeCallback.Stub implements Recyclable {
+
+        private static final String TAG = "IPC.IPCInvokeCallbackWrapper";
+
+        String mProcess;
+        IPCInvokeCallback mCallback;
+
+        IPCInvokeCallbackWrapper(@NonNull String process, @NonNull IPCInvokeCallback callback) {
+            this.mCallback = callback;
+            this.mProcess = process;
+            ObjectRecycler.addIntoSet(process, this);
+            Log.i(TAG, "keep ref of callback(%s)", callback.hashCode());
+        }
+
+        @Override
+        public void onCallback(Bundle data) throws RemoteException {
+            final IPCInvokeCallback callback = this.mCallback;
+            if (callback == null) {
+                Log.w(TAG, "callback failed, ref has been release");
+                return;
+            }
+            if (data == null) {
+                callback.onCallback(null);
+                return;
+            }
+            data.setClassLoader(IPCInvoker.class.getClassLoader());
+            boolean releaseRef = data.getBoolean(BaseIPCService.INNER_KEY_COMMAND_RELEASE_REF);
+            if (releaseRef) {
+                Log.i(TAG, "release ref of callback(%s)", callback.hashCode());
+                recycle();
+                return;
+            }
+            callback.onCallback(data.getParcelable(BaseIPCService.INNER_KEY_REMOTE_TASK_RESULT_DATA));
+        }
+
+        @Override
+        public void recycle() {
+            mCallback = null;
+            ObjectRecycler.removeFromSet(mProcess, this);
+        }
+
+        @Override
+        protected void finalize() throws Throwable {
+            recycle();
+            Log.i(TAG, "finalize(%s)", hashCode());
+            super.finalize();
+        }
+    }
+
 }

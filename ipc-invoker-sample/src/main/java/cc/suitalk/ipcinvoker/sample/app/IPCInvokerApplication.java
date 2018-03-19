@@ -19,15 +19,21 @@ package cc.suitalk.ipcinvoker.sample.app;
 
 import android.app.Application;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+
 import cc.suitalk.ipcinvoker.IPCInvokerBoot;
 import cc.suitalk.ipcinvoker.activate.DefaultInitDelegate;
+import cc.suitalk.ipcinvoker.activate.ExecutorServiceCreator;
 import cc.suitalk.ipcinvoker.activate.IPCInvokerInitializer;
 import cc.suitalk.ipcinvoker.activate.TypeTransferInitializer;
 import cc.suitalk.ipcinvoker.sample.nimble.TestTypeTransfer;
 import cc.suitalk.ipcinvoker.sample.service.PushProcessIPCService;
 import cc.suitalk.ipcinvoker.sample.service.MainProcessIPCService;
 import cc.suitalk.ipcinvoker.sample.service.SupportProcessIPCService;
+import cc.suitalk.ipcinvoker.tools.DefaultLogPrinter;
 import cc.suitalk.ipcinvoker.tools.Log;
+import cc.suitalk.ipcinvoker.tools.log.ILogPrinter;
 
 /**
  * Created by albieliang on 2017/5/28.
@@ -36,6 +42,8 @@ import cc.suitalk.ipcinvoker.tools.Log;
 public class IPCInvokerApplication extends Application {
 
     private static final String TAG = "IPCInvokerSample.IPCInvokerApplication";
+
+    private static final ILogPrinter sLogPrinter = new DefaultLogPrinter();
 
     @Override
     public void onCreate() {
@@ -49,6 +57,18 @@ public class IPCInvokerApplication extends Application {
         });
         // Initialize IPCInvoker
         IPCInvokerBoot.setup(this, new DefaultInitDelegate() {
+
+            @Override
+            public void onInitialize(IPCInvokerInitializer initializer) {
+                initializer.setLogPrinter(sLogPrinter);
+                initializer.setExecutorServiceCreator(new ExecutorServiceCreator() {
+                    @Override
+                    public ExecutorService create() {
+                        return new ScheduledThreadPoolExecutor(5);
+                    }
+                });
+            }
+
             @Override
             public void onAttachServiceInfo(IPCInvokerInitializer initializer) {
                 initializer.addIPCService(MainProcessIPCService.PROCESS_NAME, MainProcessIPCService.class);

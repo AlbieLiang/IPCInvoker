@@ -155,7 +155,7 @@ public abstract class BaseIPCService extends Service {
         }, 2 * 1000);
     }
 
-    private static class IPCInvokeCallbackProxy implements IPCInvokeCallback<Bundle> {
+    private static class IPCInvokeCallbackProxy implements IPCInvokeCallback<Parcelable> {
 
         private static final String TAG = "IPC.IPCInvokeCallbackProxy";
 
@@ -170,7 +170,7 @@ public abstract class BaseIPCService extends Service {
         }
 
         @Override
-        public void onCallback(Bundle data) {
+        public void onCallback(Parcelable data) {
             if (callback == null) {
                 return;
             }

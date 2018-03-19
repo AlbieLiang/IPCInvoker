@@ -123,7 +123,7 @@ public class InvokeAsyncSample {
 }
 ```
 
-上述示例中IPCString和IPCInteger是IPCInvoker里面提供的String的Parcelable的包装类，IPCInvoker支持的跨进程调用的数据必须是可序列化的Parcelable。
+上述示例中IPCString和IPCInteger是IPCInvoker里面提供的Parcelable的包装类，IPCInvoker支持的跨进程调用的数据必须是可序列化的Parcelable。
 
 IPCInvoker支持自定义实现的Parcelable类作为跨进程调用的数据结构，同时也支持非Parcelable的扩展类型数据，详细请参考[XIPCInvoker扩展系列接口](https://github.com/AlbieLiang/IPCInvoker/wiki/XIPCInvoker%E6%89%A9%E5%B1%95%E7%B3%BB%E5%88%97%E6%8E%A5%E5%8F%A3)
 

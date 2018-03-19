@@ -1,8 +1,8 @@
 # IPCInvoker
 
 [![license](http://img.shields.io/badge/license-Apache2.0-brightgreen.svg?style=flat)](https://github.com/AlbieLiang/IPCInvoker/blob/master/LICENSE)
-[![Release Version](https://img.shields.io/badge/release-1.1.7-red.svg)](https://github.com/AlbieLiang/IPCInvoker/releases)
-[![wiki](https://img.shields.io/badge/wiki-1.1.7-red.svg)](https://github.com/AlbieLiang/IPCInvoker/wiki) 
+[![Release Version](https://img.shields.io/badge/release-1.1.8-red.svg)](https://github.com/AlbieLiang/IPCInvoker/releases)
+[![wiki](https://img.shields.io/badge/wiki-1.1.8-red.svg)](https://github.com/AlbieLiang/IPCInvoker/wiki) 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/AlbieLiang/IPCInvoker/pulls)
 
 
@@ -18,10 +18,9 @@ IPCInvoker组件库已经提交到jcenter上了，可以直接dependencies中配
 
 ```gradle
 dependencies {
-    compile 'cc.suitalk.android:ipc-invoker:1.1.7'
+    compile 'cc.suitalk.android:ipc-invoker:1.1.8'
 }
 ```
-
 
 ## 在项目中使用
 
@@ -47,23 +46,7 @@ public class PushProcessIPCService extends BaseIPCService {
 在manifest.xml中配置service
 
 ```xml
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cc.suitalk.ipcinvoker.sample">
-
-    <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <service
-            android:name=".service.PushProcessIPCService"
-            android:process=":push"
-            android:exported="false"/>
-    </application>
-</manifest>
-
+<service android:name="cc.suitalk.ipcinvoker.sample.service.PushProcessIPCService" android:process=":push"/>
 ```
 
 ### 在项目的Application中setup IPCInvoker
@@ -71,7 +54,6 @@ public class PushProcessIPCService extends BaseIPCService {
 这里需要在你的项目所有需要支持跨进程调用的进程中调用`IPCInvoker.setup(Application, IPCInvokerInitDelegate)`方法，并在传入的IPCInvokerInitDelegate接口实现中将该进程需要支持访问的其它进程相应的Service的class添加到IPCInvoker当中，示例如下：
 
 ```java
-
 public class IPCInvokerApplication extends Application {
 
     @Override
@@ -79,17 +61,10 @@ public class IPCInvokerApplication extends Application {
         super.onCreate();
         // Initialize IPCInvoker
         IPCInvokerBoot.setup(this, new DefaultInitDelegate() {
+            
             @Override
             public void onAttachServiceInfo(IPCInvokerInitializer initializer) {
-//              initializer.addIPCService(MainProcessIPCService.PROCESS_NAME, MainProcessIPCService.class);
-//              initializer.addIPCService(SupportProcessIPCService.PROCESS_NAME, SupportProcessIPCService.class);
                 initializer.addIPCService(PushProcessIPCService.PROCESS_NAME, PushProcessIPCService.class);
-            }
-
-            @Override
-            public void onAddTypeTransfer(TypeTransferInitializer initializer) {
-                super.onAddTypeTransfer(initializer);
-                initializer.addTypeTransfer(new TestTypeTransfer());
             }
         });
     }
@@ -100,65 +75,55 @@ public class IPCInvokerApplication extends Application {
 #### 通过IPCInvoker同步调用跨进程逻辑
 
 ```java
+public class InvokeSyncSample {
 
-public class IPCInvokeSample_InvokeByType {
-
-    private static final String TAG = "IPCInvokerSample.IPCInvokeSample_InvokeByType";
+    private static final String TAG = "InvokeSyncSample";
 
     public static void invokeSync() {
-        Bundle bundle = new Bundle();
-        bundle.putString("name", "AlbieLiang");
-        bundle.putInt("pid", android.os.Process.myPid());
-        IPCString result = IPCInvoker.invokeSync(PushProcessIPCService.PROCESS_NAME, bundle, IPCRemoteInvoke_BuildString.class);
+        IPCInteger result = IPCInvoker.invokeSync(
+                PushProcessIPCService.PROCESS_NAME, new IPCString("Albie"), HashCode.class);
         Log.i(TAG, "invoke result : %s", result);
     }
 
-    private static class IPCRemoteInvoke_BuildString implements IPCSyncInvokeTask<Bundle, IPCString> {
+    private static class HashCode implements IPCSyncInvokeTask<IPCString, IPCInteger> {
 
         @Override
-        public IPCString invoke(Bundle data) {
-            String msg = String.format("name:%s|fromPid:%s|curPid:%s", data.getString("name"), data.getInt("pid"), android.os.Process.myPid());
-            Log.i(TAG, "build String : %s", msg);
-            return new IPCString(msg);
+        public IPCInteger invoke(IPCString data) {
+            return new IPCInteger(data.hashCode());
         }
     }
 }
-
 ```
 
 
 #### 通过IPCInvoker异步调用跨进程逻辑
 
 ```java
+public class InvokeAsyncSample {
 
-public class IPCInvokeSample_InvokeByType {
-
-    private static final String TAG = "IPCInvokerSample.IPCInvokeSample_InvokeByType";
+    private static final String TAG = "InvokeAsyncSample";
 
     public static void invokeAsync() {
-        Bundle bundle = new Bundle();
-        bundle.putString("name", "AlbieLiang");
-        bundle.putInt("pid", android.os.Process.myPid());
-        IPCInvoker.invokeAsync(PushProcessIPCService.PROCESS_NAME, bundle, IPCRemoteInvoke_PrintSomething.class, new IPCInvokeCallback<IPCString>() {
+        IPCInvoker.invokeAsync(PushProcessIPCService.PROCESS_NAME,
+                new IPCString("Albie"), HashCode.class, new IPCInvokeCallback<IPCInteger>() {
             @Override
-            public void onCallback(IPCString data) {
-                Log.i(TAG, "onCallback : %s", data.value);
+            public void onCallback(IPCInteger data) {
+                Log.i(TAG, "onCallback : hascode : %d", data.value);
             }
         });
     }
 
-    private static class IPCRemoteInvoke_PrintSomething implements IPCAsyncInvokeTask<Bundle, IPCString> {
+    private static class HashCode implements IPCAsyncInvokeTask<IPCString, IPCInteger> {
 
         @Override
-        public void invoke(Bundle data, IPCInvokeCallback<IPCString> callback) {
-            String result = String.format("name:%s|fromPid:%s|curPid:%s", data.getString("name"), data.getInt("pid"), android.os.Process.myPid());
-            callback.onCallback(new IPCString(result));
+        public void invoke(IPCString data, IPCInvokeCallback<IPCInteger> callback) {
+            callback.onCallback(new IPCInteger(data.hashCode()));
         }
     }
 }
 ```
 
-上述示例中IPCString是IPCInvoker里面提供的String的Parcelable的包装类，IPCInvoker支持的跨进程调用的数据必须是可序列化的Parcelable（默认支持Bundle）。
+上述示例中IPCString和IPCInteger是IPCInvoker里面提供的String的Parcelable的包装类，IPCInvoker支持的跨进程调用的数据必须是可序列化的Parcelable。
 
 IPCInvoker支持自定义实现的Parcelable类作为跨进程调用的数据结构，同时也支持非Parcelable的扩展类型数据，详细请参考[XIPCInvoker扩展系列接口](https://github.com/AlbieLiang/IPCInvoker/wiki/XIPCInvoker%E6%89%A9%E5%B1%95%E7%B3%BB%E5%88%97%E6%8E%A5%E5%8F%A3)
 

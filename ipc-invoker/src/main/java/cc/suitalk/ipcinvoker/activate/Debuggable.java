@@ -17,22 +17,10 @@
 
 package cc.suitalk.ipcinvoker.activate;
 
-import cc.suitalk.ipcinvoker.BaseIPCService;
-import cc.suitalk.ipcinvoker.tools.log.ILogPrinter;
-
 /**
- * Created by albieliang on 2017/5/28.
+ * Created by albieliang on 2018/4/2.
  */
 
-public interface IPCInvokerInitializer {
-
-    <T extends BaseIPCService> void addIPCService(String processName, Class<T> service);
-
-    void setLogPrinter(ILogPrinter printer);
-
-    void setExecutorServiceCreator(ExecutorServiceCreator creator);
-
-    void setThreadCreator(ThreadCreator creator);
-
-    void setDebugger(Debuggable debugger);
+public interface Debuggable {
+    boolean isDebug();
 }

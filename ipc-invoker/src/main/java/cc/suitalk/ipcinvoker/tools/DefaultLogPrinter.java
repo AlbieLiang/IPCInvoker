@@ -17,7 +17,7 @@
 
 package cc.suitalk.ipcinvoker.tools;
 
-import cc.suitalk.ipcinvoker.BuildConfig;
+import cc.suitalk.ipcinvoker.Debugger;
 import cc.suitalk.ipcinvoker.tools.log.ILogPrinter;
 import cc.suitalk.ipcinvoker.tools.log.ILogWriter;
 
@@ -52,7 +52,7 @@ public class DefaultLogPrinter implements ILogPrinter {
     @Override
     public int getPriority() {
         int priority = Log.VERBOSE;
-        if (!BuildConfig.DEBUG) {
+        if (!Debugger.isDebug()) {
             priority = Log.INFO;
         }
         return priority;

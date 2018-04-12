@@ -48,7 +48,7 @@ public class ThreadCaller {
     }
 
     private ThreadCaller() {
-        mHandlerThread = new HandlerThread("ThreadCaller#Worker-" + hashCode());
+        mHandlerThread = ThreadPool.sThreadCreator.createHandlerThread("ThreadCaller#Worker-" + hashCode());
         mHandlerThread.start();
         mHandler = new Handler(mHandlerThread.getLooper());
         mUiThreadHandler = new Handler(Looper.getMainLooper());

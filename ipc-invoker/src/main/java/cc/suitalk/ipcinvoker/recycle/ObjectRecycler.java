@@ -17,10 +17,10 @@
 
 package cc.suitalk.ipcinvoker.recycle;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import cc.suitalk.ipcinvoker.tools.Log;
 
@@ -33,7 +33,7 @@ public class ObjectRecycler {
     private static final String TAG = "IPC.ObjectRecycler";
 
     private static final Set<Object> sObjectSet = new HashSet<>();
-    private static final Map<String, Set<Recyclable>> sMap = new ConcurrentHashMap<>();
+    private static final Map<String, Set<Recyclable>> sMap = new HashMap<>();
 
     public static void keepRef(Object o) {
         sObjectSet.add(o);
@@ -47,40 +47,55 @@ public class ObjectRecycler {
         if (setId == null || setId.length() == 0 || o == null) {
             return false;
         }
-        Set<Recyclable> set = sMap.get(setId);
-        if (set == null) {
-            set = new HashSet<>();
-            sMap.put(setId, set);
+        Set<Recyclable> set;
+        synchronized (sMap) {
+            set = sMap.get(setId);
+            if (set == null) {
+                set = new HashSet<>();
+                sMap.put(setId, set);
+            }
         }
-        Log.i(TAG, "addIntoSet(%s, %s)", setId, set.hashCode());
-        return set.add(o);
+        Log.i(TAG, "addIntoSet(%s)", setId);
+        synchronized (set) {
+            return set.add(o);
+        }
     }
 
     public static boolean removeFromSet(String setId, Recyclable o) {
         if (setId == null || setId.length() == 0 || o == null) {
             return false;
         }
-        Set<Recyclable> set = sMap.get(setId);
+        Set<Recyclable> set;
+        synchronized (sMap) {
+            set = sMap.get(setId);
+        }
         if (set == null) {
             return false;
         }
-        Log.i(TAG, "removeFromSet(%s, %s)", setId, set.hashCode());
-        return set.remove(o);
+        Log.i(TAG, "removeFromSet(%s)", setId);
+        synchronized (set) {
+            return set.remove(o);
+        }
     }
 
     public static void recycleAll(String setId) {
         if (setId == null || setId.length() == 0) {
             return;
         }
-        Set<Recyclable> set = sMap.remove(setId);
+        Set<Recyclable> set;
+        synchronized (sMap) {
+            set = sMap.remove(setId);
+        }
         if (set == null) {
             return;
         }
         Log.i(TAG, "recycleAll(%s)", setId);
-        for (Recyclable o : set) {
-            Log.i(TAG, "recycle(%s)", o.hashCode());
-            o.recycle();
+        synchronized (set) {
+            for (Recyclable o : set) {
+                Log.i(TAG, "recycle(%s)", o.hashCode());
+                o.recycle();
+            }
+            set.clear();
         }
-        set.clear();
     }
 }

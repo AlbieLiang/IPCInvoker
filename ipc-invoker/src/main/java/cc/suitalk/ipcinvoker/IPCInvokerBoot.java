@@ -21,9 +21,11 @@ import android.app.Application;
 
 import junit.framework.Assert;
 
+import cc.suitalk.ipcinvoker.activate.Debuggable;
 import cc.suitalk.ipcinvoker.activate.ExecutorServiceCreator;
 import cc.suitalk.ipcinvoker.activate.IPCInvokerInitDelegate;
 import cc.suitalk.ipcinvoker.activate.IPCInvokerInitializer;
+import cc.suitalk.ipcinvoker.activate.ThreadCreator;
 import cc.suitalk.ipcinvoker.activate.TypeTransferInitializer;
 import cc.suitalk.ipcinvoker.annotation.NonNull;
 import cc.suitalk.ipcinvoker.extension.BaseTypeTransfer;
@@ -56,6 +58,16 @@ public class IPCInvokerBoot {
             @Override
             public void setExecutorServiceCreator(ExecutorServiceCreator creator) {
                 ThreadPool.setExecutorServiceCreator(creator);
+            }
+
+            @Override
+            public void setThreadCreator(ThreadCreator creator) {
+                ThreadPool.setThreadCreator(creator);
+            }
+
+            @Override
+            public void setDebugger(Debuggable debugger) {
+                Debugger.setDebuggable(debugger);
             }
         };
         delegate.onInitialize(initializer);

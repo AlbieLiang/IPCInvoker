@@ -46,8 +46,8 @@ public class XIPCInvoker {
      * @param taskClass    remote invoke logic task class
      * @param callback     callback on current process after IPC invoked finished and initiative callback.
      * @param <T>          the class implements {@link IPCAsyncInvokeTask} interface
-     * @param <InputType>  the class extends {@link Parcelable}
-     * @param <ResultType> the class extends {@link Parcelable}
+     * @param <InputType>  the class extends {@link Parcelable} or has extended a {@link BaseTypeTransfer} for this InputType
+     * @param <ResultType> the class extends {@link Parcelable} or has extended a {@link BaseTypeTransfer} for this ResultType
      */
     @AnyThread
     public static <T extends IPCAsyncInvokeTask<InputType, ResultType>, InputType, ResultType>
@@ -77,8 +77,8 @@ public class XIPCInvoker {
      * @param data         data for remote process invoked, it must be a {@link Parcelable}
      * @param taskClass    remote invoke logic task class
      * @param <T>          the class implements {@link IPCSyncInvokeTask} interface
-     * @param <InputType>  the class extends {@link Parcelable}
-     * @param <ResultType> the class extends {@link Parcelable}
+     * @param <InputType>  the class extends {@link Parcelable} or has extended a {@link BaseTypeTransfer} for this InputType
+     * @param <ResultType> the class extends {@link Parcelable} or has extended a {@link BaseTypeTransfer} for this ResultType
      * @return the cross-process invoke result.
      */
     @WorkerThread

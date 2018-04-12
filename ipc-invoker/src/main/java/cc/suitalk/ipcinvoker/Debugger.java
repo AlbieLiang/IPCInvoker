@@ -15,24 +15,33 @@
  *
  */
 
-package cc.suitalk.ipcinvoker.activate;
+package cc.suitalk.ipcinvoker;
 
-import cc.suitalk.ipcinvoker.BaseIPCService;
-import cc.suitalk.ipcinvoker.tools.log.ILogPrinter;
+import cc.suitalk.ipcinvoker.activate.Debuggable;
+import cc.suitalk.ipcinvoker.annotation.NonNull;
 
 /**
- * Created by albieliang on 2017/5/28.
+ * Created by albieliang on 2018/4/2.
  */
 
-public interface IPCInvokerInitializer {
+public class Debugger {
 
-    <T extends BaseIPCService> void addIPCService(String processName, Class<T> service);
+    private static Debuggable sDebugger = new Debuggable() {
 
-    void setLogPrinter(ILogPrinter printer);
+        @Override
+        public boolean isDebug() {
+            return false;
+        }
+    };
 
-    void setExecutorServiceCreator(ExecutorServiceCreator creator);
+    public static void setDebuggable(@NonNull Debuggable debuggable) {
+        if (debuggable == null) {
+            return;
+        }
+        sDebugger = debuggable;
+    }
 
-    void setThreadCreator(ThreadCreator creator);
-
-    void setDebugger(Debuggable debugger);
+    public static boolean isDebug() {
+        return sDebugger.isDebug();
+    }
 }

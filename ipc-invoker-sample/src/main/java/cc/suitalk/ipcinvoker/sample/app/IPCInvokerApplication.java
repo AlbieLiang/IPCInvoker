@@ -18,15 +18,19 @@
 package cc.suitalk.ipcinvoker.sample.app;
 
 import android.app.Application;
+import android.os.HandlerThread;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import cc.suitalk.ipcinvoker.IPCInvokerBoot;
+import cc.suitalk.ipcinvoker.activate.Debuggable;
 import cc.suitalk.ipcinvoker.activate.DefaultInitDelegate;
 import cc.suitalk.ipcinvoker.activate.ExecutorServiceCreator;
 import cc.suitalk.ipcinvoker.activate.IPCInvokerInitializer;
+import cc.suitalk.ipcinvoker.activate.ThreadCreator;
 import cc.suitalk.ipcinvoker.activate.TypeTransferInitializer;
+import cc.suitalk.ipcinvoker.sample.BuildConfig;
 import cc.suitalk.ipcinvoker.sample.nimble.TestTypeTransfer;
 import cc.suitalk.ipcinvoker.sample.service.PushProcessIPCService;
 import cc.suitalk.ipcinvoker.sample.service.MainProcessIPCService;
@@ -61,10 +65,27 @@ public class IPCInvokerApplication extends Application {
             @Override
             public void onInitialize(IPCInvokerInitializer initializer) {
                 initializer.setLogPrinter(sLogPrinter);
-                initializer.setExecutorServiceCreator(new ExecutorServiceCreator() {
+//                initializer.setExecutorServiceCreator(new ExecutorServiceCreator() {
+//                    @Override
+//                    public ExecutorService create() {
+//                        return new ScheduledThreadPoolExecutor(5);
+//                    }
+//                });
+                initializer.setDebugger(new Debuggable() {
                     @Override
-                    public ExecutorService create() {
-                        return new ScheduledThreadPoolExecutor(5);
+                    public boolean isDebug() {
+                        return BuildConfig.DEBUG;
+                    }
+                });
+                initializer.setThreadCreator(new ThreadCreator() {
+                    @Override
+                    public Thread createThread(Runnable run, String name) {
+                        return new Thread(run, name);
+                    }
+
+                    @Override
+                    public HandlerThread createHandlerThread(String name) {
+                        return new HandlerThread(name);
                     }
                 });
             }

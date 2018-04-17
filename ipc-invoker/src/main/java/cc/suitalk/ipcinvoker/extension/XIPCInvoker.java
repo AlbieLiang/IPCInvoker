@@ -28,6 +28,8 @@ import cc.suitalk.ipcinvoker.ObjectStore;
 import cc.suitalk.ipcinvoker.annotation.AnyThread;
 import cc.suitalk.ipcinvoker.annotation.NonNull;
 import cc.suitalk.ipcinvoker.annotation.WorkerThread;
+import cc.suitalk.ipcinvoker.exception.OnExceptionObservable;
+import cc.suitalk.ipcinvoker.exception.OnExceptionObserver;
 import cc.suitalk.ipcinvoker.tools.Log;
 
 /**
@@ -128,14 +130,43 @@ public class XIPCInvoker {
                 Log.w(TAG, "proxy AsyncInvoke failed, newInstance(%s) return null.", clazz);
                 return;
             }
-            task.invoke(remoteData, new IPCInvokeCallback() {
-                @Override
-                public void onCallback(Object data) {
-                    if (callback != null) {
-                        callback.onCallback(new WrapperParcelable(null, data));
-                    }
-                }
-            });
+            task.invoke(remoteData, new IPCInvokeCallbackProxy(callback));
+        }
+    }
+
+    private static class IPCInvokeCallbackProxy implements IPCInvokeCallback, OnExceptionObservable {
+
+        IPCInvokeCallback<WrapperParcelable> callback;
+        OnExceptionObservable onExceptionObservable;
+
+        IPCInvokeCallbackProxy(IPCInvokeCallback<WrapperParcelable> callback) {
+            this.callback = callback;
+            if (callback instanceof OnExceptionObservable) {
+                this.onExceptionObservable = (OnExceptionObservable) callback;
+            }
+        }
+
+        @Override
+        public void onCallback(Object data) {
+            if (callback != null) {
+                callback.onCallback(new WrapperParcelable(null, data));
+            }
+        }
+
+        @Override
+        public void registerObserver(OnExceptionObserver observer) {
+            if (onExceptionObservable == null) {
+                return;
+            }
+            onExceptionObservable.registerObserver(observer);
+        }
+
+        @Override
+        public void unregisterObserver(OnExceptionObserver observer) {
+            if (onExceptionObservable == null) {
+                return;
+            }
+            ((OnExceptionObservable) callback).unregisterObserver(observer);
         }
     }
 

@@ -25,9 +25,14 @@ import android.os.Parcelable;
 import android.os.Process;
 import android.os.RemoteException;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeBridge;
 import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeCallback;
 import cc.suitalk.ipcinvoker.annotation.Nullable;
+import cc.suitalk.ipcinvoker.exception.OnExceptionObservable;
+import cc.suitalk.ipcinvoker.exception.OnExceptionObserver;
 import cc.suitalk.ipcinvoker.recycle.ObjectRecycler;
 import cc.suitalk.ipcinvoker.tools.Log;
 
@@ -155,11 +160,13 @@ public abstract class BaseIPCService extends Service {
         }, 2 * 1000);
     }
 
-    private static class IPCInvokeCallbackProxy implements IPCInvokeCallback<Parcelable> {
+    private static class IPCInvokeCallbackProxy implements IPCInvokeCallback<Parcelable>, OnExceptionObservable {
 
         private static final String TAG = "IPC.IPCInvokeCallbackProxy";
 
         AIDL_IPCInvokeCallback callback;
+        final List<OnExceptionObserver> observableList = new LinkedList<>();
+
 
         public IPCInvokeCallbackProxy(AIDL_IPCInvokeCallback callback) {
             this.callback = callback;
@@ -181,13 +188,21 @@ public abstract class BaseIPCService extends Service {
                 callback.onCallback(resData);
             } catch (RemoteException e) {
                 Log.e(TAG, "%s", android.util.Log.getStackTraceString(e));
+                if (!observableList.isEmpty()) {
+                    List<OnExceptionObserver> list;
+                    synchronized (observableList) {
+                        list = new LinkedList<>(observableList);
+                    }
+                    for (OnExceptionObserver observable : list) {
+                        observable.onExceptionOccur(e);
+                    }
+                }
             }
         }
 
         @Override
         protected void finalize() throws Throwable {
             try {
-                // TODO: 2018/3/14 Delete
                 Log.i(TAG, "finalize(%s)", hashCode());
                 if (callback != null) {
                     Log.i(TAG, "finalize, release callback(%s)", callback.hashCode());
@@ -196,6 +211,29 @@ public abstract class BaseIPCService extends Service {
                 }
             } finally {
                 super.finalize();
+            }
+        }
+
+        @Override
+        public void registerObserver(OnExceptionObserver observer) {
+            if (observer == null) {
+                return;
+            }
+            synchronized (observableList) {
+                if (observableList.contains(observer)) {
+                    return;
+                }
+                observableList.add(observer);
+            }
+        }
+
+        @Override
+        public void unregisterObserver(OnExceptionObserver observer) {
+            if (observer == null) {
+                return;
+            }
+            synchronized (observableList) {
+                observableList.remove(observer);
             }
         }
 

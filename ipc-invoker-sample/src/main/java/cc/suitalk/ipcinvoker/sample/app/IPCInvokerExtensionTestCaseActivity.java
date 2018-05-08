@@ -51,6 +51,8 @@ public class IPCInvokerExtensionTestCaseActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutId());
+        getSupportActionBar().setSubtitle("IPCInvokerExtension TestCase");
+
         myPidTv = (TextView) findViewById(R.id.myPidTv);
 
         getKeyEt = (EditText) findViewById(R.id.getByKeyEt);

@@ -26,6 +26,7 @@ import android.os.Parcelable;
 import cc.suitalk.ipcinvoker.IPCAsyncInvokeTask;
 import cc.suitalk.ipcinvoker.IPCInvokeLogic;
 import cc.suitalk.ipcinvoker.IPCInvokeCallback;
+import cc.suitalk.ipcinvoker.ThreadCaller;
 import cc.suitalk.ipcinvoker.sample.app.model.DataCenter;
 import cc.suitalk.ipcinvoker.tools.Log;
 
@@ -66,6 +67,13 @@ public class IPCInvokeTask_PutValue implements Parcelable, IPCAsyncInvokeTask<IP
                 Log.i(TAG, "test post message to Looper(%s).", Looper.myLooper().hashCode());
             }
         });
+//        ThreadCaller.post(true, new Runnable() {
+//            @Override
+//            public void run() {
+//                throw new RuntimeException("test crash in ui thread");
+//            }
+//        });
+//        throw new RuntimeException("test crash");
         callback.onCallback(result);
     }
 

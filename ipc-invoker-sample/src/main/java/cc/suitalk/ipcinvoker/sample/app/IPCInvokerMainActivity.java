@@ -48,10 +48,19 @@ public class IPCInvokerMainActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.openXxxIPCInvokerBtn).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.openXIPCInvokerBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), XIPCInvokerTestCaseActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
+
+        findViewById(R.id.openIPCTaskBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), IPCTaskTestCaseActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }

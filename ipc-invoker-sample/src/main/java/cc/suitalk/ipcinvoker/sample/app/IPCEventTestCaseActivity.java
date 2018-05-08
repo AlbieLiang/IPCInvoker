@@ -53,6 +53,7 @@ public class IPCEventTestCaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ipc_event_test_activity);
         setTitle(R.string.push_process);
+        getSupportActionBar().setSubtitle("IPCEvent TestCase");
 
         final IPCObserver observer = new IPCObserver() {
             @Override

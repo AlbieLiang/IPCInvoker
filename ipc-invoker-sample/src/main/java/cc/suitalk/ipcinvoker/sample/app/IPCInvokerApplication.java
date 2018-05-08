@@ -57,6 +57,7 @@ public class IPCInvokerApplication extends Application {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
                 Log.e(TAG, "uncaughtException : %s", android.util.Log.getStackTraceString(e));
+                System.exit(0);
             }
         });
         // Initialize IPCInvoker

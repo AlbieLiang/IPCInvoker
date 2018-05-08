@@ -33,16 +33,14 @@ import cc.suitalk.ipcinvoker.sample.R;
 import cc.suitalk.ipcinvoker.sample.app.model.ThreadPool;
 import cc.suitalk.ipcinvoker.sample.nimble.TestType;
 import cc.suitalk.ipcinvoker.tools.Log;
-import cc.suitalk.ipcinvoker.type.IPCInteger;
-import cc.suitalk.ipcinvoker.type.IPCString;
 
 /**
- * Created by albieliang on 2017/7/6.
+ * Created by albieliang on 2018/5/8.
  */
 
-public class XIPCInvokerTestCaseActivity extends AppCompatActivity {
+public class IPCTaskTestCaseActivity extends AppCompatActivity {
 
-    private static final String TAG = "IPCInvokerSample.XIPCInvokerTestCaseActivity";
+    private static final String TAG = "IPCInvokerSample.IPCTaskTestCaseActivity";
 
     TextView msgPanelTv;
     View syncInvokeBtn;
@@ -55,7 +53,7 @@ public class XIPCInvokerTestCaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.xipcinvoker_test_case_activity);
         setTitle(R.string.app_name);
-        getSupportActionBar().setSubtitle("XIPCInvoker TestCase");
+        getSupportActionBar().setSubtitle("IPCTask TestCase");
 
         msgPanelTv = (TextView) findViewById(R.id.msgPanelTv);
         syncInvokeBtn = findViewById(R.id.syncInvokeBtn);
@@ -71,13 +69,13 @@ public class XIPCInvokerTestCaseActivity extends AppCompatActivity {
                         TestType data = new TestType();
                         data.key = "wx-developer";
                         data.value = "XIPCInvoker";
-                        final IPCInteger result = XIPCInvoker.invokeSync(process, data, IPCInvokeTask_getInt.class);
+                        final Integer result = XIPCInvoker.invokeSync(process, data, IPCInvokeTask_getInt.class);
 
-                        Log.i(TAG, "result : %s", result.value);
+                        Log.i(TAG, "result : %s", result);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                msgPanelTv.setText("get result : " + result.value);
+                                msgPanelTv.setText("get result : " + result);
                             }
                         });
                     }
@@ -95,15 +93,15 @@ public class XIPCInvokerTestCaseActivity extends AppCompatActivity {
                         TestType data = new TestType();
                         data.key = "wx-developer";
                         data.value = "AlbieLiang";
-                        XIPCInvoker.invokeAsync(process, data, IPCInvokeTask_getString.class, new IPCInvokeCallback<IPCString>() {
+                        XIPCInvoker.invokeAsync(process, data, IPCInvokeTask_getString.class, new IPCInvokeCallback<String>() {
 
                             @Override
-                            public void onCallback(final IPCString data) {
-                                Log.i(TAG, "result : %s", data.value);
+                            public void onCallback(final String data) {
+                                Log.i(TAG, "result : %s", data);
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        msgPanelTv.setText(data.value);
+                                        msgPanelTv.setText(data);
                                     }
                                 });
                             }
@@ -115,22 +113,22 @@ public class XIPCInvokerTestCaseActivity extends AppCompatActivity {
         processEt = (EditText) findViewById(R.id.remoteProcessNameEt);
     }
 
-    private static class IPCInvokeTask_getInt implements IPCSyncInvokeTask<TestType, IPCInteger> {
+    private static class IPCInvokeTask_getInt implements IPCSyncInvokeTask<TestType, Integer> {
 
         @Override
-        public IPCInteger invoke(TestType data) {
-            return new IPCInteger((data.key + data.value + System.currentTimeMillis()).hashCode());
+        public Integer invoke(TestType data) {
+            return (data.key + data.value + System.currentTimeMillis()).hashCode();
         }
     }
 
     @Singleton
-    private static class IPCInvokeTask_getString implements IPCAsyncInvokeTask<TestType, IPCString> {
+    private static class IPCInvokeTask_getString implements IPCAsyncInvokeTask<TestType, String> {
 
         int count;
 
         @Override
-        public void invoke(TestType data, IPCInvokeCallback<IPCString> callback) {
-            callback.onCallback(new IPCString(data.key + ":" + data.value + ", count : " + (count++)));
+        public void invoke(TestType data, IPCInvokeCallback<String> callback) {
+            callback.onCallback(data.key + ":" + data.value + ", count : " + (count++));
         }
     }
 }

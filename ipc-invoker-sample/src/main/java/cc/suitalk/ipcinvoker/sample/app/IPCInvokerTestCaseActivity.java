@@ -38,6 +38,8 @@ public class IPCInvokerTestCaseActivity extends BaseSampleActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle(R.string.main_process);
+        getSupportActionBar().setSubtitle("IPCInvoker TestCase");
+
         openPushActivityBtn = (Button) findViewById(R.id.openPushActivityBtn);
         openSupportActivityBtn = (Button) findViewById(R.id.openSupportActivityBtn);
 

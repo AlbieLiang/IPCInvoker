@@ -52,6 +52,7 @@ public class XIPCDispatcherTestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.xipcdispatcher_test_activity);
         setTitle(R.string.support_process);
+        getSupportActionBar().setSubtitle("XIPCDispatcher TestCase");
         //
         final XIPCObserver<IPCString> observer1 = new XIPCObserver<IPCString>() {
             @Override

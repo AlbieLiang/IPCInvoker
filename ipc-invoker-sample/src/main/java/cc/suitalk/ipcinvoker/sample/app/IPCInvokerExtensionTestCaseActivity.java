@@ -27,7 +27,7 @@ import android.widget.TextView;
 import cc.suitalk.ipcinvoker.IPCInvokeCallback;
 import cc.suitalk.ipcinvoker.sample.R;
 import cc.suitalk.ipcinvoker.sample.app.model.ThreadPool;
-import cc.suitalk.ipcinvoker.sample.extension.IPCTask$AG;
+import cc.suitalk.ipcinvoker.sample.extension.AutoGenIPCTaskTestCase$AG;
 import cc.suitalk.ipcinvoker.tools.Log;
 
 /**
@@ -71,7 +71,7 @@ public class IPCInvokerExtensionTestCaseActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         String key = getKeyEt.getText().toString();
-                        final String value = IPCTask$AG.getValue(key);
+                        final String value = AutoGenIPCTaskTestCase$AG.getValue(key);
                         Log.i(TAG, "getValue(%s)", value);
                         runOnUiThread(new Runnable() {
                             @Override
@@ -88,7 +88,7 @@ public class IPCInvokerExtensionTestCaseActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String key = putKeyEt.getText().toString();
                 String value = putValueEt.getText().toString();
-                IPCTask$AG.setValue(key, value, new IPCInvokeCallback<Bundle>() {
+                AutoGenIPCTaskTestCase$AG.setValue(key, value, new IPCInvokeCallback<Bundle>() {
                     @Override
                     public void onCallback(final Bundle data) {
                         Log.i(TAG, "onCallback(%s)", data);

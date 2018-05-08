@@ -34,11 +34,11 @@ import cc.suitalk.ipcinvoker.tools.Log;
  */
 
 @IPCInvokeTask(process = "cc.suitalk.ipcinvoker.sample:support")
-public class IPCTask {
+public class AutoGenIPCTaskTestCase {
 
-    private static final String TAG = "IPCSample.IPCTask";
+    private static final String TAG = "IPCSample.AutoGenIPCTaskTestCase";
 
-    public IPCTask() {
+    public AutoGenIPCTaskTestCase() {
         init();
     }
 

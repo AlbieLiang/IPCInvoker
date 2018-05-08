@@ -27,7 +27,6 @@ import cc.suitalk.ipcinvoker.IPCSyncInvokeTask;
 import cc.suitalk.ipcinvoker.IPCTask;
 import cc.suitalk.ipcinvoker.exception.OnExceptionObserver;
 import cc.suitalk.ipcinvoker.tools.Log;
-import cc.suitalk.ipcinvoker.type.IPCBoolean;
 import cc.suitalk.ipcinvoker.type.IPCString;
 
 /**
@@ -39,21 +38,21 @@ public class IPCTaskTestCase {
     private static final String TAG = "IPCInvokerSample.IPCTaskTestCase";
 
     public static void invokeAsync() {
-        IPCTask.create("cc.suitalk.ipcinvoker")
+        IPCTask.create("cc.suitalk.ipcinvoker.sample:push")
                 .timeout(10)
                 .async(AsyncInvokeTask.class)
                 .data(new IPCString("test invokeAsync"))
-                .defaultResult(new IPCBoolean(false))
-                .callback(new IPCInvokeCallback<IPCBoolean>() {
+                .defaultResult(false)
+                .callback(new IPCInvokeCallback<Boolean>() {
                     @Override
-                    public void onCallback(IPCBoolean data) {
+                    public void onCallback(Boolean data) {
                         Log.i(TAG, "invokeAsync result : %s", data);
                     }
                 }).invoke();
     }
 
     public static void invokeSync() {
-        IPCBoolean result = IPCTask.create("cc.suitalk.ipcinvoker")
+        Boolean result = IPCTask.create("cc.suitalk.ipcinvoker.sample:push")
                 .timeout(20)
                 .onExceptionObserver(new OnExceptionObserver() {
                     @Override
@@ -73,25 +72,25 @@ public class IPCTaskTestCase {
                     }
                 })
                 .sync(SyncInvokeTask.class)
-                .data(new IPCString("test invokeSync"))
-                .defaultResult(new IPCBoolean(false))
+                .data("test invokeSync")
+                .defaultResult(false)
                 .invoke();
         Log.i(TAG, "invokeSync result : %s", result);
     }
 
-    private static class SyncInvokeTask implements IPCSyncInvokeTask<IPCString, IPCBoolean> {
+    private static class SyncInvokeTask implements IPCSyncInvokeTask<String, Boolean> {
 
         @Override
-        public IPCBoolean invoke(IPCString data) {
-            return new IPCBoolean(true);
+        public Boolean invoke(String data) {
+            return true;
         }
     }
 
-    private static class AsyncInvokeTask implements IPCAsyncInvokeTask<IPCString, IPCBoolean> {
+    private static class AsyncInvokeTask implements IPCAsyncInvokeTask<IPCString, Boolean> {
 
         @Override
-        public void invoke(IPCString data, IPCInvokeCallback<IPCBoolean> callback) {
-            callback.onCallback(new IPCBoolean(true));
+        public void invoke(IPCString data, IPCInvokeCallback<Boolean> callback) {
+            callback.onCallback(true);
         }
     }
 }

@@ -17,20 +17,15 @@
 
 package cc.suitalk.ipcinvoker.extension;
 
-import android.os.Parcel;
 import android.os.Parcelable;
 
 import cc.suitalk.ipcinvoker.IPCInvokeCallback;
-import cc.suitalk.ipcinvoker.IPCInvoker;
 import cc.suitalk.ipcinvoker.IPCAsyncInvokeTask;
 import cc.suitalk.ipcinvoker.IPCSyncInvokeTask;
-import cc.suitalk.ipcinvoker.ObjectStore;
 import cc.suitalk.ipcinvoker.annotation.AnyThread;
 import cc.suitalk.ipcinvoker.annotation.NonNull;
 import cc.suitalk.ipcinvoker.annotation.WorkerThread;
-import cc.suitalk.ipcinvoker.exception.OnExceptionObservable;
-import cc.suitalk.ipcinvoker.exception.OnExceptionObserver;
-import cc.suitalk.ipcinvoker.tools.Log;
+import cc.suitalk.ipcinvoker.IPCTask;
 
 /**
  * Created by albieliang on 2017/7/6.
@@ -54,20 +49,7 @@ public class XIPCInvoker {
     @AnyThread
     public static <T extends IPCAsyncInvokeTask<InputType, ResultType>, InputType, ResultType>
             void invokeAsync(final String process, final InputType data, @NonNull final Class<T> taskClass, final IPCInvokeCallback<ResultType> callback) {
-        IPCInvoker.invokeAsync(process, new WrapperParcelable(taskClass.getName(), data),
-                IPCAsyncInvokeTaskProxy.class, new IPCInvokeCallback<WrapperParcelable>() {
-                    @Override
-                    public void onCallback(WrapperParcelable data) {
-                        if (callback != null) {
-                            if (data == null) {
-                                Log.w(TAG, "async invoke callback error, wrapper parcelable data is null!");
-                                callback.onCallback(null);
-                                return;
-                            }
-                            callback.onCallback((ResultType) data.getTarget());
-                        }
-                    }
-                });
+        IPCTask.create(process).async(taskClass).data(data).callback(callback).invoke();
     }
 
     /**
@@ -86,156 +68,6 @@ public class XIPCInvoker {
     @WorkerThread
     public static <T extends IPCSyncInvokeTask<InputType, ResultType>, InputType, ResultType>
             ResultType invokeSync(String process, InputType data, @NonNull Class<T> taskClass) {
-        WrapperParcelable parcelable = IPCInvoker.invokeSync(process, new WrapperParcelable(taskClass.getName(), data), IPCSyncInvokeTaskProxy.class);
-        if (parcelable == null) {
-            Log.w(TAG, "sync invoke error, wrapper parcelable data is null!");
-            return null;
-        }
-        return (ResultType) parcelable.getTarget();
-    }
-
-    private static class IPCSyncInvokeTaskProxy implements IPCSyncInvokeTask<WrapperParcelable, WrapperParcelable> {
-
-        @Override
-        public WrapperParcelable invoke(WrapperParcelable data) {
-            Object remoteData = data.getTarget();
-            String clazz = data.getTaskClass();
-            if (clazz == null || clazz.length() == 0) {
-                Log.e(TAG, "proxy SyncInvoke failed, class is null or nil.");
-                return new WrapperParcelable(null, null);
-            }
-            IPCSyncInvokeTask task = ObjectStore.get(clazz, IPCSyncInvokeTask.class);
-            if (task == null) {
-                Log.w(TAG, "proxy SyncInvoke failed, newInstance(%s) return null.", clazz);
-                return new WrapperParcelable(null, null);
-            }
-            return new WrapperParcelable(null, task.invoke(remoteData));
-        }
-    }
-
-    private static class IPCAsyncInvokeTaskProxy implements IPCAsyncInvokeTask<WrapperParcelable, WrapperParcelable> {
-
-        private static final String TAG = "IPC.IPCAsyncInvokeTaskProxy";
-
-        @Override
-        public void invoke(WrapperParcelable data, final IPCInvokeCallback<WrapperParcelable> callback) {
-            Object remoteData = data.getTarget();
-            String clazz = data.getTaskClass();
-            if (clazz == null || clazz.length() == 0) {
-                Log.e(TAG, "proxy AsyncInvoke failed, class is null or nil.");
-                return;
-            }
-            IPCAsyncInvokeTask task = ObjectStore.get(clazz, IPCAsyncInvokeTask.class);
-            if (task == null) {
-                Log.w(TAG, "proxy AsyncInvoke failed, newInstance(%s) return null.", clazz);
-                return;
-            }
-            task.invoke(remoteData, new IPCInvokeCallbackProxy(callback));
-        }
-    }
-
-    private static class IPCInvokeCallbackProxy implements IPCInvokeCallback, OnExceptionObservable {
-
-        IPCInvokeCallback<WrapperParcelable> callback;
-        OnExceptionObservable onExceptionObservable;
-
-        IPCInvokeCallbackProxy(IPCInvokeCallback<WrapperParcelable> callback) {
-            this.callback = callback;
-            if (callback instanceof OnExceptionObservable) {
-                this.onExceptionObservable = (OnExceptionObservable) callback;
-            }
-        }
-
-        @Override
-        public void onCallback(Object data) {
-            if (callback != null) {
-                callback.onCallback(new WrapperParcelable(null, data));
-            }
-        }
-
-        @Override
-        public void registerObserver(OnExceptionObserver observer) {
-            if (onExceptionObservable == null) {
-                return;
-            }
-            onExceptionObservable.registerObserver(observer);
-        }
-
-        @Override
-        public void unregisterObserver(OnExceptionObserver observer) {
-            if (onExceptionObservable == null) {
-                return;
-            }
-            ((OnExceptionObservable) callback).unregisterObserver(observer);
-        }
-    }
-
-    private static class WrapperParcelable implements Parcelable {
-
-        private static final int NO_DATA = 0;
-        private static final int HAS_DATA = 1;
-
-        String taskClass;
-        Object target;
-
-        private WrapperParcelable() {
-
-        }
-
-        public WrapperParcelable(String taskClass, Object o) {
-            this.taskClass = taskClass;
-            this.target = o;
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(taskClass);
-            if (target != null) {
-                BaseTypeTransfer transfer = ObjectTypeTransfer.getTypeTransfer(target);
-                if (transfer != null) {
-                    dest.writeInt(HAS_DATA);
-                    dest.writeString(transfer.getClass().getName());
-                    transfer.writeToParcel(target, dest);
-                    return;
-                }
-            }
-            dest.writeInt(NO_DATA);
-        }
-
-        void readFromParcel(Parcel in) {
-            taskClass = in.readString();
-            int hasData = in.readInt();
-            if (hasData == HAS_DATA) {
-                String transferClass = in.readString();
-                target = ObjectTypeTransfer.readFromParcel(transferClass, in);
-            }
-        }
-
-        Object getTarget() {
-            return target;
-        }
-
-        String getTaskClass() {
-            return this.taskClass;
-        }
-
-        public static final Creator<WrapperParcelable> CREATOR = new Creator<WrapperParcelable>() {
-            @Override
-            public WrapperParcelable createFromParcel(Parcel in) {
-                WrapperParcelable o = new WrapperParcelable();
-                o.readFromParcel(in);
-                return o;
-            }
-
-            @Override
-            public WrapperParcelable[] newArray(int size) {
-                return new WrapperParcelable[size];
-            }
-        };
+        return IPCTask.create(process).sync(taskClass).data(data).invoke();
     }
 }

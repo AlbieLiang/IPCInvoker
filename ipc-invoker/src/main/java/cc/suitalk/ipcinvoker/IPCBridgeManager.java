@@ -37,6 +37,7 @@ import java.util.concurrent.CountDownLatch;
 import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeBridge;
 import cc.suitalk.ipcinvoker.annotation.NonNull;
 import cc.suitalk.ipcinvoker.annotation.WorkerThread;
+import cc.suitalk.ipcinvoker.exception.OnExceptionObserver;
 import cc.suitalk.ipcinvoker.exception.RemoteServiceNotConnectedException;
 import cc.suitalk.ipcinvoker.recycle.DeathRecipientImpl;
 import cc.suitalk.ipcinvoker.recycle.ObjectRecycler;
@@ -84,7 +85,7 @@ class IPCBridgeManager {
     }
 
     @WorkerThread
-    public AIDL_IPCInvokeBridge getIPCBridge(@NonNull final String process) {
+    public AIDL_IPCInvokeBridge getIPCBridge(@NonNull final String process, @NonNull IPCTaskExtInfo extInfo) {
         IPCBridgeWrapper bridgeWrapper;
         synchronized (mBridgeMap) {
             bridgeWrapper = mBridgeMap.get(process);
@@ -117,6 +118,8 @@ class IPCBridgeManager {
         }
         final Context context = IPCInvokeLogic.getContext();
         final IPCBridgeWrapper bw = bridgeWrapper;
+        final OnExceptionObserver onExceptionObserver = extInfo.getOnExceptionObserver();
+        final ServiceConnection serviceConnection = extInfo.getServiceConnection();
 
         final ServiceConnection sc = new ServiceConnection() {
 
@@ -146,6 +149,9 @@ class IPCBridgeManager {
                     bw.connectTimeoutRunnable = null;
                 }
                 bw.latch.countDown();
+                if (serviceConnection != null) {
+                    serviceConnection.onServiceConnected(name, service);
+                }
             }
 
             @Override
@@ -153,6 +159,9 @@ class IPCBridgeManager {
                 Log.i(TAG, "onServiceDisconnected(%s, tid : %s)", bw.hashCode(), Thread.currentThread().getId());
                 releaseIPCBridge(process);
                 ObjectRecycler.recycleAll(process);
+                if (serviceConnection != null) {
+                    serviceConnection.onServiceDisconnected(name);
+                }
             }
         };
         synchronized (bw) {
@@ -179,7 +188,7 @@ class IPCBridgeManager {
                     }
                 }
             };
-            mHandler.postDelayed(bw.connectTimeoutRunnable, getTimeout());
+            mHandler.postDelayed(bw.connectTimeoutRunnable, extInfo.getTimeout());
             bw.latch.await();
             if (bw.connectTimeoutRunnable != null) {
                 mHandler.removeCallbacks(bw.connectTimeoutRunnable);
@@ -190,11 +199,17 @@ class IPCBridgeManager {
             synchronized (mBridgeMap) {
                 mBridgeMap.remove(process);
             }
+            if (onExceptionObserver != null) {
+                onExceptionObserver.onExceptionOccur(e);
+            }
             return null;
         } catch (SecurityException e) {
             Log.e(TAG, "bindService error : %s", android.util.Log.getStackTraceString(e));
             synchronized (mBridgeMap) {
                 mBridgeMap.remove(process);
+            }
+            if (onExceptionObserver != null) {
+                onExceptionObserver.onExceptionOccur(e);
             }
             return null;
         } finally {
@@ -217,7 +232,7 @@ class IPCBridgeManager {
             Log.i(TAG, "the same process(%s), do not need to build IPCBridge.", process);
             return;
         }
-        getIPCBridge(process);
+        getIPCBridge(process, IPCTaskExtInfo.DEFAULT);
     }
 
     @WorkerThread
@@ -294,13 +309,6 @@ class IPCBridgeManager {
 
     public <T extends BaseIPCService> void addIPCService(String processName, Class<T> service) {
         mServiceClassMap.put(processName, service);
-    }
-
-    private static long getTimeout() {
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            return 3 * 1000;
-        }
-        return 10 * 1000;
     }
 
     private static class IPCBridgeWrapper {

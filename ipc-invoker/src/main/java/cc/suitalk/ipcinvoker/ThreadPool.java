@@ -43,9 +43,9 @@ class ThreadPool {
 
     private static volatile ThreadPool sThreadPool;
 
-    static ExecutorServiceCreator sExecutorServiceCreator = new ExecutorServiceCreatorImpl();
-
     static ThreadCreator sThreadCreator = new ThreadCreatorImpl();
+
+    static ExecutorServiceCreator sExecutorServiceCreator = new ExecutorServiceCreatorImpl();
 
     private Handler mHandler;
     ExecutorService mExecutorService;
@@ -124,14 +124,11 @@ class ThreadPool {
         HandlerThread mHandlerThread;
 
         ExecutorServiceCreatorImpl() {
-            final HandlerThread handlerThread = sThreadCreator.createHandlerThread("ThreadPool#InnerWorkerThread-" + hashCode());
-            handlerThread.start();
-            mHandlerThread = handlerThread;
-            Log.i(TAG, "createHandlerThread(hash : %d)", handlerThread.hashCode());
         }
 
         @Override
         public ExecutorService create() {
+            ensureHandleThreadReady();
             ThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(mCorePoolSize, new ThreadFactory() {
 
                 int index = 0;
@@ -185,6 +182,15 @@ class ThreadPool {
                 }
             });
             return executor;
+        }
+
+        synchronized void ensureHandleThreadReady() {
+            if (mHandlerThread == null) {
+                final HandlerThread handlerThread = sThreadCreator.createHandlerThread("ThreadPool#InnerWorkerThread-" + hashCode());
+                handlerThread.start();
+                mHandlerThread = handlerThread;
+                Log.i(TAG, "createHandlerThread(hash : %d)", handlerThread.hashCode());
+            }
         }
     }
 

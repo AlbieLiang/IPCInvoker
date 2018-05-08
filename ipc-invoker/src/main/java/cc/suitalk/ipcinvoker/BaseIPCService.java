@@ -188,14 +188,14 @@ public abstract class BaseIPCService extends Service {
                 callback.onCallback(resData);
             } catch (RemoteException e) {
                 Log.e(TAG, "%s", android.util.Log.getStackTraceString(e));
-                if (!observableList.isEmpty()) {
-                    List<OnExceptionObserver> list;
-                    synchronized (observableList) {
-                        list = new LinkedList<>(observableList);
+                List<OnExceptionObserver> list = new LinkedList<>();
+                synchronized (observableList) {
+                    if (!observableList.isEmpty()) {
+                        list.addAll(observableList);
                     }
-                    for (OnExceptionObserver observable : list) {
-                        observable.onExceptionOccur(e);
-                    }
+                }
+                for (OnExceptionObserver observable : list) {
+                    observable.onExceptionOccur(e);
                 }
             }
         }

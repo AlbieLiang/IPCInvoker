@@ -65,6 +65,11 @@ public class XIPCObservable<InputType> {
                 WrapperParcelable parcelable = data.getParcelable(INNER_KEY_DATA);
                 o.onCallback((InputType) parcelable.getTarget());
             }
+
+            @Override
+            public int hashCode() {
+                return o.hashCode();
+            }
         };
         boolean r = mClient.registerIPCObserver(event, observer);
         if (r) {

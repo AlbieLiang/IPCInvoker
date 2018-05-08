@@ -29,7 +29,7 @@ public interface BaseTypeTransfer {
 
     boolean canTransfer(Object o);
 
-    void writeToParcel(@NonNull Object o, Parcel dest);
+    void writeToParcel(@NonNull Object o, @NonNull Parcel dest);
 
-    Object readFromParcel(Parcel in);
+    Object readFromParcel(@NonNull Parcel in);
 }

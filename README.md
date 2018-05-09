@@ -1,8 +1,8 @@
 # IPCInvoker
 
 [![license](http://img.shields.io/badge/license-Apache2.0-brightgreen.svg?style=flat)](https://github.com/AlbieLiang/IPCInvoker/blob/master/LICENSE)
-[![Release Version](https://img.shields.io/badge/release-1.1.8-red.svg)](https://github.com/AlbieLiang/IPCInvoker/releases)
-[![wiki](https://img.shields.io/badge/wiki-1.1.8-red.svg)](https://github.com/AlbieLiang/IPCInvoker/wiki) 
+[![Release Version](https://img.shields.io/badge/release-1.1.9-red.svg)](https://github.com/AlbieLiang/IPCInvoker/releases)
+[![wiki](https://img.shields.io/badge/wiki-1.1.9-red.svg)](https://github.com/AlbieLiang/IPCInvoker/wiki) 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/AlbieLiang/IPCInvoker/pulls)
 
 
@@ -18,7 +18,7 @@ IPCInvoker组件库已经提交到jcenter上了，可以直接dependencies中配
 
 ```gradle
 dependencies {
-    compile 'cc.suitalk.android:ipc-invoker:1.1.8'
+    compile 'cc.suitalk.android:ipc-invoker:1.1.9'
 }
 ```
 
@@ -127,7 +127,82 @@ public class InvokeAsyncSample {
 
 IPCInvoker支持自定义实现的Parcelable类作为跨进程调用的数据结构，同时也支持非Parcelable的扩展类型数据，详细请参考[XIPCInvoker扩展系列接口](https://github.com/AlbieLiang/IPCInvoker/wiki/XIPCInvoker%E6%89%A9%E5%B1%95%E7%B3%BB%E5%88%97%E6%8E%A5%E5%8F%A3)
 
+#### 通过IPCTask实现跨进程调用
+
+IPCTask提供了相对IPCInvoker更为丰富的接口，支持设置连接超时，连接回调，异常回调和确实结果等。与此同时IPCTask支持基本数据类型，并提供了不同于IPCInvoker链式调用方式。
+
+异步调用
+```java
+public class IPCTaskTestCase {
+    
+    private static final String TAG = "IPCTaskTestCase";
+    
+    public static void invokeAsync() {
+        IPCTask.create("cc.suitalk.ipcinvoker.sample:push")
+                .timeout(10)
+                .async(AsyncInvokeTask.class)
+                .data(new IPCString("test invokeAsync"))
+                .defaultResult(false)
+                .callback(new IPCInvokeCallback<Boolean>() {
+                    @Override
+                    public void onCallback(Boolean data) {
+                        Log.i(TAG, "invokeAsync result : %s", data);
+                    }
+                }).invoke();
+    }
+
+    private static class AsyncInvokeTask implements IPCAsyncInvokeTask<IPCString, Boolean> {
+
+        @Override
+        public void invoke(IPCString data, IPCInvokeCallback<Boolean> callback) {
+            callback.onCallback(true);
+        }
+    }
+}
+```
+
+同步调用
+```java
+public class IPCTaskTestCase {
+
+    private static final String TAG = "IPCTaskTestCase";
+
+    public static void invokeSync() {
+        Boolean result = IPCTask.create("cc.suitalk.ipcinvoker.sample:push")
+                .timeout(20)
+                .sync(SyncInvokeTask.class)
+                .data("test invokeSync")
+                .defaultResult(false)
+                .invoke();
+        Log.i(TAG, "invokeSync result : %s", result);
+    }
+
+    private static class SyncInvokeTask implements IPCSyncInvokeTask<String, Boolean> {
+
+        @Override
+        public Boolean invoke(String data) {
+            return true;
+        }
+    }
+}
+```
 
 __此外，IPCInvoker还支持跨进程事件监听和分发等丰富的功能，详细使用说明请参考[wiki](https://github.com/AlbieLiang/IPCInvoker/wiki) ，更多使用示例请移步[Sample工程](https://github.com/AlbieLiang/IPCInvoker/tree/master/ipc-invoker-sample)__
 
+## License
 
+```
+   Copyright 2017 Albie Liang
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+```

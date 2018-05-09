@@ -18,7 +18,7 @@
 
 ext {
     buildConfig = [
-            debug : true,
+            debug : false,
             minSdkVersion : 15,
             targetSdkVersion : 25,
             versionCode : 1,
@@ -28,7 +28,7 @@ ext {
     ]
 
     bintrayConfig = [
-            version : '1.1.8',
+            version : '1.1.9',
             siteUrl : 'https://github.com/AlbieLiang/IPCInvoker',   // 项目的主页
             gitUrl : 'https://github.com/AlbieLiang/IPCInvoker.git',   // Git仓库的url
             licenseName : 'The Apache Software License, Version 2.0',
@@ -42,9 +42,9 @@ ext {
             arbitrarygen : 'cc.suitalk.tools:arbitrarygen:2.1.0',
             arbitrarygenSdk : 'cc.suitalk.tools:arbitrarygen-sdk:2.1.0',
 
-            ipcinvoker : 'cc.suitalk.android:ipc-invoker:1.1.8',
-            ipcinvokerExtensionAnnotation : 'cc.suitalk.tools:ipc-invoker-extension-annotation:1.1.8',
-            ipcinvokerExtension : 'cc.suitalk.tools:ipc-invoker-extension:1.1.8',
+            ipcinvoker : 'cc.suitalk.android:ipc-invoker:1.1.9',
+            ipcinvokerExtensionAnnotation : 'cc.suitalk.tools:ipc-invoker-extension-annotation:1.1.9',
+            ipcinvokerExtension : 'cc.suitalk.tools:ipc-invoker-extension:1.1.9',
             ipcinvokerAgExtension : 'cc.suitalk.tools:ipc-invoker-ag-extension:1.1.8'
     ]
 }

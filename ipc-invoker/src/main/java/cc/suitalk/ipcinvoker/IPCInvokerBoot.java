@@ -99,6 +99,30 @@ public class IPCInvokerBoot {
     }
 
     /**
+     * Invoke this method to pre-connect Remote Service to improve the performance of the first time IPC invoke.
+     *
+     * @param process remote service process name
+     * @param callback callback for connect remote service
+     */
+    public static void connectRemoteService(@NonNull final String process, final OnConnectRemoteServiceCallback callback) {
+        if (IPCInvokeLogic.isCurrentProcess(process) || hasConnectedRemoteService(process)) {
+            if (callback != null) {
+                callback.onConnectCallback(true);
+            }
+            return;
+        }
+        ThreadPool.post(new Runnable() {
+            @Override
+            public void run() {
+                final boolean success = IPCBridgeManager.getImpl().getIPCBridge(process, IPCTaskExtInfo.DEFAULT) != null;
+                if (callback != null) {
+                    callback.onConnectCallback(success);
+                }
+            }
+        });
+    }
+
+    /**
      * Invoke this method to disconnect the connection between current process and remote process to release resource.
      *
      * @param process remote service process name
@@ -131,4 +155,7 @@ public class IPCInvokerBoot {
         });
     }
 
+    public interface OnConnectRemoteServiceCallback {
+        void onConnectCallback(boolean success);
+    }
 }

@@ -52,7 +52,6 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-//    provided 'com.android.support:appcompat-v7:25.1.0'
     testCompile 'junit:junit:4.12'
 
 //    provided 'com.google.protobuf:protobuf-java:3.0.0'
@@ -65,7 +64,7 @@ uploadArchives {
         //            authentication(userName: "admin", password: "admin")
         //        }
         // 如果没有私服的话，发布到本地也是ok的
-        repository(url: "file:${project.rootDir.getParentFile().getAbsolutePath()}/repositories/release")
+        repository(url: "file:${System.getProperty("user.home")}/.debugMaven/repositories/release")
     }
 }
 

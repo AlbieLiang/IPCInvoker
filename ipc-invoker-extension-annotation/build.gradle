@@ -46,7 +46,7 @@ targetCompatibility = "1.7"
 
 uploadArchives {
     repositories.mavenDeployer {
-        repository(url: "file:${project.rootDir.getParentFile().getAbsolutePath()}/repositories/release")
+        repository(url: "file:${System.getProperty("user.home")}/.debugMaven/repositories/release")
     }
 }
 

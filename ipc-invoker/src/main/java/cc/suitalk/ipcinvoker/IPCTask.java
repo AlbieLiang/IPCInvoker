@@ -136,6 +136,8 @@ public class IPCTask {
             if (task.hasTimeout) {
                 extInfo.setTimeout(task.timeout);
             }
+            extInfo.setServiceConnection(task.serviceConnection);
+            extInfo.setOnExceptionObserver(task.onExceptionObserver);
             IPCTaskExecutor.invokeAsync(process, new WrapperParcelable(taskClass.getName(), data),
                     IPCAsyncInvokeTaskProxy.class, new IPCInvokeCallback<WrapperParcelable>() {
                         @Override

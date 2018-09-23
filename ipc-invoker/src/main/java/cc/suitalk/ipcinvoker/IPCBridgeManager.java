@@ -152,6 +152,7 @@ class IPCBridgeManager {
                 if (serviceConnection != null) {
                     serviceConnection.onServiceConnected(name, service);
                 }
+                ServiceConnectionManager.dispatchOnServiceConnected(process, name, service);
             }
 
             @Override
@@ -162,6 +163,7 @@ class IPCBridgeManager {
                 if (serviceConnection != null) {
                     serviceConnection.onServiceDisconnected(name);
                 }
+                ServiceConnectionManager.dispatchOnServiceDisconnected(process, name);
             }
         };
         synchronized (bw) {
@@ -235,11 +237,17 @@ class IPCBridgeManager {
         getIPCBridge(process, IPCTaskExtInfo.DEFAULT);
     }
 
+    /**
+     * Release IPC Bridge.
+     *
+     * @param process
+     * @return true: in releaseIPCBridge process, false: otherwise.
+     */
     @WorkerThread
-    public void releaseIPCBridge(@NonNull final String process) {
+    public boolean releaseIPCBridge(@NonNull final String process) {
         if (IPCInvokeLogic.isCurrentProcess(process)) {
             Log.i(TAG, "the same process(%s), do not need to release IPCBridge.", process);
-            return;
+            return false;
         }
         final IPCBridgeWrapper bridgeWrapper;
         synchronized (mBridgeMap) {
@@ -247,13 +255,13 @@ class IPCBridgeManager {
         }
         if (bridgeWrapper == null) {
             Log.i(TAG, "releaseIPCBridge(%s) failed, IPCBridgeWrapper is null.", process);
-            return;
+            return false;
         }
         bridgeWrapper.latch.countDown();
         synchronized (bridgeWrapper) {
             if (bridgeWrapper.serviceConnection == null) {
                 Log.i(TAG, "releaseIPCBridge(%s) failed, ServiceConnection is null.", process);
-                return;
+                return false;
             }
         }
         mHandler.post(new Runnable() {
@@ -281,6 +289,7 @@ class IPCBridgeManager {
                 }
             }
         });
+        return true;
     }
 
     public synchronized void lockCreateBridge(boolean lock) {

@@ -121,7 +121,7 @@ public class IPCTaskExecutor {
     /**
      * Sync invoke, it must be invoked on WorkerThread or make sure the connection is established before invoked.
      *
-     * Call {@link IPCInvokerBoot#connectRemoteService(String)} to pre-connect remote Service.
+     * Call {@link IPCInvoker#connectRemoteService(String)} to pre-connect remote Service.
      *
      * @param process       remote service process name
      * @param data          data for remote process invoked, it must be a {@link Parcelable}

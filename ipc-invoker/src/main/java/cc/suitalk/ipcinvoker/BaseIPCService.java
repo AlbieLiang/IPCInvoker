@@ -112,7 +112,7 @@ public abstract class BaseIPCService extends Service {
             Log.i(TAG, "need to kill self, return null Binder object.");
             return null;
         }
-        IPCServiceManager.getImpl().put(IPCInvokeLogic.getCurrentProcessName(), this);
+        IPCServiceManager.getImpl().put(getProcessName(), this);
         mHasConnectting = true;
         return mBinder;
     }

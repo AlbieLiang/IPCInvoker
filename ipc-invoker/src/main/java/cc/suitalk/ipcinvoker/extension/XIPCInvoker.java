@@ -22,10 +22,10 @@ import android.os.Parcelable;
 import cc.suitalk.ipcinvoker.IPCInvokeCallback;
 import cc.suitalk.ipcinvoker.IPCAsyncInvokeTask;
 import cc.suitalk.ipcinvoker.IPCSyncInvokeTask;
+import cc.suitalk.ipcinvoker.IPCTask;
 import cc.suitalk.ipcinvoker.annotation.AnyThread;
 import cc.suitalk.ipcinvoker.annotation.NonNull;
 import cc.suitalk.ipcinvoker.annotation.WorkerThread;
-import cc.suitalk.ipcinvoker.IPCTask;
 
 /**
  * Created by albieliang on 2017/7/6.
@@ -55,7 +55,7 @@ public class XIPCInvoker {
     /**
      * Sync invoke, it must be invoked on WorkerThread or make sure the connection is established before invoked.
      *
-     * Call {@link cc.suitalk.ipcinvoker.IPCInvokerBoot#connectRemoteService(String)} to pre-connect remote Service.
+     * Call {@link cc.suitalk.ipcinvoker.IPCInvoker#connectRemoteService(String)} to pre-connect remote Service.
      *
      * @param process      remote service process name
      * @param data         data for remote process invoked, it must be a {@link Parcelable}

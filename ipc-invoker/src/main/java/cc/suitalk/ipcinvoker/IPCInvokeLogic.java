@@ -59,21 +59,19 @@ public class IPCInvokeLogic {
     }
 
     public static String getProcessName(Context context, int pid) {
-        if (context == null) {
-            return null;
-        }
-        ActivityManager mActivityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        if (mActivityManager != null) {
-            List<ActivityManager.RunningAppProcessInfo> list = mActivityManager.getRunningAppProcesses();
-            if (list != null && !list.isEmpty()) {
-                for (ActivityManager.RunningAppProcessInfo appProcess : list) {
-                    if (appProcess.pid == pid) {
-                        return appProcess.processName;
+        if (context != null) {
+            ActivityManager mActivityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+            if (mActivityManager != null) {
+                List<ActivityManager.RunningAppProcessInfo> list = mActivityManager.getRunningAppProcesses();
+                if (list != null && !list.isEmpty()) {
+                    for (ActivityManager.RunningAppProcessInfo appProcess : list) {
+                        if (appProcess.pid == pid) {
+                            return appProcess.processName;
+                        }
                     }
                 }
             }
         }
-
         byte[] b = new byte[128];
         FileInputStream in = null;
         try {

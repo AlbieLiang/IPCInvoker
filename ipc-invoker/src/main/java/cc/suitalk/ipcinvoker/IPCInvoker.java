@@ -131,11 +131,14 @@ public class IPCInvoker {
      */
     public static void connectRemoteService(@NonNull final String process) {
         if (hasConnectedRemoteService(process)) {
+            Log.i(TAG, "disconnectRemoteService(process : %s), has connected, skip.", process);
             return;
         }
+        Log.i(TAG, "connectRemoteService(process : %s)", process);
         ThreadPool.post(new Runnable() {
             @Override
             public void run() {
+                Log.d(TAG, "connectRemoteService(process : %s), exec prepareIPCBridge", process);
                 IPCBridgeManager.getImpl().prepareIPCBridge(process);
             }
         });
@@ -149,14 +152,17 @@ public class IPCInvoker {
      */
     public static void connectRemoteService(@NonNull final String process, final OnConnectRemoteServiceCallback callback) {
         if (IPCInvokeLogic.isCurrentProcess(process) || hasConnectedRemoteService(process)) {
+            Log.i(TAG, "disconnectRemoteService(process : %s), has connected, skip and callback.", process);
             if (callback != null) {
                 callback.onConnectCallback(true);
             }
             return;
         }
+        Log.i(TAG, "connectRemoteService(process : %s) with callback", process);
         ThreadPool.post(new Runnable() {
             @Override
             public void run() {
+                Log.d(TAG, "connectRemoteService(process : %s) with callback, exec prepareIPCBridge", process);
                 final boolean success = IPCBridgeManager.getImpl().getIPCBridge(process, IPCTaskExtInfo.DEFAULT) != null;
                 if (callback != null) {
                     callback.onConnectCallback(success);
@@ -172,11 +178,14 @@ public class IPCInvoker {
      */
     public static void disconnectRemoteService(@NonNull final String process) {
         if (!hasConnectedRemoteService(process)) {
+            Log.i(TAG, "disconnectRemoteService(process : %s), not connected, skip", process);
             return;
         }
+        Log.i(TAG, "disconnectRemoteService(process : %s)", process);
         ThreadPool.post(new Runnable() {
             @Override
             public void run() {
+                Log.d(TAG, "disconnectRemoteService(process : %s), exec releaseIPCBridge", process);
                 IPCBridgeManager.getImpl().releaseIPCBridge(process);
             }
         });
@@ -193,11 +202,14 @@ public class IPCInvoker {
      */
     public static boolean disconnectRemoteService(@NonNull final String process, final OnDisconnectRemoteServiceCallback callback) {
         if (!hasConnectedRemoteService(process)) {
+            Log.i(TAG, "disconnectRemoteService(process : %s) with callback, not connected, skip", process);
             return false;
         }
+        Log.i(TAG, "disconnectRemoteService(process : %s) with callback", process);
         ThreadPool.post(new Runnable() {
             @Override
             public void run() {
+                Log.d(TAG, "disconnectRemoteService(process : %s) exec.", process);
                 boolean r = false;
                 if (hasConnectedRemoteService(process)) {
                     final ServiceConnection sc = new ServiceConnection() {
@@ -215,6 +227,7 @@ public class IPCInvoker {
                     };
                     ServiceConnectionManager.registerServiceConnection(process, sc);
                     r = IPCBridgeManager.getImpl().releaseIPCBridge(process);
+                    Log.d(TAG, "disconnectRemoteService(process : %s), exec releaseIPCBridge(r : %s)", process, r);
                     if (!r) {
                         ServiceConnectionManager.unregisterServiceConnection(process, sc);
                     }

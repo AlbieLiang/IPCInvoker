@@ -105,9 +105,10 @@ class IPCBridgeManager {
             return null;
         }
         if (Looper.getMainLooper() == Looper.myLooper()) {
-            Log.w(TAG, "getIPCBridge failed, can not create bridge on Main thread.");
+            RemoteServiceNotConnectedException e = new RemoteServiceNotConnectedException("can not invoke on main-thread, the remote service not connected.");
+            Log.w(TAG, "getIPCBridge failed, can not create bridge on Main thread. exception : %s", android.util.Log.getStackTraceString(e));
             if (Debugger.isDebug()) {
-                throw new RemoteServiceNotConnectedException("can not invoke on main-thread, the remote service not connected.");
+                throw e;
             }
             return null;
         }
@@ -128,7 +129,9 @@ class IPCBridgeManager {
                 if (service == null) {
                     Log.i(TAG, "onServiceConnected(%s), but service is null", bw.hashCode());
                     context.unbindService(this);
-                    mBridgeMap.remove(process);
+                    synchronized (mBridgeMap) {
+                        mBridgeMap.remove(process);
+                    }
                     synchronized (bw) {
                         bw.serviceConnection = null;
                     }
@@ -158,7 +161,19 @@ class IPCBridgeManager {
             @Override
             public void onServiceDisconnected(ComponentName name) {
                 Log.i(TAG, "onServiceDisconnected(%s, tid : %s)", bw.hashCode(), Thread.currentThread().getId());
-                releaseIPCBridge(process);
+                final IPCBridgeWrapper bridgeWrapper;
+                synchronized (mBridgeMap) {
+                    bridgeWrapper = mBridgeMap.remove(process);
+                }
+                if (bridgeWrapper == null) {
+                    Log.i(TAG, "onServiceDisconnected(%s), IPCBridgeWrapper is null.", process);
+                    return;
+                }
+                bridgeWrapper.latch.countDown();
+                synchronized (bridgeWrapper) {
+                    bridgeWrapper.bridge = null;
+                    bridgeWrapper.serviceConnection = null;
+                }
                 ObjectRecycler.recycleAll(process);
                 if (serviceConnection != null) {
                     serviceConnection.onServiceDisconnected(name);

@@ -149,7 +149,7 @@ class ThreadPool {
                             r.run();
                         }
                     }, name);
-                    Log.i(TAG, "newThread(thread : %s)", name);
+                    Log.i(TAG, "newThread(name : %s, thread : %s)", name, thread);
                     return thread;
                 }
             }) {
@@ -159,8 +159,10 @@ class ThreadPool {
                         @Override
                         public void run() {
                             try {
+                                Log.v(TAG, "execute command(%s)", command.hashCode());
                                 command.run();
                             } catch (Throwable e) {
+                                Log.e(TAG, "execute command(%s) error, %s", command.hashCode(), android.util.Log.getStackTraceString(e));
                                 Thread.UncaughtExceptionHandler handler = Thread.currentThread().getUncaughtExceptionHandler();
                                 if (handler == null) {
                                     handler = Thread.getDefaultUncaughtExceptionHandler();

@@ -1,8 +1,8 @@
 # IPCInvoker
 
 [![license](http://img.shields.io/badge/license-Apache2.0-brightgreen.svg?style=flat)](https://github.com/AlbieLiang/IPCInvoker/blob/master/LICENSE)
-[![Release Version](https://img.shields.io/badge/release-1.2.1-red.svg)](https://github.com/AlbieLiang/IPCInvoker/releases)
-[![wiki](https://img.shields.io/badge/wiki-1.2.1-red.svg)](https://github.com/AlbieLiang/IPCInvoker/wiki) 
+[![Release Version](https://img.shields.io/badge/release-1.2.2-red.svg)](https://github.com/AlbieLiang/IPCInvoker/releases)
+[![wiki](https://img.shields.io/badge/wiki-1.2.2-red.svg)](https://github.com/AlbieLiang/IPCInvoker/wiki) 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/AlbieLiang/IPCInvoker/pulls)
 
 
@@ -18,7 +18,7 @@ IPCInvoker组件库已经提交到jcenter上了，可以直接dependencies中配
 
 ```gradle
 dependencies {
-    compile 'cc.suitalk.android:ipc-invoker:1.2.1'
+    compile 'cc.suitalk.android:ipc-invoker:1.2.2'
 }
 ```
 

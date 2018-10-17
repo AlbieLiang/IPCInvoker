@@ -89,11 +89,12 @@ class IPCBridgeManager {
         IPCBridgeWrapper bridgeWrapper;
         synchronized (mBridgeMap) {
             bridgeWrapper = mBridgeMap.get(process);
+            Log.d(TAG, "getIPCBridge(%s), getFromMap(bw : %s)", process, bridgeWrapper != null ? bridgeWrapper.hashCode() : null);
             if (bridgeWrapper != null) {
                 try {
                     bridgeWrapper.latch.await();
                 } catch (InterruptedException e) {
-                    Log.e(TAG, "%s", e);
+                    Log.e(TAG, "getIPCBridge, latch.await() error, %s", e);
                 }
                 return bridgeWrapper.bridge;
             }
@@ -134,11 +135,13 @@ class IPCBridgeManager {
                     }
                     synchronized (bw) {
                         bw.serviceConnection = null;
+                        bw.bridge = null;
                     }
-                    bw.bridge = null;
                 } else {
                     Log.i(TAG, "onServiceConnected(%s)", bw.hashCode());
-                    bw.bridge = AIDL_IPCInvokeBridge.Stub.asInterface(service);
+                    synchronized (bw) {
+                        bw.bridge = AIDL_IPCInvokeBridge.Stub.asInterface(service);
+                    }
                     try {
                         service.linkToDeath(new DeathRecipientImpl(process), 0);
                     } catch (RemoteException e) {
@@ -160,7 +163,8 @@ class IPCBridgeManager {
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
-                Log.i(TAG, "onServiceDisconnected(%s, tid : %s)", bw.hashCode(), Thread.currentThread().getId());
+                Log.i(TAG, "onServiceDisconnected(%s)", bw.hashCode());
+                BindServiceExecutor.unbindService(context, this);
                 final IPCBridgeWrapper bridgeWrapper;
                 synchronized (mBridgeMap) {
                     bridgeWrapper = mBridgeMap.remove(process);
@@ -169,6 +173,12 @@ class IPCBridgeManager {
                     Log.i(TAG, "onServiceDisconnected(%s), IPCBridgeWrapper is null.", process);
                     return;
                 }
+                if (bridgeWrapper != bw) {
+                    Log.i(TAG, "onServiceDisconnected(%s), IPCBridgeWrapper(pbw : %s, cbw : %s) has expired, skip."
+                            , bw.hashCode(), bridgeWrapper.hashCode(), process);
+                    return;
+                }
+                bw.latch.countDown();
                 bridgeWrapper.latch.countDown();
                 synchronized (bridgeWrapper) {
                     bridgeWrapper.bridge = null;
@@ -187,7 +197,7 @@ class IPCBridgeManager {
         try {
             final Intent intent = new Intent(context, serviceClass);
             Log.i(TAG, "bindService(bw : %s, tid : %s, intent : %s)", bw.hashCode(), Thread.currentThread().getId(), intent);
-            context.bindService(intent, sc, Context.BIND_AUTO_CREATE | Context.BIND_WAIVE_PRIORITY);
+            BindServiceExecutor.bindService(context, intent, sc, Context.BIND_AUTO_CREATE | Context.BIND_WAIVE_PRIORITY);
             bw.connectTimeoutRunnable = new Runnable() {
                 @Override
                 public void run() {
@@ -211,16 +221,7 @@ class IPCBridgeManager {
                 mHandler.removeCallbacks(bw.connectTimeoutRunnable);
                 bw.connectTimeoutRunnable = null;
             }
-        } catch (InterruptedException e) {
-            Log.e(TAG, "%s", android.util.Log.getStackTraceString(e));
-            synchronized (mBridgeMap) {
-                mBridgeMap.remove(process);
-            }
-            if (onExceptionObserver != null) {
-                onExceptionObserver.onExceptionOccur(e);
-            }
-            return null;
-        } catch (SecurityException e) {
+        } catch (InterruptedException | SecurityException e) {
             Log.e(TAG, "bindService error : %s", android.util.Log.getStackTraceString(e));
             synchronized (mBridgeMap) {
                 mBridgeMap.remove(process);
@@ -237,7 +238,6 @@ class IPCBridgeManager {
     @WorkerThread
     public boolean hasIPCBridge(@NonNull final String process) {
         if (IPCInvokeLogic.isCurrentProcess(process)) {
-//            Log.i(TAG, "the same process(%s), do not need to build IPCBridge.", process);
             return false;
         }
         return mBridgeMap.get(process) != null;

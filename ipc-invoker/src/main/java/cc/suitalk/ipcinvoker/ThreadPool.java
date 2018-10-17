@@ -86,13 +86,18 @@ class ThreadPool {
     }
 
     private Handler createHandler() {
-        final HandlerThread handlerThread = new HandlerThread("ThreadPool#WorkerThread-" + hashCode());
+        final HandlerThread handlerThread = new HandlerThread("ThreadPool#WorkerThread-" + hashCode()) {
+            @Override
+            protected void onLooperPrepared() {
+                Log.i(TAG, "createHandler(id : %d), onLooperPrepared", getThreadId());
+            }
+        };
         handlerThread.start();
         Handler handler = new Handler(handlerThread.getLooper());
         handler.post(new Runnable() {
             @Override
             public void run() {
-                Log.i(TAG, "createHandlerThread(id : %d)", handlerThread.getThreadId());
+                Log.i(TAG, "createHandler(id : %d)", handlerThread.getThreadId());
             }
         });
         return handler;

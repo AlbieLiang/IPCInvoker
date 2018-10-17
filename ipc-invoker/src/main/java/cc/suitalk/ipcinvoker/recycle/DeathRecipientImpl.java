@@ -37,7 +37,7 @@ public class DeathRecipientImpl implements IBinder.DeathRecipient {
 
     @Override
     public void binderDied() {
-        Log.i(TAG, "binderDied(%s)", process);
+        Log.i(TAG, "binderDied(impl : %s, process :%s)", this.hashCode(), process);
         if (process == null || process.length() == 0) {
             return;
         }

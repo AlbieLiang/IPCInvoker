@@ -23,7 +23,7 @@ import android.os.HandlerThread;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
-import cc.suitalk.ipcinvoker.IPCInvokerBoot;
+import cc.suitalk.ipcinvoker.IPCInvoker;
 import cc.suitalk.ipcinvoker.activate.Debuggable;
 import cc.suitalk.ipcinvoker.activate.DefaultInitDelegate;
 import cc.suitalk.ipcinvoker.activate.ExecutorServiceCreator;
@@ -61,7 +61,7 @@ public class IPCInvokerApplication extends Application {
             }
         });
         // Initialize IPCInvoker
-        IPCInvokerBoot.setup(this, new DefaultInitDelegate() {
+        IPCInvoker.setup(this, new DefaultInitDelegate() {
 
             @Override
             public void onInitialize(IPCInvokerInitializer initializer) {

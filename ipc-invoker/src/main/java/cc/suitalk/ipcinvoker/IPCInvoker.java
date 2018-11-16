@@ -196,7 +196,7 @@ public class IPCInvoker {
      *
      * You must check whether the connection is exists or not by {@link #hasConnectedRemoteService(String)} before.
      *
-     * @param callback
+     * @param callback callback it can be null
      * @param process remote service process name
      * @return true: in disconnectRemoteService process, false: otherwise
      */
@@ -241,9 +241,10 @@ public class IPCInvoker {
     }
 
     /**
+     * Check whether has Connected RemoteService or not.
      *
-     * @param process
-     * @return
+     * @param process target process name
+     * @return true : has connected, false otherwise
      */
     public static boolean hasConnectedRemoteService(@NonNull String process) {
         return IPCBridgeManager.getImpl().hasIPCBridge(process);
@@ -264,19 +265,20 @@ public class IPCInvoker {
     /**
      * Register the {@link ServiceConnection} by processName.
      *
-     * @param processName
-     * @param serviceConnection
-     * @return
+     * @param processName target process name
+     * @param serviceConnection callback ServiceConnection
+     * @return true means success, false otherwise
      */
     public static boolean registerServiceConnection(@NonNull String processName, @NonNull ServiceConnection serviceConnection) {
         return ServiceConnectionManager.registerServiceConnection(processName, serviceConnection);
     }
 
     /**
+     * Unregister the {@link ServiceConnection} by processName.
      *
-     * @param processName
-     * @param serviceConnection
-     * @return
+     * @param processName target process name
+     * @param serviceConnection callback ServiceConnection
+     * @return true means success, false otherwise
      */
     public static boolean unregisterServiceConnection(@NonNull String processName, @NonNull ServiceConnection serviceConnection) {
         return ServiceConnectionManager.unregisterServiceConnection(processName, serviceConnection);

@@ -6,11 +6,15 @@ import android.content.ServiceConnection;
 import android.os.Handler;
 import android.os.HandlerThread;
 
+import cc.suitalk.ipcinvoker.tools.Log;
+
 /**
- * Created by aierbi on 2018/10/17.
+ * Created by albieliang on 2018/10/17.
  */
 
 class BindServiceExecutor {
+
+    private static final String TAG = "IPC.BindServiceExecutor";
 
     private static Handler sBindServiceHandler;
 
@@ -19,6 +23,7 @@ class BindServiceExecutor {
             @Override
             protected void onLooperPrepared() {
                 sBindServiceHandler = new Handler();
+                Log.i(TAG, "onLooperPrepared(tid : %s)", getId());
             }
         };
         thread.start();
@@ -26,6 +31,7 @@ class BindServiceExecutor {
     }
 
     public static boolean bindService(final Context context, final Intent intent, final ServiceConnection conn, final int flags) {
+//        sBindServiceHandler.removeCallbacks();
         return sBindServiceHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -38,7 +44,11 @@ class BindServiceExecutor {
         return sBindServiceHandler.post(new Runnable() {
             @Override
             public void run() {
-                context.unbindService(conn);
+                try {
+                    context.unbindService(conn);
+                } catch (Exception e) {
+                    Log.e(TAG, "unbindService error, %s", android.util.Log.getStackTraceString(e));
+                }
             }
         });
     }

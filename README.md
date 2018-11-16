@@ -18,7 +18,7 @@ IPCInvoker组件库已经提交到jcenter上了，可以直接dependencies中配
 
 ```gradle
 dependencies {
-    compile 'cc.suitalk.android:ipc-invoker:1.2.2'
+    compile 'cc.suitalk.android:ipc-invoker:<last-version>'
 }
 ```
 

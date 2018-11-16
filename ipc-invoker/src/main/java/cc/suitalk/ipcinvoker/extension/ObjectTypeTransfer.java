@@ -30,11 +30,15 @@ import java.util.Map;
 
 public class ObjectTypeTransfer {
 
-    private static List<BaseTypeTransfer> sTransferList = new LinkedList<>();
-    private static Map<String, BaseTypeTransfer> sTransferMap = new HashMap<>();
+    private static final List<BaseTypeTransfer> sTransferList = new LinkedList<>();
+    private static final Map<String, BaseTypeTransfer> sTransferMap = new HashMap<>();
 
     public static BaseTypeTransfer getTypeTransfer(String transferClass) {
         return sTransferMap.get(transferClass);
+    }
+
+    public static BaseTypeTransfer getTypeTransfer(Class<?> transferClass) {
+        return sTransferMap.get(transferClass.getName());
     }
 
     public static BaseTypeTransfer getTypeTransfer(Object o) {
@@ -53,10 +57,10 @@ public class ObjectTypeTransfer {
         }
     }
 
-    public static Object readFromParcel(String transferClass, Parcel dest) {
+    public static Object readFromParcel(String transferClass, Parcel in) {
         BaseTypeTransfer transfer = getTypeTransfer(transferClass);
         if (transfer != null) {
-            return transfer.readFromParcel(dest);
+            return transfer.readFromParcel(in);
         }
         return null;
     }

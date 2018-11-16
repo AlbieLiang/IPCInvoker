@@ -129,7 +129,7 @@ class IPCBridgeManager {
             public void onServiceConnected(ComponentName name, IBinder service) {
                 if (service == null) {
                     Log.i(TAG, "onServiceConnected(%s), but service is null", bw.hashCode());
-                    context.unbindService(this);
+                    BindServiceExecutor.unbindService(context, this);
                     synchronized (mBridgeMap) {
                         mBridgeMap.remove(process);
                     }
@@ -290,11 +290,7 @@ class IPCBridgeManager {
                     Log.i(TAG, "releaseIPCBridge(%s) failed, ServiceConnection is null.", process);
                     return;
                 }
-                try {
-                    IPCInvokeLogic.getContext().unbindService(sc);
-                } catch (Exception e) {
-                    Log.e(TAG, "unbindService(%s) error, %s", process, android.util.Log.getStackTraceString(e));
-                }
+                BindServiceExecutor.unbindService(IPCInvokeLogic.getContext(), sc);
                 synchronized (mBridgeMap) {
                     mBridgeMap.remove(process);
                 }

@@ -91,7 +91,25 @@ public class IPCTask {
         }
 
         public Async<InputType, ResultType> callback(IPCInvokeCallback<ResultType> callback) {
-            this.callback = callback;
+            return callback(false, callback);
+        }
+
+        public Async<InputType, ResultType> callback(boolean callbackOnUiThread, final IPCInvokeCallback<ResultType> callback) {
+            if (callbackOnUiThread && callback != null) {
+                this.callback = new IPCInvokeCallback<ResultType>() {
+                    @Override
+                    public void onCallback(final ResultType data) {
+                        ThreadCaller.post(true, new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onCallback(data);
+                            }
+                        });
+                    }
+                };
+            } else {
+                this.callback = callback;
+            }
             return this;
         }
 
@@ -302,7 +320,7 @@ public class IPCTask {
             if (onExceptionObservable == null) {
                 return;
             }
-            ((OnExceptionObservable) callback).unregisterObserver(observer);
+            onExceptionObservable.unregisterObserver(observer);
         }
     }
 

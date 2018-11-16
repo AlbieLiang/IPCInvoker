@@ -24,6 +24,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import cc.suitalk.ipcinvoker.IPCAsyncInvokeTask;
 import cc.suitalk.ipcinvoker.IPCInvokeCallback;
 import cc.suitalk.ipcinvoker.IPCSyncInvokeTask;
@@ -69,13 +74,13 @@ public class IPCTaskTestCaseActivity extends AppCompatActivity {
                         TestType data = new TestType();
                         data.key = "wx-developer";
                         data.value = "XIPCInvoker";
-                        final Integer result = XIPCInvoker.invokeSync(process, data, IPCInvokeTask_getInt.class);
+                        final List<Integer> result = XIPCInvoker.invokeSync(process, data, IPCInvokeTask_getList.class);
 
                         Log.i(TAG, "result : %s", result);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                msgPanelTv.setText("get result : " + result);
+                                msgPanelTv.setText("get result, hash : " + result.get(0) + ", timestamp : " + result.get(1));
                             }
                         });
                     }
@@ -90,11 +95,9 @@ public class IPCTaskTestCaseActivity extends AppCompatActivity {
                 ThreadPool.post(new Runnable() {
                     @Override
                     public void run() {
-                        TestType data = new TestType();
-                        data.key = "wx-developer";
-                        data.value = "AlbieLiang";
+                        Map<String, String> data = new HashMap<>();
+                        data.put("wx-developer", "AlbieLiang");
                         XIPCInvoker.invokeAsync(process, data, IPCInvokeTask_getString.class, new IPCInvokeCallback<String>() {
-
                             @Override
                             public void onCallback(final String data) {
                                 Log.i(TAG, "result : %s", data);
@@ -113,22 +116,25 @@ public class IPCTaskTestCaseActivity extends AppCompatActivity {
         processEt = (EditText) findViewById(R.id.remoteProcessNameEt);
     }
 
-    private static class IPCInvokeTask_getInt implements IPCSyncInvokeTask<TestType, Integer> {
+    private static class IPCInvokeTask_getList implements IPCSyncInvokeTask<TestType, List<Integer>> {
 
         @Override
-        public Integer invoke(TestType data) {
-            return (data.key + data.value + System.currentTimeMillis()).hashCode();
+        public List<Integer> invoke(TestType data) {
+            List<Integer> list = new LinkedList<>();
+            list.add((data.key + data.value + System.currentTimeMillis()).hashCode());
+            list.add((int) System.currentTimeMillis());
+            return list;
         }
     }
 
     @Singleton
-    private static class IPCInvokeTask_getString implements IPCAsyncInvokeTask<TestType, String> {
+    private static class IPCInvokeTask_getString implements IPCAsyncInvokeTask<Map<String, String>, String> {
 
         int count;
 
         @Override
-        public void invoke(TestType data, IPCInvokeCallback<String> callback) {
-            callback.onCallback(data.key + ":" + data.value + ", count : " + (count++));
+        public void invoke(Map<String, String> data, IPCInvokeCallback<String> callback) {
+            callback.onCallback("wx-developer :" + data.get("wx-developer") + ", count : " + (count++));
         }
     }
 }

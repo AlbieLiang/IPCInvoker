@@ -1,8 +1,8 @@
 # IPCInvoker
 
 [![license](http://img.shields.io/badge/license-Apache2.0-brightgreen.svg?style=flat)](https://github.com/AlbieLiang/IPCInvoker/blob/master/LICENSE)
-[![Release Version](https://img.shields.io/badge/release-1.2.2-red.svg)](https://github.com/AlbieLiang/IPCInvoker/releases)
-[![wiki](https://img.shields.io/badge/wiki-1.2.2-red.svg)](https://github.com/AlbieLiang/IPCInvoker/wiki) 
+[![Release Version](https://img.shields.io/badge/release-1.2.5-red.svg)](https://github.com/AlbieLiang/IPCInvoker/releases)
+[![wiki](https://img.shields.io/badge/wiki-1.2.5-red.svg)](https://github.com/AlbieLiang/IPCInvoker/wiki) 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/AlbieLiang/IPCInvoker/pulls)
 
 
@@ -141,20 +141,21 @@ public class IPCTaskTestCase {
         IPCTask.create("cc.suitalk.ipcinvoker.sample:push")
                 .timeout(10)
                 .async(AsyncInvokeTask.class)
-                .data(new IPCString("test invokeAsync"))
+                .data("test invokeAsync")
                 .defaultResult(false)
-                .callback(new IPCInvokeCallback<Boolean>() {
+                .callback(true, new IPCInvokeCallback<Boolean>() {
                     @Override
                     public void onCallback(Boolean data) {
+                        /// callback on UI Thread
                         Log.i(TAG, "invokeAsync result : %s", data);
                     }
                 }).invoke();
     }
 
-    private static class AsyncInvokeTask implements IPCAsyncInvokeTask<IPCString, Boolean> {
+    private static class AsyncInvokeTask implements IPCAsyncInvokeTask<String, Boolean> {
 
         @Override
-        public void invoke(IPCString data, IPCInvokeCallback<Boolean> callback) {
+        public void invoke(String data, IPCInvokeCallback<Boolean> callback) {
             callback.onCallback(true);
         }
     }
@@ -168,19 +169,21 @@ public class IPCTaskTestCase {
     private static final String TAG = "IPCTaskTestCase";
 
     public static void invokeSync() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("key", "value");
         Boolean result = IPCTask.create("cc.suitalk.ipcinvoker.sample:push")
                 .timeout(20)
                 .sync(SyncInvokeTask.class)
-                .data("test invokeSync")
+                .data(map)
                 .defaultResult(false)
                 .invoke();
         Log.i(TAG, "invokeSync result : %s", result);
     }
 
-    private static class SyncInvokeTask implements IPCSyncInvokeTask<String, Boolean> {
+    private static class SyncInvokeTask implements IPCSyncInvokeTask<Map<String, Object>, Boolean> {
 
         @Override
-        public Boolean invoke(String data) {
+        public Boolean invoke(Map<String, Object> data) {
             return true;
         }
     }

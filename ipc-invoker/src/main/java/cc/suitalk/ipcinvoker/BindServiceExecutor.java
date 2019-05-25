@@ -22,7 +22,6 @@ class BindServiceExecutor {
         HandlerThread thread = new HandlerThread("IPC.BindServiceExecutor-Thread") {
             @Override
             protected void onLooperPrepared() {
-                sBindServiceHandler = new Handler();
                 Log.i(TAG, "onLooperPrepared(tid : %s)", getId());
             }
         };

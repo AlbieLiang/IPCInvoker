@@ -60,16 +60,20 @@ public class IPCInvokeLogic {
 
     public static String getProcessName(Context context, int pid) {
         if (context != null) {
-            ActivityManager mActivityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-            if (mActivityManager != null) {
-                List<ActivityManager.RunningAppProcessInfo> list = mActivityManager.getRunningAppProcesses();
-                if (list != null && !list.isEmpty()) {
-                    for (ActivityManager.RunningAppProcessInfo appProcess : list) {
-                        if (appProcess.pid == pid) {
-                            return appProcess.processName;
+            try {
+                ActivityManager mActivityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+                if (mActivityManager != null) {
+                    List<ActivityManager.RunningAppProcessInfo> list = mActivityManager.getRunningAppProcesses();
+                    if (list != null && !list.isEmpty()) {
+                        for (ActivityManager.RunningAppProcessInfo appProcess : list) {
+                            if (appProcess.pid == pid) {
+                                return appProcess.processName;
+                            }
                         }
                     }
                 }
+            } catch (Exception exception) {
+                Log.e(TAG, "get running process by system error: %s", android.util.Log.getStackTraceString(e));
             }
         }
         byte[] b = new byte[128];

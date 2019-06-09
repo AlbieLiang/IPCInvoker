@@ -17,6 +17,7 @@
 
 package cc.suitalk.ipcinvoker.sample.event;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import cc.suitalk.ipcinvoker.event.IPCDispatcher;
@@ -32,22 +33,25 @@ public class IPCEventSample {
 
     public static final String TAG = "IPCEventSample";
 
-    public class IPCEventDispatcher extends IPCDispatcher {
+    private class IPCEventDispatcher extends IPCDispatcher {
     }
 
     public void aVoid() {
         final IPCObserver observer = new IPCObserver() {
             @Override
             public void onCallback(final Bundle data) {
+                @SuppressLint("DefaultLocale")
                 String log = String.format("onCallback(actions : %d), timestamp : %d",
                         data.getInt("action"), data.getLong("timestamp"));
                 Log.i(TAG, log);
             }
         };
+        // register Observer to Dispatcher
         IPCObservable observable = new IPCObservable("cc.suitalk.ipcinvoker.sample:push", IPCEventDispatcher.class);
         observable.registerIPCObserver(observer);
 
-        OnClickEventDispatcher dispatcher = new OnClickEventDispatcher();
+        // publish event
+        IPCEventDispatcher dispatcher = new IPCEventDispatcher();
 
         Bundle event = new Bundle();
         event.putInt("action", 1);

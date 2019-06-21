@@ -34,7 +34,11 @@ class BindServiceExecutor {
         return sBindServiceHandler.post(new Runnable() {
             @Override
             public void run() {
-                context.bindService(intent, conn, flags);
+                try {
+                    context.bindService(intent, conn, flags);
+                } catch (java.lang.Exception e) {
+                    Log.e(TAG, "bindService %s", android.util.Log.getStackTraceString(e));
+                }
             }
         });
     }

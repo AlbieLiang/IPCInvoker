@@ -72,7 +72,7 @@ public class IPCInvokeLogic {
                         }
                     }
                 }
-            } catch (Exception exception) {
+            } catch (Exception e) {
                 Log.e(TAG, "get running process by system error: %s", android.util.Log.getStackTraceString(e));
             }
         }

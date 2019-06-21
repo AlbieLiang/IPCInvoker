@@ -20,20 +20,16 @@ package cc.suitalk.ipcinvoker.sample.app;
 import android.app.Application;
 import android.os.HandlerThread;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-
 import cc.suitalk.ipcinvoker.IPCInvoker;
 import cc.suitalk.ipcinvoker.activate.Debuggable;
 import cc.suitalk.ipcinvoker.activate.DefaultInitDelegate;
-import cc.suitalk.ipcinvoker.activate.ExecutorServiceCreator;
 import cc.suitalk.ipcinvoker.activate.IPCInvokerInitializer;
 import cc.suitalk.ipcinvoker.activate.ThreadCreator;
 import cc.suitalk.ipcinvoker.activate.TypeTransferInitializer;
 import cc.suitalk.ipcinvoker.sample.BuildConfig;
 import cc.suitalk.ipcinvoker.sample.nimble.TestTypeTransfer;
-import cc.suitalk.ipcinvoker.sample.service.PushProcessIPCService;
 import cc.suitalk.ipcinvoker.sample.service.MainProcessIPCService;
+import cc.suitalk.ipcinvoker.sample.service.PushProcessIPCService;
 import cc.suitalk.ipcinvoker.sample.service.SupportProcessIPCService;
 import cc.suitalk.ipcinvoker.tools.DefaultLogPrinter;
 import cc.suitalk.ipcinvoker.tools.Log;

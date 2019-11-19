@@ -44,6 +44,7 @@ allprojects {
     apply from : "$rootDir/config.gradle"
     repositories {
         jcenter()
+        maven {url 'https://maven.google.com/'}
         if (buildConfig.debug) {
             maven {
                 url "file:${System.getProperty("user.home")}/.debugMaven/repositories/release"

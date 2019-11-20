@@ -104,7 +104,7 @@ public class IPCObserverRestorer {
             }
             return set;
         } catch (JSONException e) {
-            Log.w(TAG, "");
+            Log.w(TAG, "getEventProcessSet, %s", android.util.Log.getStackTraceString(e));
             return Collections.emptySet();
         }
     }

@@ -25,7 +25,7 @@ import cc.suitalk.ipcinvoker.tools.storage.KVStorage;
 import cc.suitalk.ipcinvoker.type.IPCVoid;
 
 public class IPCObserverRestorer {
-    private static final String TAG = "IPCObserverRestorer";
+    private static final String TAG = "IPCInvoker.IPCObserverRestorer";
     // key: event,  value:observer
     private static final Map<String, Set<IPCObserver>> eventObserverMap = new HashMap<>();
     private static final String KEY_EVENT_PROCESS_LIST = "event_process_list_";

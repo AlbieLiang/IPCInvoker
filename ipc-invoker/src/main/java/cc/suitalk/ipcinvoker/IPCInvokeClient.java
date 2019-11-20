@@ -71,12 +71,7 @@ public class IPCInvokeClient {
             @Override
             public void onCallback(IPCVoid data) {
                 // save register
-                ThreadPool.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        IPCObserverRestorer.addIPCObserver(mProcess, event, observer);
-                    }
-                });
+                IPCObserverRestorer.addIPCObserver(mProcess, event, observer);
             }
         });
         return true;
@@ -94,12 +89,7 @@ public class IPCInvokeClient {
             @Override
             public void onCallback(Bundle data) {
                 // remove register
-                ThreadPool.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        IPCObserverRestorer.removeIPCObserver(mProcess, event, observer);
-                    }
-                });
+                IPCObserverRestorer.removeIPCObserver(mProcess, event, observer);
             }
         });
         return true;

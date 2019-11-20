@@ -20,7 +20,7 @@ import cc.suitalk.ipcinvoker.tools.Log;
 import cc.suitalk.ipcinvoker.type.IPCVoid;
 
 public class IPCObserverRestoreTestActivity extends AppCompatActivity {
-    private static final String TAG = "IPCObserverRestoreTestActivity";
+    private static final String TAG = "IPCInvoker.IPCObserverRestoreTestActivity";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

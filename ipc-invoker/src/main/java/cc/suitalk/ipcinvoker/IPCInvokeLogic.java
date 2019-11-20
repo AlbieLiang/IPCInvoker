@@ -19,12 +19,14 @@ package cc.suitalk.ipcinvoker;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.text.TextUtils;
 
 import junit.framework.Assert;
 
 import java.io.FileInputStream;
 import java.util.List;
 
+import cc.suitalk.ipcinvoker.annotation.NonNull;
 import cc.suitalk.ipcinvoker.tools.Log;
 
 /**
@@ -101,5 +103,28 @@ public class IPCInvokeLogic {
             }
         }
         return null;
+    }
+
+    /**
+     *  判断进程是否存活
+     */
+    public static boolean isProcessLive(@NonNull Context context, @NonNull String processName) {
+        if (TextUtils.isEmpty(processName)) {
+            return false;
+        }
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        if (am == null) {
+            return false;
+        }
+        List<ActivityManager.RunningAppProcessInfo> list = am.getRunningAppProcesses();
+        if (list == null) {
+            return false;
+        }
+        for(ActivityManager.RunningAppProcessInfo info : list){
+            if(processName.equals(info.processName)){
+                return true;
+            }
+        }
+        return false;
     }
 }

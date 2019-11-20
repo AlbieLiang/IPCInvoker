@@ -77,6 +77,12 @@
                     android:layout_height="wrap_content"
                     android:text="Open IPCInvoker Extension Test Activity"
                     android:layout_marginBottom="10dp"/>
+                <Button
+                    android:id="@+id/jumpToIPCObserverRestoreTestBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Open IPCObserver Restore Test Activity"
+                    android:layout_marginBottom="10dp"/>
             </LinearLayout>
 
         </LinearLayout>

@@ -59,6 +59,7 @@ class IPCBridgeManager {
     private Map<String, IPCBridgeWrapper> mBridgeMap;
 
     private volatile boolean mLockCreateBridge;
+    private int mBindServiceFlags = Context.BIND_AUTO_CREATE | Context.BIND_WAIVE_PRIORITY;
 
     public static IPCBridgeManager getImpl() {
         if (sInstance == null) {
@@ -197,7 +198,7 @@ class IPCBridgeManager {
         try {
             final Intent intent = new Intent(context, serviceClass);
             Log.i(TAG, "bindService(bw : %s, tid : %s, intent : %s)", bw.hashCode(), Thread.currentThread().getId(), intent);
-            BindServiceExecutor.bindService(context, intent, sc, Context.BIND_AUTO_CREATE | Context.BIND_WAIVE_PRIORITY);
+            BindServiceExecutor.bindService(context, intent, sc, mBindServiceFlags);
             bw.connectTimeoutRunnable = new Runnable() {
                 @Override
                 public void run() {
@@ -329,6 +330,10 @@ class IPCBridgeManager {
 
     public <T extends BaseIPCService> void addIPCService(String processName, Class<T> service) {
         mServiceClassMap.put(processName, service);
+    }
+
+    public void setBindServiceFlags(int bindServiceFlags) {
+        this.mBindServiceFlags = bindServiceFlags;
     }
 
     private static class IPCBridgeWrapper {

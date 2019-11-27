@@ -86,6 +86,11 @@ public class IPCInvoker {
                 }
                 KVStorage.set(kvStorage);
             }
+
+            @Override
+            public void setBindServiceFlags(int flags) {
+                IPCBridgeManager.getImpl().setBindServiceFlags(flags);
+            }
         };
         delegate.onInitialize(initializer);
         delegate.onAddTypeTransfer(new TypeTransferInitializer() {

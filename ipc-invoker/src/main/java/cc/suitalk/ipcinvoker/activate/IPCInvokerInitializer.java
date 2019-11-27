@@ -38,4 +38,10 @@ public interface IPCInvokerInitializer {
     void setDebugger(Debuggable debugger);
 
     void setKVStorage(KVStorage kvStorage);
+
+    /**
+     * @see #{Context.BindServiceFlags}
+     * @param flags
+     */
+    void setBindServiceFlags(int flags);
 }

@@ -75,6 +75,11 @@ public class IPCInvoker {
             public void setDebugger(Debuggable debugger) {
                 Debugger.setDebuggable(debugger);
             }
+
+            @Override
+            public void setBindServiceFlags(int flags) {
+                IPCBridgeManager.getImpl().setBindServiceFlags(flags);
+            }
         };
         delegate.onInitialize(initializer);
         delegate.onAddTypeTransfer(new TypeTransferInitializer() {

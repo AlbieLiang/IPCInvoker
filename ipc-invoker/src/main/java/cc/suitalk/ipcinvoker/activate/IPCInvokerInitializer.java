@@ -35,4 +35,10 @@ public interface IPCInvokerInitializer {
     void setThreadCreator(ThreadCreator creator);
 
     void setDebugger(Debuggable debugger);
+
+    /**
+     * @see #{Context.BindServiceFlags}
+     * @param flags
+     */
+    void setBindServiceFlags(int flags);
 }

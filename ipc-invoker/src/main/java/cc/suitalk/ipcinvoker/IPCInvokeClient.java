@@ -27,6 +27,8 @@ import cc.suitalk.ipcinvoker.annotation.NonNull;
 import cc.suitalk.ipcinvoker.annotation.WorkerThread;
 import cc.suitalk.ipcinvoker.event.IPCEventBus;
 import cc.suitalk.ipcinvoker.event.IPCObserver;
+import cc.suitalk.ipcinvoker.restore.IPCObserverRestorer;
+import cc.suitalk.ipcinvoker.type.IPCVoid;
 
 /**
  * Created by albieliang on 2017/6/18.
@@ -56,7 +58,7 @@ public class IPCInvokeClient {
     }
 
     @AnyThread
-    public boolean registerIPCObserver(String event, @NonNull IPCObserver observer) {
+    public boolean registerIPCObserver(final String event, @NonNull final IPCObserver observer) {
         if (event == null || event.length() == 0 || observer == null) {
             return false;
         }
@@ -64,18 +66,32 @@ public class IPCInvokeClient {
         data.putString(TOKEN, buildToken(observer));
         data.putString(EVENT, event);
         IPCInvoker.invokeAsync(mProcess, data, IPCInvokeTask_RegisterIPCObserver.class, observer);
+        // save observer and event after application startup
+        IPCInvoker.invokeAsync(mProcess, null, IPCTestAsyncTask.class, new IPCInvokeCallback<IPCVoid>() {
+            @Override
+            public void onCallback(IPCVoid data) {
+                // save register
+                IPCObserverRestorer.addIPCObserver(mProcess, event, observer);
+            }
+        });
         return true;
     }
 
     @AnyThread
-    public boolean unregisterIPCObserver(String event, @NonNull IPCObserver observer) {
+    public boolean unregisterIPCObserver(final String event, @NonNull final IPCObserver observer) {
         if (event == null || event.length() == 0 || observer == null) {
             return false;
         }
         Bundle data = new Bundle();
         data.putString(TOKEN, buildToken(observer));
         data.putString(EVENT, event);
-        IPCInvoker.invokeAsync(mProcess, data, IPCInvokeTask_UnregisterIPCObserver.class, null);
+        IPCInvoker.invokeAsync(mProcess, data, IPCInvokeTask_UnregisterIPCObserver.class, new IPCInvokeCallback<Bundle>() {
+            @Override
+            public void onCallback(Bundle data) {
+                // remove register
+                IPCObserverRestorer.removeIPCObserver(mProcess, event, observer);
+            }
+        });
         return true;
     }
 
@@ -101,15 +117,24 @@ public class IPCInvokeClient {
     private static class IPCInvokeTask_UnregisterIPCObserver implements IPCAsyncInvokeTask<Bundle, Bundle> {
 
         @Override
-        public void invoke(Bundle data, final IPCInvokeCallback callback) {
+        public void invoke(Bundle data, final IPCInvokeCallback<Bundle> callback) {
             final String token = data.getString(TOKEN);
             final String event = data.getString(EVENT);
             IPCEventBus.getImpl().unregisterIPCObserver(event, new IPCObserverProxy(token) {
                 @Override
                 public void onCallback(Bundle data) {
-//                    callback.onCallback(data);
                 }
             });
+            if (callback != null) {
+                callback.onCallback(null);
+            }
+        }
+    }
+
+    private static class IPCTestAsyncTask implements IPCAsyncInvokeTask<IPCVoid, IPCVoid> {
+        @Override
+        public void invoke(IPCVoid data, final IPCInvokeCallback<IPCVoid> callback) {
+            callback.onCallback(null);
         }
     }
 

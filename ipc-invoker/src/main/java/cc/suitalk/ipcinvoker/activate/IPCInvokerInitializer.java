@@ -19,6 +19,7 @@ package cc.suitalk.ipcinvoker.activate;
 
 import cc.suitalk.ipcinvoker.BaseIPCService;
 import cc.suitalk.ipcinvoker.tools.log.ILogPrinter;
+import cc.suitalk.ipcinvoker.tools.storage.KVStorage;
 
 /**
  * Created by albieliang on 2017/5/28.
@@ -35,6 +36,8 @@ public interface IPCInvokerInitializer {
     void setThreadCreator(ThreadCreator creator);
 
     void setDebugger(Debuggable debugger);
+
+    void setKVStorage(KVStorage kvStorage);
 
     /**
      * @see #{Context.BindServiceFlags}

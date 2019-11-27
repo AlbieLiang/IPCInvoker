@@ -84,5 +84,11 @@ public class IPCInvokerMainActivity extends AppCompatActivity {
                 startActivity(new Intent(v.getContext(), IPCInvokerExtensionTestCaseActivity.class));
             }
         });
+        findViewById(R.id.jumpToIPCObserverRestoreTestBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(v.getContext(), IPCObserverRestoreTestActivity.class));
+            }
+        });
     }
 }

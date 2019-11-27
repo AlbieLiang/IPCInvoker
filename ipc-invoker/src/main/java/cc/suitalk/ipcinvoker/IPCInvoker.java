@@ -26,9 +26,12 @@ import android.os.Parcelable;
 import junit.framework.Assert;
 
 import cc.suitalk.ipcinvoker.activate.Debuggable;
+import cc.suitalk.ipcinvoker.restore.IPCObserverRestorer;
+import cc.suitalk.ipcinvoker.tools.storage.DefaultKVStorage;
 import cc.suitalk.ipcinvoker.activate.ExecutorServiceCreator;
 import cc.suitalk.ipcinvoker.activate.IPCInvokerInitDelegate;
 import cc.suitalk.ipcinvoker.activate.IPCInvokerInitializer;
+import cc.suitalk.ipcinvoker.tools.storage.KVStorage;
 import cc.suitalk.ipcinvoker.activate.ThreadCreator;
 import cc.suitalk.ipcinvoker.activate.TypeTransferInitializer;
 import cc.suitalk.ipcinvoker.annotation.AnyThread;
@@ -47,7 +50,7 @@ public class IPCInvoker {
 
     private static final String TAG = "IPC.IPCInvoker";
 
-    public static void setup(@NonNull Application application, @NonNull IPCInvokerInitDelegate delegate) {
+    public static void setup(@NonNull final Application application, @NonNull IPCInvokerInitDelegate delegate) {
         Assert.assertNotNull(application);
         IPCInvokeLogic.setContext(application);
         final IPCInvokerInitializer initializer = new IPCInvokerInitializer() {
@@ -77,6 +80,14 @@ public class IPCInvoker {
             }
 
             @Override
+            public void setKVStorage(KVStorage kvStorage) {
+                if (kvStorage != null) {
+                    kvStorage.setContext(application);
+                }
+                KVStorage.set(kvStorage);
+            }
+
+            @Override
             public void setBindServiceFlags(int flags) {
                 IPCBridgeManager.getImpl().setBindServiceFlags(flags);
             }
@@ -89,6 +100,16 @@ public class IPCInvoker {
             }
         });
         delegate.onAttachServiceInfo(initializer);
+        if (KVStorage.get() == null) {
+            KVStorage.set(new DefaultKVStorage(application));
+        }
+        // restore disconnected ipc observer
+        ThreadPool.post(new Runnable() {
+            @Override
+            public void run() {
+                IPCObserverRestorer.restore();
+            }
+        });
         Log.i(TAG, "setup IPCInvoker(process : %s, application : %s)", IPCInvokeLogic.getCurrentProcessName(), application.hashCode());
     }
 

@@ -85,7 +85,7 @@ public class IPCObserverRestorer {
     private static Set<EventProcess> getEventProcessSet(@NonNull String targetProcess) {
         String json = KVStorage.get().getString(KEY_EVENT_PROCESS_LIST + targetProcess, null);
         if (TextUtils.isEmpty(json)) {
-            return Collections.emptySet();
+            return new HashSet<>(0);
         }
         try {
             JSONArray jsonArray = new JSONArray(json);
@@ -105,7 +105,7 @@ public class IPCObserverRestorer {
             return set;
         } catch (JSONException e) {
             Log.w(TAG, "getEventProcessSet, %s", android.util.Log.getStackTraceString(e));
-            return Collections.emptySet();
+            return new HashSet<>(0);
         }
     }
 

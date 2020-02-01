@@ -17,6 +17,7 @@
 
 package cc.suitalk.ipcinvoker.recycle;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -32,7 +33,7 @@ public class ObjectRecycler {
 
     private static final String TAG = "IPC.ObjectRecycler";
 
-    private static final Set<Object> sObjectSet = new HashSet<>();
+    private static final Set<Object> sObjectSet = Collections.synchronizedSet(new HashSet<>());
     private static final Map<String, Set<Recyclable>> sMap = new HashMap<>();
 
     public static void keepRef(Object o) {

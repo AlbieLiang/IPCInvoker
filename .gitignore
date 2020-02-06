@@ -8,3 +8,4 @@
 /build
 /captures
 .externalNativeBuild
+bintray-config.properties

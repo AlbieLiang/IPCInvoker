@@ -18,7 +18,7 @@
 apply plugin: 'com.android.library'
 //apply plugin: 'maven'
 //
-apply plugin: 'com.github.dcendents.android-maven'
+//apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 group = "cc.suitalk.tools"            // Maven Group ID for the artifact，
@@ -48,54 +48,54 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    provided 'com.android.support:appcompat-v7:25.1.0'
-    testCompile 'junit:junit:4.12'
-    compile project(':ipc-invoker-extension-annotation')
+    api fileTree(dir: 'libs', include: ['*.jar'])
+    compileOnly 'com.android.support:appcompat-v7:28.0.0'
+    testImplementation 'junit:junit:4.12'
+    api project(':ipc-invoker-extension-annotation')
 }
 
-uploadArchives {
-    repositories.mavenDeployer {
-        // 如果你公司或者自己搭了nexus私服，那么可以将插件deploy到上面去
-        //        repository(url: "http://10.XXX.XXX.XXX:8080/nexus/content/repositories/releases/") {
-        //            authentication(userName: "admin", password: "admin")
-        //        }
-        // 如果没有私服的话，发布到本地也是ok的
-        repository(url: "file:${System.getProperty("user.home")}/.debugMaven/repositories/release")
-    }
-}
-install {
-    repositories.mavenInstaller {
-        // This generates POM.xml with proper parameters
-        pom {
-            project {
-                packaging 'jar'
-                // Add your description here
-                name 'A code generator gradle plugin for IPCInvoker, extends from ArbitraryGen.'
-                url bintrayConfig.siteUrl
-                // Set your license
-                licenses {
-                    license {
-                        name bintrayConfig.licenseName
-                        url bintrayConfig.licenseUrl
-                    }
-                }
-                developers {
-                    developer {
-                        id bintrayConfig.developerId
-                        name bintrayConfig.developerName
-                        email bintrayConfig.developerEmail
-                    }
-                }
-                scm {
-                    connection bintrayConfig.gitUrl
-                    developerConnection bintrayConfig.gitUrl
-                    url bintrayConfig.siteUrl
-                }
-            }
-        }
-    }
-}
+//uploadArchives {
+//    repositories.mavenDeployer {
+//        // 如果你公司或者自己搭了nexus私服，那么可以将插件deploy到上面去
+//        //        repository(url: "http://10.XXX.XXX.XXX:8080/nexus/content/repositories/releases/") {
+//        //            authentication(userName: "admin", password: "admin")
+//        //        }
+//        // 如果没有私服的话，发布到本地也是ok的
+//        repository(url: "file:${System.getProperty("user.home")}/.debugMaven/repositories/release")
+//    }
+//}
+//install {
+//    repositories.mavenInstaller {
+//        // This generates POM.xml with proper parameters
+//        pom {
+//            project {
+//                packaging 'jar'
+//                // Add your description here
+//                name 'A code generator gradle plugin for IPCInvoker, extends from ArbitraryGen.'
+//                url bintrayConfig.siteUrl
+//                // Set your license
+//                licenses {
+//                    license {
+//                        name bintrayConfig.licenseName
+//                        url bintrayConfig.licenseUrl
+//                    }
+//                }
+//                developers {
+//                    developer {
+//                        id bintrayConfig.developerId
+//                        name bintrayConfig.developerName
+//                        email bintrayConfig.developerEmail
+//                    }
+//                }
+//                scm {
+//                    connection bintrayConfig.gitUrl
+//                    developerConnection bintrayConfig.gitUrl
+//                    url bintrayConfig.siteUrl
+//                }
+//            }
+//        }
+//    }
+//}
 
 //task copyDependencies(type: Copy) {
 //    from configurations.compile.collect {

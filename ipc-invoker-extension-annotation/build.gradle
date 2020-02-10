@@ -20,7 +20,7 @@ apply plugin: 'java'
 apply plugin: 'application'
 //apply plugin: 'maven'
 
-//apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 group = "cc.suitalk.tools"            // Maven Group ID for the artifact，
@@ -56,38 +56,38 @@ targetCompatibility = "1.7"
 //    version = this.version
 //}
 
-//install {
-//    repositories.mavenInstaller {
-//        // This generates POM.xml with proper parameters
-//        pom {
-//            project {
-//                packaging 'jar'
-//                // Add your description here
-//                name 'A ag-extension for IPCInvoker to generate code.'
-//                url bintrayConfig.siteUrl
-//                // Set your license
-//                licenses {
-//                    license {
-//                        name bintrayConfig.licenseName
-//                        url bintrayConfig.licenseUrl
-//                    }
-//                }
-//                developers {
-//                    developer {
-//                        id bintrayConfig.developerId
-//                        name bintrayConfig.developerName
-//                        email bintrayConfig.developerEmail
-//                    }
-//                }
-//                scm {
-//                    connection bintrayConfig.gitUrl
-//                    developerConnection bintrayConfig.gitUrl
-//                    url bintrayConfig.siteUrl
-//                }
-//            }
-//        }
-//    }
-//}
+install {
+    repositories.mavenInstaller {
+        // This generates POM.xml with proper parameters
+        pom {
+            project {
+                packaging 'jar'
+                // Add your description here
+                name 'A ag-extension for IPCInvoker to generate code.'
+                url bintrayConfig.siteUrl
+                // Set your license
+                licenses {
+                    license {
+                        name bintrayConfig.licenseName
+                        url bintrayConfig.licenseUrl
+                    }
+                }
+                developers {
+                    developer {
+                        id bintrayConfig.developerId
+                        name bintrayConfig.developerName
+                        email bintrayConfig.developerEmail
+                    }
+                }
+                scm {
+                    connection bintrayConfig.gitUrl
+                    developerConnection bintrayConfig.gitUrl
+                    url bintrayConfig.siteUrl
+                }
+            }
+        }
+    }
+}
 
 
 task packSourcesJar(type: Jar) {

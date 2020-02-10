@@ -32,8 +32,8 @@ import java.util.Map;
 import cc.suitalk.ipcinvoker.IPCAsyncInvokeTask;
 import cc.suitalk.ipcinvoker.IPCInvokeCallback;
 import cc.suitalk.ipcinvoker.IPCSyncInvokeTask;
+import cc.suitalk.ipcinvoker.IPCTask;
 import cc.suitalk.ipcinvoker.annotation.Singleton;
-import cc.suitalk.ipcinvoker.extension.XIPCInvoker;
 import cc.suitalk.ipcinvoker.sample.R;
 import cc.suitalk.ipcinvoker.sample.app.model.ThreadPool;
 import cc.suitalk.ipcinvoker.sample.nimble.TestType;
@@ -73,8 +73,8 @@ public class IPCTaskTestCaseActivity extends AppCompatActivity {
                     public void run() {
                         TestType data = new TestType();
                         data.key = "wx-developer";
-                        data.value = "XIPCInvoker";
-                        final List<Integer> result = XIPCInvoker.invokeSync(process, data, IPCInvokeTask_getList.class);
+                        data.value = "IPCTask";
+                        final List<Integer> result = IPCTask.create(process).sync(IPCInvokeTask_getList.class).data(data).invoke();
 
                         Log.i(TAG, "result : %s", result);
                         runOnUiThread(new Runnable() {
@@ -97,18 +97,21 @@ public class IPCTaskTestCaseActivity extends AppCompatActivity {
                     public void run() {
                         Map<String, String> data = new HashMap<>();
                         data.put("wx-developer", "AlbieLiang");
-                        XIPCInvoker.invokeAsync(process, data, IPCInvokeTask_getString.class, new IPCInvokeCallback<String>() {
-                            @Override
-                            public void onCallback(final String data) {
-                                Log.i(TAG, "result : %s", data);
-                                runOnUiThread(new Runnable() {
+                        IPCTask.create(process)
+                                .async(IPCInvokeTask_getString.class)
+                                .data(data)
+                                .callback(new IPCInvokeCallback<String>() {
                                     @Override
-                                    public void run() {
-                                        msgPanelTv.setText(data);
+                                    public void onCallback(final String data) {
+                                        Log.i(TAG, "result : %s", data);
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                msgPanelTv.setText(data);
+                                            }
+                                        });
                                     }
-                                });
-                            }
-                        });
+                                }).invoke();
                     }
                 });
             }

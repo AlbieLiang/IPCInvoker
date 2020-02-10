@@ -27,7 +27,7 @@ public class IPCObserverRestoreTestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ipc_observer_restore_test_activity);
         setTitle(R.string.app_name);
-        getSupportActionBar().setSubtitle("IPCObserver Restore Test");
+        getSupportActionBar().setSubtitle("InnerIPCObserver Restore Test");
 
         findViewById(R.id.addObserverFromMainToSupportBtn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,7 +122,7 @@ public class IPCObserverRestoreTestActivity extends AppCompatActivity {
         IPCInvoker.invokeSync(PushProcessIPCService.PROCESS_NAME, null, IPCRemoveObserverSyncTask.class);
     }
 
-    private static final IPCObserver observer = new IPCObserver() {
+    private static final IPCObserver<Bundle> observer = new IPCObserver<Bundle>() {
         @Override
         public void onCallback(Bundle data) {
             Log.i(TAG, "observer, from %s", IPCInvokeLogic.getCurrentProcessName());
@@ -134,7 +134,7 @@ public class IPCObserverRestoreTestActivity extends AppCompatActivity {
         public IPCVoid invoke(IPCVoid data) {
             Log.i(TAG, "IPCAddObserverSyncTask, invoke, %s", IPCInvokeLogic.getCurrentProcessName());
             IPCInvokeClient client = new IPCInvokeClient(SupportProcessIPCService.PROCESS_NAME);
-            client.registerIPCObserver(IPCTestDispatcher.class.getName(), observer);
+            client.registerIPCObserver(IPCTestDispatcher.class, observer);
             return null;
         }
     }
@@ -144,12 +144,12 @@ public class IPCObserverRestoreTestActivity extends AppCompatActivity {
         public IPCVoid invoke(IPCVoid data) {
             Log.i(TAG, "IPCRemoveObserverSyncTask, invoke, %s", IPCInvokeLogic.getCurrentProcessName());
             IPCInvokeClient client = new IPCInvokeClient(SupportProcessIPCService.PROCESS_NAME);
-            client.unregisterIPCObserver(IPCTestDispatcher.class.getName(), observer);
+            client.unregisterIPCObserver(IPCTestDispatcher.class, observer);
             return null;
         }
     }
 
-    private static class IPCTestDispatcher extends IPCDispatcher {
+    private static class IPCTestDispatcher extends IPCDispatcher<Bundle> {
         private static final IPCTestDispatcher INSTANCE = new IPCTestDispatcher();
         private static void dispatch() {
             INSTANCE.dispatch(new Bundle());

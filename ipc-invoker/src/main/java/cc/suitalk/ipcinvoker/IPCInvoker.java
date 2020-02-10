@@ -23,7 +23,7 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.Parcelable;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import cc.suitalk.ipcinvoker.activate.Debuggable;
 import cc.suitalk.ipcinvoker.restore.IPCObserverRestorer;
@@ -132,6 +132,24 @@ public class IPCInvoker {
     }
 
     /**
+     * Async invoke, it can be invoked on any thread.
+     *
+     * @param process      remote service process name
+     * @param data         data for remote process invoked, it must be a {@link Parcelable}
+     * @param taskClass    remote invoke logic task class
+     * @param callback     callback on current process after IPC invoked finished and initiative callback.
+     * @param <T>          the class implements {@link IPCAsyncInvokeTask} interface
+     * @param <InputType>  the class extends {@link Parcelable} or has extended a {@link BaseTypeTransfer} for this InputType
+     * @param <ResultType> the class extends {@link Parcelable} or has extended a {@link BaseTypeTransfer} for this ResultType
+     * @return true if cross-process invoke has been initiated, false otherwise.
+     */
+    @AnyThread
+    public static <T extends IPCAsyncInvokeTask<InputType, ResultType>, InputType, ResultType>
+    boolean invokeAsync(final String process, final InputType data, @NonNull final Class<T> taskClass, final IPCInvokeCallback<ResultType> callback) {
+        return IPCTask.create(process).async(taskClass).data(data).callback(callback).invoke();
+    }
+
+    /**
      * Sync invoke, it must be invoked on WorkerThread or make sure the connection is established before invoked.
      *
      * Call {@link IPCInvoker#connectRemoteService(String)} to pre-connect remote Service.
@@ -148,6 +166,25 @@ public class IPCInvoker {
     public static <T extends IPCSyncInvokeTask<InputType, ResultType>, InputType extends Parcelable, ResultType extends Parcelable>
     ResultType invokeSync(String process, InputType data, @NonNull Class<T> taskClass) {
         return (ResultType) IPCTaskExecutor.invokeSync(process, data, taskClass, IPCTaskExtInfo.DEFAULT);
+    }
+
+    /**
+     * Sync invoke, it must be invoked on WorkerThread or make sure the connection is established before invoked.
+     *
+     * Call {@link cc.suitalk.ipcinvoker.IPCInvoker#connectRemoteService(String)} to pre-connect remote Service.
+     *
+     * @param process      remote service process name
+     * @param data         data for remote process invoked, it must be a {@link Parcelable}
+     * @param taskClass    remote invoke logic task class
+     * @param <T>          the class implements {@link IPCSyncInvokeTask} interface
+     * @param <InputType>  the class extends {@link Parcelable} or has extended a {@link BaseTypeTransfer} for this InputType
+     * @param <ResultType> the class extends {@link Parcelable} or has extended a {@link BaseTypeTransfer} for this ResultType
+     * @return the cross-process invoke result.
+     */
+    @WorkerThread
+    public static <T extends IPCSyncInvokeTask<InputType, ResultType>, InputType, ResultType>
+    ResultType invokeSync(String process, InputType data, @NonNull Class<T> taskClass) {
+        return IPCTask.create(process).sync(taskClass).data(data).invoke();
     }
 
     /**

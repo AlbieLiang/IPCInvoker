@@ -15,9 +15,10 @@
  *
  */
 
-package cc.suitalk.ipcinvoker.event;
+package cc.suitalk.ipcinvoker.inner;
 
 import android.os.Bundle;
+import android.support.annotation.RestrictTo;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -29,24 +30,25 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by albieliang on 2017/6/18.
  */
 
-public class IPCEventBus {
+@RestrictTo(RestrictTo.Scope.LIBRARY)
+public class InnerIPCEventBus {
 
-    private static volatile IPCEventBus sImpl;
+    private static volatile InnerIPCEventBus sImpl;
 
-    Map<String, List<IPCObserver>> mMap;
+    Map<String, List<InnerIPCObserver>> mMap;
 
-    public static IPCEventBus getImpl() {
+    public static InnerIPCEventBus getImpl() {
         if (sImpl == null) {
-            synchronized (IPCEventBus.class) {
+            synchronized (InnerIPCEventBus.class) {
                 if (sImpl == null) {
-                    sImpl = new IPCEventBus();
+                    sImpl = new InnerIPCEventBus();
                 }
             }
         }
         return sImpl;
     }
 
-    private IPCEventBus() {
+    private InnerIPCEventBus() {
         mMap = new ConcurrentHashMap<>();
     }
 
@@ -54,25 +56,25 @@ public class IPCEventBus {
         if (event == null || event.length() == 0 || data == null) {
             return false;
         }
-        List<IPCObserver> list = mMap.get(event);
+        List<InnerIPCObserver> list = mMap.get(event);
         if (list == null || list.isEmpty()) {
             return true;
         }
-        List<IPCObserver> tempList;
+        List<InnerIPCObserver> tempList;
         synchronized (list) {
             tempList = new ArrayList<>(list);
         }
-        for (IPCObserver observer : tempList) {
+        for (InnerIPCObserver observer : tempList) {
             observer.onCallback(data);
         }
         return true;
     }
 
-    public boolean registerIPCObserver(String event, IPCObserver o) {
+    public boolean registerIPCObserver(String event, InnerIPCObserver o) {
         if (event == null || event.length() == 0 || o == null) {
             return false;
         }
-        List<IPCObserver> list = mMap.get(event);
+        List<InnerIPCObserver> list = mMap.get(event);
         if (list == null) {
             list = new LinkedList<>();
             mMap.put(event, list);
@@ -87,12 +89,12 @@ public class IPCEventBus {
         return r;
     }
 
-    public boolean unregisterIPCObserver(String event, IPCObserver o) {
+    public boolean unregisterIPCObserver(String event, InnerIPCObserver o) {
         if (event == null || event.length() == 0 || o == null) {
             return false;
         }
         boolean r = false;
-        List<IPCObserver> list = mMap.get(event);
+        List<InnerIPCObserver> list = mMap.get(event);
         if (list != null) {
             synchronized (list) {
                 r = list.remove(o);

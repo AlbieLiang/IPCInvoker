@@ -21,7 +21,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.text.TextUtils;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import java.io.FileInputStream;
 import java.util.List;
@@ -99,7 +99,7 @@ public class IPCInvokeLogic {
                 if (in != null) {
                     in.close();
                 }
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
         return null;

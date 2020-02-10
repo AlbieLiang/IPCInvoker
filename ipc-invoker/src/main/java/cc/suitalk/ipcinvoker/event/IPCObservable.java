@@ -17,41 +17,133 @@
 
 package cc.suitalk.ipcinvoker.event;
 
-import junit.framework.Assert;
+import android.os.Bundle;
 
-import cc.suitalk.ipcinvoker.IPCInvokeClient;
+import org.junit.Assert;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import cc.suitalk.ipcinvoker.annotation.AnyThread;
 import cc.suitalk.ipcinvoker.annotation.NonNull;
+import cc.suitalk.ipcinvoker.annotation.Nullable;
+import cc.suitalk.ipcinvoker.inner.InnerIPCObservable;
+import cc.suitalk.ipcinvoker.inner.InnerIPCObserver;
+import cc.suitalk.ipcinvoker.reflect.ReflectUtil;
 
 /**
- * Created by albieliang on 2017/6/18.
+ * Created by albieliang on 2017/7/20.
  */
 
-public class IPCObservable {
+public class IPCObservable<InputType> {
 
-    private String mProcess;
-    private String mEvent;
-    private IPCInvokeClient mClient;
+    static final String INNER_KEY_DATA = "__inner_key_data";
 
-    public <T extends IPCDispatcher> IPCObservable(String process, Class<T> dispatcherClass) {
+    private final String mEvent;
+
+    private final Ext<InputType> mExt;
+
+    public static <T> Ext<T> create(@NonNull String process) {
+        return new Ext<>(process);
+    }
+
+    public <T extends IPCDispatcher<InputType>> IPCObservable(String process, Class<T> dispatcherClass) {
         Assert.assertNotNull(process);
         Assert.assertNotNull(dispatcherClass);
-        this.mProcess = process;
-        this.mEvent = dispatcherClass.getName();
-        this.mClient = new IPCInvokeClient(process);
+        Class<?> tClass = ReflectUtil.getActualTypeArgument(dispatcherClass);
+        Assert.assertNotNull(tClass);
+        this.mEvent = genKey(dispatcherClass, tClass);
+        mExt = create(process);
     }
 
     @AnyThread
-    public boolean registerIPCObserver(@NonNull IPCObserver o) {
-        return mClient.registerIPCObserver(mEvent, o);
+    public boolean registerIPCObserver(@NonNull final IPCObserver<InputType> o) {
+        return mExt.registerIPCObserver(mEvent, o);
     }
 
     @AnyThread
-    public boolean unregisterIPCObserver(@NonNull IPCObserver o) {
-        return mClient.unregisterIPCObserver(mEvent, o);
+    public boolean unregisterIPCObserver(@NonNull IPCObserver<InputType> o) {
+        return mExt.unregisterIPCObserver(mEvent, o);
     }
 
     public String getProcess() {
-        return mProcess;
+        return mExt.mProcess;
+    }
+
+    public static String genKey(@NonNull Class<?> dispatcherClass, @Nullable Class<?> inputDataClass) {
+        return (new StringBuilder()).append(dispatcherClass.getName()).append("#").append(inputDataClass == null ? "" : inputDataClass.getName()).toString();
+    }
+
+    /**
+     *
+     * @param <InputType>
+     */
+    public static final class Ext<InputType> {
+
+        private final String mProcess;
+        private final Map<IPCObserver<InputType>, InnerIPCObserver> mMap;
+
+        private InnerIPCObservable mInnerIPCObservable;
+
+        private <T extends IPCDispatcher<InputType>> Ext(String process) {
+            Assert.assertNotNull(process);
+            this.mProcess = process;
+            mInnerIPCObservable = new InnerIPCObservable(mProcess);
+            mMap = new ConcurrentHashMap<>();
+        }
+
+        @AnyThread
+        public boolean registerIPCObserver(@NonNull Class<IPCDispatcher<InputType>> dispatcherClass, @NonNull final IPCObserver<InputType> o) {
+            if (dispatcherClass == null || o == null || mMap.containsKey(o)) {
+                return false;
+            }
+            Class<?> tClass = ReflectUtil.getActualTypeArgument(dispatcherClass);
+            return registerIPCObserver(genKey(dispatcherClass, tClass), o);
+        }
+
+        @AnyThread
+        public boolean unregisterIPCObserver(@NonNull Class<IPCDispatcher<InputType>> dispatcherClass, @NonNull IPCObserver<InputType> o) {
+            if (dispatcherClass == null || o == null) {
+                return false;
+            }
+            Class<?> tClass = ReflectUtil.getActualTypeArgument(dispatcherClass);
+            return unregisterIPCObserver(genKey(dispatcherClass, tClass), o);
+        }
+
+        @AnyThread
+        private boolean registerIPCObserver(@NonNull String event, @NonNull final IPCObserver<InputType> o) {
+            if (event == null || event.length() == 0 || o == null || mMap.containsKey(o)) {
+                return false;
+            }
+            final InnerIPCObserver observer = new InnerIPCObserver() {
+                @Override
+                public void onCallback(Bundle data) {
+                    WrapperParcelable parcelable = data.getParcelable(INNER_KEY_DATA);
+                    o.onCallback((InputType) parcelable.getTarget());
+                }
+
+                @Override
+                public int hashCode() {
+                    return o.hashCode();
+                }
+            };
+            boolean r = mInnerIPCObservable.registerIPCObserver(event, observer);
+            if (r) {
+                mMap.put(o, observer);
+            }
+            return r;
+        }
+
+        @AnyThread
+        private boolean unregisterIPCObserver(@NonNull String event, @NonNull IPCObserver<InputType> o) {
+            if (event == null || event.length() == 0 || o == null) {
+                return false;
+            }
+            final InnerIPCObserver observer = mMap.remove(o);
+            if (observer == null) {
+                return false;
+            }
+            return mInnerIPCObservable.unregisterIPCObserver(event, observer);
+        }
     }
 }

@@ -12,31 +12,20 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- *  
+ *
  */
 
-package cc.suitalk.ipcinvoker.extension.event;
+package cc.suitalk.ipcinvoker.inner;
 
 import android.os.Bundle;
+import android.support.annotation.RestrictTo;
 
-import cc.suitalk.ipcinvoker.event.IPCEventBus;
+import cc.suitalk.ipcinvoker.IPCInvokeCallback;
 
 /**
- * Created by albieliang on 2017/7/20.
+ * Created by albieliang on 2017/6/18.
  */
 
-public class XIPCDispatcher<T> {
-
-    protected String genKey(T data) {
-        return XIPCObservable.genKey(getClass(), data.getClass());
-    }
-    
-    public final void dispatch(T data) {
-        if (data == null) {
-            return;
-        }
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(XIPCObservable.INNER_KEY_DATA, new WrapperParcelable(data));
-        IPCEventBus.getImpl().dispatch(genKey(data), bundle);
-    }
+@RestrictTo(RestrictTo.Scope.LIBRARY)
+public interface InnerIPCObserver extends IPCInvokeCallback<Bundle> {
 }

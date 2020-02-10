@@ -15,13 +15,17 @@
  *
  */
 
-package cc.suitalk.ipcinvoker.extension.event;
+package cc.suitalk.ipcinvoker.inner;
 
-import cc.suitalk.ipcinvoker.IPCInvokeCallback;
+import android.os.Bundle;
 
 /**
- * Created by albieliang on 2017/7/20.
+ * Created by albieliang on 2017/6/18.
  */
 
-public interface XIPCObserver<T> extends IPCInvokeCallback<T> {
+public interface IPCData {
+
+    Bundle toBundle();
+
+    void fromBundle(Bundle bundle);
 }

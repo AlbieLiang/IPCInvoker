@@ -28,6 +28,7 @@ import cc.suitalk.ipcinvoker.IPCInvokeLogic;
 import cc.suitalk.ipcinvoker.IPCSyncInvokeTask;
 import cc.suitalk.ipcinvoker.ThreadCaller;
 import cc.suitalk.ipcinvoker.event.IPCObserver;
+import cc.suitalk.ipcinvoker.inner.IPCData;
 import cc.suitalk.ipcinvoker.sample.IPCSampleData;
 import cc.suitalk.ipcinvoker.sample.R;
 import cc.suitalk.ipcinvoker.sample.event.IPC;
@@ -55,16 +56,15 @@ public class IPCEventTestCaseActivity extends AppCompatActivity {
         setTitle(R.string.push_process);
         getSupportActionBar().setSubtitle("IPCEvent TestCase");
 
-        final IPCObserver observer = new IPCObserver() {
+        final IPCObserver<IPCData> observer = new IPCObserver<IPCData>() {
             @Override
-            public void onCallback(final Bundle data) {
+            public void onCallback(final IPCData data) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        IPCSampleData result = new IPCSampleData();
-                        result.fromBundle(data);
+                        IPCSampleData d = (IPCSampleData) data;
                         String log = String.format("register observer by client, onCallback(%s), cost : %s",
-                                result.result, (System.nanoTime() - result.timestamp) / 1000000.0d);
+                                d.result, (System.nanoTime() - d.timestamp) / 1000000.0d);
                         Log.i(TAG, log);
                         clientMsgPanelTv.setText(log);
                     }
@@ -76,19 +76,19 @@ public class IPCEventTestCaseActivity extends AppCompatActivity {
         findViewById(R.id.registerByClientBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                IPC.getMainIPCClient().registerIPCObserver(OnClickEventDispatcher.class.getName(), observer);
+                IPC.getMainIPCClient().registerIPCObserver(OnClickEventDispatcher.class, observer);
             }
         });
 
         findViewById(R.id.unregisterByClientBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                IPC.getMainIPCClient().unregisterIPCObserver(OnClickEventDispatcher.class.getName(), observer);
+                IPC.getMainIPCClient().unregisterIPCObserver(OnClickEventDispatcher.class, observer);
             }
         });
 
         //
-        final IPCObserver observer1 = new IPCObserver() {
+        final IPCObserver<Bundle> observer1 = new IPCObserver<Bundle>() {
             @Override
             public void onCallback(final Bundle data) {
                 runOnUiThread(new Runnable() {

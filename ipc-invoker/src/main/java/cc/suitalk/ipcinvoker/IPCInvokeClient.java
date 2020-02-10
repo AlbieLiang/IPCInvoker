@@ -17,18 +17,14 @@
 
 package cc.suitalk.ipcinvoker;
 
-import android.os.Bundle;
 import android.os.Parcelable;
-
-import junit.framework.Assert;
 
 import cc.suitalk.ipcinvoker.annotation.AnyThread;
 import cc.suitalk.ipcinvoker.annotation.NonNull;
 import cc.suitalk.ipcinvoker.annotation.WorkerThread;
-import cc.suitalk.ipcinvoker.event.IPCEventBus;
+import cc.suitalk.ipcinvoker.event.IPCDispatcher;
+import cc.suitalk.ipcinvoker.event.IPCObservable;
 import cc.suitalk.ipcinvoker.event.IPCObserver;
-import cc.suitalk.ipcinvoker.restore.IPCObserverRestorer;
-import cc.suitalk.ipcinvoker.type.IPCVoid;
 
 /**
  * Created by albieliang on 2017/6/18.
@@ -36,13 +32,12 @@ import cc.suitalk.ipcinvoker.type.IPCVoid;
 
 public class IPCInvokeClient {
 
-    private static final String TOKEN = "Token";
-    private static final String EVENT = "Event";
-
     private String mProcess;
+    private IPCObservable.Ext mIPCObservableExt;
 
     public IPCInvokeClient(String process) {
         this.mProcess = process;
+        this.mIPCObservableExt = IPCObservable.create(process);
     }
 
     @AnyThread
@@ -51,108 +46,32 @@ public class IPCInvokeClient {
         return IPCInvoker.invokeAsync(mProcess, data, taskClass, callback);
     }
 
+    @AnyThread
+    public <T extends IPCAsyncInvokeTask<InputType, ResultType>, InputType, ResultType>
+            boolean invokeAsync(InputType data, @NonNull Class<T> taskClass, final IPCInvokeCallback<ResultType> callback) {
+        return IPCTask.create(mProcess).async(taskClass).data(data).callback(callback).invoke();
+    }
+
     @WorkerThread
     public <T extends IPCSyncInvokeTask<InputType, ResultType>, InputType extends Parcelable, ResultType extends Parcelable>
             ResultType invokeSync(InputType data, @NonNull Class<T> taskClass) {
         return IPCInvoker.invokeSync(mProcess, data, taskClass);
     }
 
-    @AnyThread
-    public boolean registerIPCObserver(final String event, @NonNull final IPCObserver observer) {
-        if (event == null || event.length() == 0 || observer == null) {
-            return false;
-        }
-        Bundle data = new Bundle();
-        data.putString(TOKEN, buildToken(observer));
-        data.putString(EVENT, event);
-        IPCInvoker.invokeAsync(mProcess, data, IPCInvokeTask_RegisterIPCObserver.class, observer);
-        // save observer and event after application startup
-        IPCInvoker.invokeAsync(mProcess, null, IPCTestAsyncTask.class, new IPCInvokeCallback<IPCVoid>() {
-            @Override
-            public void onCallback(IPCVoid data) {
-                // save register
-                IPCObserverRestorer.addIPCObserver(mProcess, event, observer);
-            }
-        });
-        return true;
+    @WorkerThread
+    public <T extends IPCSyncInvokeTask<InputType, ResultType>, InputType, ResultType>
+            ResultType invokeSync(InputType data, @NonNull Class<T> taskClass) {
+        return IPCTask.create(mProcess).sync(taskClass).data(data).invoke();
     }
 
     @AnyThread
-    public boolean unregisterIPCObserver(final String event, @NonNull final IPCObserver observer) {
-        if (event == null || event.length() == 0 || observer == null) {
-            return false;
-        }
-        Bundle data = new Bundle();
-        data.putString(TOKEN, buildToken(observer));
-        data.putString(EVENT, event);
-        IPCInvoker.invokeAsync(mProcess, data, IPCInvokeTask_UnregisterIPCObserver.class, new IPCInvokeCallback<Bundle>() {
-            @Override
-            public void onCallback(Bundle data) {
-                // remove register
-                IPCObserverRestorer.removeIPCObserver(mProcess, event, observer);
-            }
-        });
-        return true;
+    public <T> boolean registerIPCObserver(@NonNull final Class<? extends IPCDispatcher<T>> dispatcherClass, @NonNull final IPCObserver<T> o) {
+        return mIPCObservableExt.registerIPCObserver(dispatcherClass, o);
     }
 
-    public static String buildToken(@NonNull Object o) {
-        return "Token#IPCObserver#" + o.hashCode();
+    @AnyThread
+    public <T> boolean unregisterIPCObserver(@NonNull final Class<? extends IPCDispatcher<T>> dispatcherClass, @NonNull final IPCObserver o) {
+        return mIPCObservableExt.unregisterIPCObserver(dispatcherClass, o);
     }
 
-    private static class IPCInvokeTask_RegisterIPCObserver implements IPCAsyncInvokeTask<Bundle, Bundle> {
-
-        @Override
-        public void invoke(Bundle data, final IPCInvokeCallback<Bundle> callback) {
-            final String token = data.getString(TOKEN);
-            final String event = data.getString(EVENT);
-            IPCEventBus.getImpl().registerIPCObserver(event, new IPCObserverProxy(token) {
-                @Override
-                public void onCallback(Bundle data) {
-                    callback.onCallback(data);
-                }
-            });
-        }
-    }
-
-    private static class IPCInvokeTask_UnregisterIPCObserver implements IPCAsyncInvokeTask<Bundle, Bundle> {
-
-        @Override
-        public void invoke(Bundle data, final IPCInvokeCallback<Bundle> callback) {
-            final String token = data.getString(TOKEN);
-            final String event = data.getString(EVENT);
-            IPCEventBus.getImpl().unregisterIPCObserver(event, new IPCObserverProxy(token) {
-                @Override
-                public void onCallback(Bundle data) {
-                }
-            });
-            if (callback != null) {
-                callback.onCallback(null);
-            }
-        }
-    }
-
-    private static class IPCTestAsyncTask implements IPCAsyncInvokeTask<IPCVoid, IPCVoid> {
-        @Override
-        public void invoke(IPCVoid data, final IPCInvokeCallback<IPCVoid> callback) {
-            callback.onCallback(null);
-        }
-    }
-
-    private static abstract class IPCObserverProxy implements IPCObserver {
-
-        String token;
-
-        IPCObserverProxy(String token) {
-            this.token = token;
-            Assert.assertNotNull(token);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null || !(obj instanceof IPCObserverProxy)) {
-                return false;
-            }
-            return token.equals(((IPCObserverProxy) obj).token);
-        }
-    }
 }

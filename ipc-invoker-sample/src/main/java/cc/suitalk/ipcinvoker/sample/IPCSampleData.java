@@ -21,7 +21,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import cc.suitalk.ipcinvoker.event.IPCData;
+import cc.suitalk.ipcinvoker.inner.IPCData;
 
 /**
  * Created by albieliang on 2017/5/14.

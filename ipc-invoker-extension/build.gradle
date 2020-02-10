@@ -18,7 +18,7 @@
 apply plugin: 'com.android.library'
 //apply plugin: 'maven'
 //
-//apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 group = "cc.suitalk.tools"            // Maven Group ID for the artifact，
@@ -64,38 +64,38 @@ dependencies {
 //        repository(url: "file:${System.getProperty("user.home")}/.debugMaven/repositories/release")
 //    }
 //}
-//install {
-//    repositories.mavenInstaller {
-//        // This generates POM.xml with proper parameters
-//        pom {
-//            project {
-//                packaging 'jar'
-//                // Add your description here
-//                name 'A code generator gradle plugin for IPCInvoker, extends from ArbitraryGen.'
-//                url bintrayConfig.siteUrl
-//                // Set your license
-//                licenses {
-//                    license {
-//                        name bintrayConfig.licenseName
-//                        url bintrayConfig.licenseUrl
-//                    }
-//                }
-//                developers {
-//                    developer {
-//                        id bintrayConfig.developerId
-//                        name bintrayConfig.developerName
-//                        email bintrayConfig.developerEmail
-//                    }
-//                }
-//                scm {
-//                    connection bintrayConfig.gitUrl
-//                    developerConnection bintrayConfig.gitUrl
-//                    url bintrayConfig.siteUrl
-//                }
-//            }
-//        }
-//    }
-//}
+install {
+    repositories.mavenInstaller {
+        // This generates POM.xml with proper parameters
+        pom {
+            project {
+                packaging 'jar'
+                // Add your description here
+                name 'A code generator gradle plugin for IPCInvoker, extends from ArbitraryGen.'
+                url bintrayConfig.siteUrl
+                // Set your license
+                licenses {
+                    license {
+                        name bintrayConfig.licenseName
+                        url bintrayConfig.licenseUrl
+                    }
+                }
+                developers {
+                    developer {
+                        id bintrayConfig.developerId
+                        name bintrayConfig.developerName
+                        email bintrayConfig.developerEmail
+                    }
+                }
+                scm {
+                    connection bintrayConfig.gitUrl
+                    developerConnection bintrayConfig.gitUrl
+                    url bintrayConfig.siteUrl
+                }
+            }
+        }
+    }
+}
 
 //task copyDependencies(type: Copy) {
 //    from configurations.compile.collect {

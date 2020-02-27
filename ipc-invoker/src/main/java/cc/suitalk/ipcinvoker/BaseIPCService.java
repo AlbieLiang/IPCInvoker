@@ -171,7 +171,7 @@ public abstract class BaseIPCService extends Service {
         public IPCInvokeCallbackProxy(AIDL_IPCInvokeCallback callback) {
             this.callback = callback;
             if (callback != null) {
-                Log.i(TAG, "keep ref of callback(%s)", callback.hashCode());
+                Log.d(TAG, "keep ref of callback(%s)", callback.hashCode());
                 ObjectRecycler.keepRef(callback);
             }
         }
@@ -181,7 +181,7 @@ public abstract class BaseIPCService extends Service {
             if (callback == null) {
                 return;
             }
-            Log.i(TAG, "onCallback(%s)", callback.hashCode());
+            Log.d(TAG, "onCallback(%s)", callback.hashCode());
             try {
                 Bundle resData = new Bundle();
                 resData.putParcelable(INNER_KEY_REMOTE_TASK_RESULT_DATA, data);
@@ -203,9 +203,9 @@ public abstract class BaseIPCService extends Service {
         @Override
         protected void finalize() throws Throwable {
             try {
-                Log.i(TAG, "finalize(%s)", hashCode());
+                Log.d(TAG, "finalize(%s)", hashCode());
                 if (callback != null) {
-                    Log.i(TAG, "finalize, release callback(%s)", callback.hashCode());
+                    Log.d(TAG, "finalize, release callback(%s)", callback.hashCode());
                     ThreadPool.post(new ReleaseRefRunnable(callback));
                     callback = null;
                 }

@@ -208,7 +208,7 @@ public class IPCTaskExecutor {
             data.setClassLoader(IPCInvoker.class.getClassLoader());
             boolean releaseRef = data.getBoolean(BaseIPCService.INNER_KEY_COMMAND_RELEASE_REF);
             if (releaseRef) {
-                Log.i(TAG, "release ref of callback(%s)", callback.hashCode());
+                Log.d(TAG, "release ref of callback(%s)", callback.hashCode());
                 recycle();
                 return;
             }
@@ -224,7 +224,7 @@ public class IPCTaskExecutor {
         @Override
         protected void finalize() throws Throwable {
             recycle();
-            Log.i(TAG, "finalize(%s)", hashCode());
+            Log.d(TAG, "finalize(%s)", hashCode());
             super.finalize();
         }
     }

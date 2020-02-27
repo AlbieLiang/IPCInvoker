@@ -56,7 +56,7 @@ public class ObjectRecycler {
                 sMap.put(setId, set);
             }
         }
-        Log.i(TAG, "addIntoSet(%s)", setId);
+        Log.d(TAG, "addIntoSet(%s)", setId);
         synchronized (set) {
             return set.add(o);
         }
@@ -73,7 +73,7 @@ public class ObjectRecycler {
         if (set == null) {
             return false;
         }
-        Log.i(TAG, "removeFromSet(%s)", setId);
+        Log.d(TAG, "removeFromSet(%s)", setId);
         synchronized (set) {
             return set.remove(o);
         }
@@ -90,10 +90,10 @@ public class ObjectRecycler {
         if (set == null) {
             return;
         }
-        Log.i(TAG, "recycleAll(%s)", setId);
+        Log.d(TAG, "recycleAll(%s)", setId);
         synchronized (set) {
             for (Recyclable o : set) {
-                Log.i(TAG, "recycle(%s)", o.hashCode());
+                Log.d(TAG, "recycle(%s)", o.hashCode());
                 o.recycle();
             }
             set.clear();

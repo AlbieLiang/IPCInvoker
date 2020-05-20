@@ -21,7 +21,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.text.TextUtils;
 
-import org.junit.Assert;
+import cc.suitalk.ipcinvoker.tools.Assert;
 
 import java.io.FileInputStream;
 import java.util.List;

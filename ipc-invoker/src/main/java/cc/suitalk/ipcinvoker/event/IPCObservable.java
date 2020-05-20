@@ -19,7 +19,7 @@ package cc.suitalk.ipcinvoker.event;
 
 import android.os.Bundle;
 
-import org.junit.Assert;
+import cc.suitalk.ipcinvoker.tools.Assert;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

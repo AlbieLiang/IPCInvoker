@@ -20,7 +20,7 @@ package cc.suitalk.ipcinvoker.inner;
 import android.os.Bundle;
 import android.support.annotation.RestrictTo;
 
-import org.junit.Assert;
+import cc.suitalk.ipcinvoker.tools.Assert;
 
 import cc.suitalk.ipcinvoker.IPCAsyncInvokeTask;
 import cc.suitalk.ipcinvoker.IPCInvokeCallback;

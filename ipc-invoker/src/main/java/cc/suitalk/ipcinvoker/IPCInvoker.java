@@ -23,7 +23,7 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.Parcelable;
 
-import org.junit.Assert;
+import cc.suitalk.ipcinvoker.tools.Assert;
 
 import cc.suitalk.ipcinvoker.activate.Debuggable;
 import cc.suitalk.ipcinvoker.restore.IPCObserverRestorer;

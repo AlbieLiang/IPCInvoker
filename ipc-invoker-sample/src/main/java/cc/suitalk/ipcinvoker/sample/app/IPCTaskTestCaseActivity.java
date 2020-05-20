@@ -100,16 +100,11 @@ public class IPCTaskTestCaseActivity extends AppCompatActivity {
                         IPCTask.create(process)
                                 .async(IPCInvokeTask_getString.class)
                                 .data(data)
-                                .callback(new IPCInvokeCallback<String>() {
+                                .callback(true, new IPCInvokeCallback<String>() {
                                     @Override
                                     public void onCallback(final String data) {
                                         Log.i(TAG, "result : %s", data);
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                msgPanelTv.setText(data);
-                                            }
-                                        });
+                                        msgPanelTv.setText(data);
                                     }
                                 }).invoke();
                     }

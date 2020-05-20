@@ -18,11 +18,11 @@
 package cc.suitalk.ipcinvoker.sample.event;
 
 import cc.suitalk.ipcinvoker.event.IPCDispatcher;
-import cc.suitalk.ipcinvoker.inner.IPCData;
+import cc.suitalk.ipcinvoker.sample.IPCSampleData;
 
 /**
  * Created by albieliang on 2017/6/18.
  */
 
-public class OnClickEventDispatcher extends IPCDispatcher<IPCData> {
+public class OnClickEventDispatcher extends IPCDispatcher<IPCSampleData> {
 }

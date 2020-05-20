@@ -28,7 +28,6 @@ import cc.suitalk.ipcinvoker.IPCInvokeLogic;
 import cc.suitalk.ipcinvoker.IPCSyncInvokeTask;
 import cc.suitalk.ipcinvoker.ThreadCaller;
 import cc.suitalk.ipcinvoker.event.IPCObserver;
-import cc.suitalk.ipcinvoker.inner.IPCData;
 import cc.suitalk.ipcinvoker.sample.IPCSampleData;
 import cc.suitalk.ipcinvoker.sample.R;
 import cc.suitalk.ipcinvoker.sample.event.IPC;
@@ -56,15 +55,14 @@ public class IPCEventTestCaseActivity extends AppCompatActivity {
         setTitle(R.string.push_process);
         getSupportActionBar().setSubtitle("IPCEvent TestCase");
 
-        final IPCObserver<IPCData> observer = new IPCObserver<IPCData>() {
+        final IPCObserver<IPCSampleData> observer = new IPCObserver<IPCSampleData>() {
             @Override
-            public void onCallback(final IPCData data) {
+            public void onCallback(final IPCSampleData data) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        IPCSampleData d = (IPCSampleData) data;
                         String log = String.format("register observer by client, onCallback(%s), cost : %s",
-                                d.result, (System.nanoTime() - d.timestamp) / 1000000.0d);
+                                data.result, (System.nanoTime() - data.timestamp) / 1000000.0d);
                         Log.i(TAG, log);
                         clientMsgPanelTv.setText(log);
                     }
@@ -88,14 +86,14 @@ public class IPCEventTestCaseActivity extends AppCompatActivity {
         });
 
         //
-        final IPCObserver<Bundle> observer1 = new IPCObserver<Bundle>() {
+        final IPCObserver<IPCSampleData> observer1 = new IPCObserver<IPCSampleData>() {
             @Override
-            public void onCallback(final Bundle data) {
+            public void onCallback(final IPCSampleData data) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         String log = String.format("register observer by Observable, onCallback(%s), cost : %s",
-                                data.getString("result"), (System.nanoTime() - data.getLong("timestamp")) / 1000000.0d);
+                                data.result, (System.nanoTime() - data.timestamp) / 1000000.0d);
                         Log.i(TAG, log);
                         observerMsgPanelTv.setText(log);
                     }

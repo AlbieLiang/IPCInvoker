@@ -12,34 +12,31 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- *
+ *  
  */
 
 package cc.suitalk.ipcinvoker.event;
 
 import android.os.Bundle;
 
+import cc.suitalk.ipcinvoker.inner.InnerIPCEventBus;
+
 /**
- * Created by albieliang on 2017/6/18.
+ * Created by albieliang on 2017/7/20.
  */
 
-public abstract class IPCDispatcher {
+public abstract class IPCDispatcher<T> {
 
-    protected String getName() {
-        return getClass().getName();
+    protected String genKey(T data) {
+        return IPCObservable.genKey(getClass(), data.getClass());
     }
-
-    public final void dispatch(IPCData data) {
+    
+    public final void dispatch(T data) {
         if (data == null) {
             return;
         }
-        IPCEventBus.getImpl().dispatch(getName(), data.toBundle());
-    }
-
-    public final void dispatch(Bundle data) {
-        if (data == null) {
-            return;
-        }
-        IPCEventBus.getImpl().dispatch(getName(), data);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(IPCObservable.INNER_KEY_DATA, new WrapperParcelable(data));
+        InnerIPCEventBus.getImpl().dispatch(genKey(data), bundle);
     }
 }

@@ -30,11 +30,11 @@ import cc.suitalk.ipcinvoker.event.IPCObservable;
 
 public class MObservable {
 
-    private static final Map<String, IPCObservable> sMap = new ConcurrentHashMap<>();
+    private static final Map<String, IPCObservable<?>> sMap = new ConcurrentHashMap<>();
 
-    public static <T extends IPCDispatcher> IPCObservable get(@NonNull String process, @NonNull Class<T> clazz) {
+    public static <T extends IPCDispatcher<?>> IPCObservable get(@NonNull String process, @NonNull Class<T> clazz) {
         String key = genKey(process, clazz);
-        IPCObservable observable = sMap.get(key);
+        IPCObservable<?> observable = sMap.get(key);
         if (observable == null) {
             observable = new IPCObservable(process, clazz);
             sMap.put(key, observable);

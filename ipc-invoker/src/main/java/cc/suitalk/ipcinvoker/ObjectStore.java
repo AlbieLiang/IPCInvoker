@@ -17,6 +17,8 @@
 
 package cc.suitalk.ipcinvoker;
 
+import android.support.annotation.RestrictTo;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,6 +31,7 @@ import cc.suitalk.ipcinvoker.tools.Log;
  * Created by albieliang on 2017/7/9.
  */
 
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class ObjectStore {
 
     private static final String TAG = "IPC.ObjectStore";

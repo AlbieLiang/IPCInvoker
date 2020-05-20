@@ -46,13 +46,6 @@
                     android:layout_marginBottom="10dp"/>
 
                 <Button
-                    android:id="@+id/openXIPCInvokerBtn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Open XIPCInvoker Activity"
-                    android:layout_marginBottom="10dp"/>
-
-                <Button
                     android:id="@+id/openIPCTaskBtn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -64,12 +57,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Open Event Test Activity"
-                    android:layout_marginBottom="10dp"/>
-                <Button
-                    android:id="@+id/jumpToXIPCDispatcherTestBtn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Open XIPCDispatcher Test Activity"
                     android:layout_marginBottom="10dp"/>
                 <Button
                     android:id="@+id/jumpToIPCInvokerExtensionTestBtn"

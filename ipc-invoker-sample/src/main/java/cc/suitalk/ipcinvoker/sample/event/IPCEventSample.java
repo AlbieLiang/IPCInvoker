@@ -33,11 +33,11 @@ public class IPCEventSample {
 
     public static final String TAG = "IPCEventSample";
 
-    private class IPCEventDispatcher extends IPCDispatcher {
+    private final class IPCEventDispatcher extends IPCDispatcher<Bundle> {
     }
 
     public void aVoid() {
-        final IPCObserver observer = new IPCObserver() {
+        final IPCObserver<Bundle> observer = new IPCObserver<Bundle>() {
             @Override
             public void onCallback(final Bundle data) {
                 @SuppressLint("DefaultLocale")
@@ -47,7 +47,7 @@ public class IPCEventSample {
             }
         };
         // register Observer to Dispatcher
-        IPCObservable observable = new IPCObservable("cc.suitalk.ipcinvoker.sample:push", IPCEventDispatcher.class);
+        IPCObservable<Bundle> observable = new IPCObservable<>("cc.suitalk.ipcinvoker.sample:push", IPCEventDispatcher.class);
         observable.registerIPCObserver(observer);
 
         // publish event

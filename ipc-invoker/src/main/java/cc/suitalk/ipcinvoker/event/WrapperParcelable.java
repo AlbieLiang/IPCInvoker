@@ -15,7 +15,7 @@
  *
  */
 
-package cc.suitalk.ipcinvoker.extension.event;
+package cc.suitalk.ipcinvoker.event;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -38,7 +38,7 @@ class WrapperParcelable implements Parcelable {
 
     }
 
-    public WrapperParcelable(Object o) {
+    WrapperParcelable(Object o) {
         this.target = o;
     }
 

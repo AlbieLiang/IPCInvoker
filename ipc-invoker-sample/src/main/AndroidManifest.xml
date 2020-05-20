@@ -39,10 +39,6 @@
         </activity>
 
         <activity
-            android:name=".app.XIPCInvokerTestCaseActivity"
-            android:label="@string/app_name"/>
-
-        <activity
             android:name=".app.IPCInvokerTestCaseActivity"
             android:label="@string/app_name"/>
 
@@ -64,13 +60,6 @@
             android:label="@string/push_process"
             android:process=":push"
             android:taskAffinity=".push"
-            android:exported="false"/>
-
-        <activity
-            android:name=".app.XIPCDispatcherTestActivity"
-            android:label="@string/support_process"
-            android:process=":support"
-            android:taskAffinity=".support"
             android:exported="false"/>
 
         <activity

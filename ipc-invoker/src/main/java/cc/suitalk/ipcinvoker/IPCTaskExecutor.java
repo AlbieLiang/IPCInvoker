@@ -20,6 +20,7 @@ package cc.suitalk.ipcinvoker;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.RemoteException;
+import android.support.annotation.RestrictTo;
 
 import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeBridge;
 import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeCallback;
@@ -35,6 +36,7 @@ import cc.suitalk.ipcinvoker.tools.Log;
  * Created by albieliang on 2018/5/7.
  */
 
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class IPCTaskExecutor {
 
     private static final String TAG = "IPC.IPCTaskExecutor";

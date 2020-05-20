@@ -14,23 +14,25 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import cc.suitalk.ipcinvoker.IPCInvokeClient;
 import cc.suitalk.ipcinvoker.IPCInvokeLogic;
 import cc.suitalk.ipcinvoker.IPCInvoker;
 import cc.suitalk.ipcinvoker.IPCSyncInvokeTask;
 import cc.suitalk.ipcinvoker.annotation.NonNull;
-import cc.suitalk.ipcinvoker.event.IPCObserver;
+import cc.suitalk.ipcinvoker.inner.InnerIPCObservable;
+import cc.suitalk.ipcinvoker.inner.InnerIPCObserver;
 import cc.suitalk.ipcinvoker.tools.Log;
 import cc.suitalk.ipcinvoker.tools.storage.KVStorage;
 import cc.suitalk.ipcinvoker.type.IPCVoid;
 
 public class IPCObserverRestorer {
+
     private static final String TAG = "IPCInvoker.IPCObserverRestorer";
-    // key: event,  value:observer
-    private static final Map<String, Set<IPCObserver>> eventObserverMap = new HashMap<>();
     private static final String KEY_EVENT_PROCESS_LIST = "event_process_list_";
     private static final String KEY_EVENT = "event";
     private static final String KEY_PROCESS = "process";
+
+    // key: event,  value:observer
+    private static final Map<String, Set<InnerIPCObserver>> sEventObserverMap = new HashMap<>();
 
     /**
      * 1. store event and observer in register process
@@ -38,11 +40,11 @@ public class IPCObserverRestorer {
      * @param event
      * @param observer
      */
-    public synchronized static void addIPCObserver(@NonNull String targetProcess, @NonNull String event, @NonNull IPCObserver observer) {
-        Set<IPCObserver> observers = eventObserverMap.get(event);
+    public synchronized static void addIPCObserver(@NonNull String targetProcess, @NonNull String event, @NonNull InnerIPCObserver observer) {
+        Set<InnerIPCObserver> observers = sEventObserverMap.get(event);
         if (observers == null) {
             observers = new HashSet<>();
-            eventObserverMap.put(event, observers);
+            sEventObserverMap.put(event, observers);
         }
         observers.add(observer);
 
@@ -62,14 +64,14 @@ public class IPCObserverRestorer {
      * @param event
      * @param observer
      */
-    public synchronized static void removeIPCObserver(@NonNull String targetProcess, @NonNull String event, @NonNull IPCObserver observer) {
-        Set<IPCObserver> observers = eventObserverMap.get(event);
+    public synchronized static void removeIPCObserver(@NonNull String targetProcess, @NonNull String event, @NonNull InnerIPCObserver observer) {
+        Set<InnerIPCObserver> observers = sEventObserverMap.get(event);
         if (observers == null) {
             return;
         }
         observers.remove(observer);
         if (observers.isEmpty()) {
-            eventObserverMap.remove(event);
+            sEventObserverMap.remove(event);
         }
         // save process and event to local file
         String processName = IPCInvokeLogic.getCurrentProcessName();
@@ -172,15 +174,15 @@ public class IPCObserverRestorer {
             }
 
             synchronized (IPCObserverRestorer.class) {
-                Set<IPCObserver> ipcObservers = eventObserverMap.get(event);
+                Set<InnerIPCObserver> ipcObservers = sEventObserverMap.get(event);
                 if (ipcObservers == null) {
                     return null;
                 }
                 Log.i(TAG, "IPCRestoreObserverSyncTask, restore %d observer in process(%s) when process(%s) start",
                         ipcObservers.size(), IPCInvokeLogic.getCurrentProcessName(), process);
-                IPCInvokeClient client = new IPCInvokeClient(process);
-                for (IPCObserver observer: ipcObservers) {
-                    client.registerIPCObserver(event, observer);
+                InnerIPCObservable observable = new InnerIPCObservable(process);
+                for (InnerIPCObserver observer: ipcObservers) {
+                    observable.registerIPCObserver(event, observer);
                 }
             }
             return null;
@@ -195,7 +197,6 @@ public class IPCObserverRestorer {
             this.event = event;
             this.process = process;
         }
-
 
         @Override
         public boolean equals(Object o) {

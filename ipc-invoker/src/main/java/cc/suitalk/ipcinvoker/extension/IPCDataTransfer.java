@@ -22,7 +22,7 @@ import android.os.Parcel;
 
 import cc.suitalk.ipcinvoker.ObjectStore;
 import cc.suitalk.ipcinvoker.annotation.NonNull;
-import cc.suitalk.ipcinvoker.event.IPCData;
+import cc.suitalk.ipcinvoker.inner.IPCData;
 
 /**
  * Created by albieliang on 2017/7/9.

@@ -80,16 +80,16 @@ public class InvokeSyncSample {
     private static final String TAG = "InvokeSyncSample";
 
     public static void invokeSync() {
-        IPCInteger result = IPCInvoker.invokeSync(
-                PushProcessIPCService.PROCESS_NAME, new IPCString("Albie"), HashCode.class);
+        Integer result = IPCInvoker.invokeSync(
+                PushProcessIPCService.PROCESS_NAME, "Albie", HashCode.class);
         Log.i(TAG, "invoke result : %s", result);
     }
 
-    private static class HashCode implements IPCSyncInvokeTask<IPCString, IPCInteger> {
+    private static class HashCode implements IPCSyncInvokeTask<String, Integer> {
 
         @Override
-        public IPCInteger invoke(IPCString data) {
-            return new IPCInteger(data.hashCode());
+        public IPCInteger invoke(String data) {
+            return data.hashCode();
         }
     }
 }
@@ -105,27 +105,25 @@ public class InvokeAsyncSample {
 
     public static void invokeAsync() {
         IPCInvoker.invokeAsync(PushProcessIPCService.PROCESS_NAME,
-                new IPCString("Albie"), HashCode.class, new IPCInvokeCallback<IPCInteger>() {
+                "Albie", HashCode.class, new IPCInvokeCallback<Integer>() {
             @Override
-            public void onCallback(IPCInteger data) {
-                Log.i(TAG, "onCallback : hascode : %d", data.value);
+            public void onCallback(Integer data) {
+                Log.i(TAG, "onCallback : hascode : %d", data);
             }
         });
     }
 
-    private static class HashCode implements IPCAsyncInvokeTask<IPCString, IPCInteger> {
+    private static class HashCode implements IPCAsyncInvokeTask<String, Integer> {
 
         @Override
-        public void invoke(IPCString data, IPCInvokeCallback<IPCInteger> callback) {
-            callback.onCallback(new IPCInteger(data.hashCode()));
+        public void invoke(String data, IPCInvokeCallback<Integer> callback) {
+            callback.onCallback(data.hashCode());
         }
     }
 }
 ```
 
-上述示例中IPCString和IPCInteger是IPCInvoker里面提供的Parcelable的包装类，IPCInvoker支持的跨进程调用的数据必须是可序列化的Parcelable。
-
-IPCInvoker支持自定义实现的Parcelable类作为跨进程调用的数据结构，同时也支持非Parcelable的扩展类型数据，如上述例子可以将IPCString改成String，将IPCInteger改成Integer即可，对于既非基础类型也非Parcelable类型，则需要[自定义TypeTransfer](https://github.com/AlbieLiang/IPCInvoker/wiki/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2%E5%99%A8TypeTransfer%E5%AE%9E%E7%8E%B0)来达到可跨进程传输的效果。
+IPCInvoker支持自定义实现的Parcelable类作为跨进程调用的数据结构，同时也支持基础类型的包装类、Map和List，对于既非基础类型也非Parcelable类型，则需要[自定义TypeTransfer](https://github.com/AlbieLiang/IPCInvoker/wiki/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2%E5%99%A8TypeTransfer%E5%AE%9E%E7%8E%B0)来达到可跨进程传输的效果。
 
 #### 通过IPCTask实现跨进程调用
 

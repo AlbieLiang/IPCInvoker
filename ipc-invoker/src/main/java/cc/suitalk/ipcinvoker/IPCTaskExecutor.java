@@ -106,7 +106,7 @@ public class IPCTaskExecutor {
                     }
                     bridge.invokeAsync(buildBundle(data, taskClass), taskClass.getName(), invokeCallback);
                     return;
-                } catch (RemoteException e) {
+                } catch (Exception e) {
                     Log.d(TAG, "invokeAsync failed, ipc invoke error : %s", e);
                     final OnExceptionObserver onExceptionObserver = extInfo.getOnExceptionObserver();
                     if (onExceptionObserver != null) {
@@ -165,7 +165,7 @@ public class IPCTaskExecutor {
             }
             resData.setClassLoader(IPCInvoker.class.getClassLoader());
             return (ResultType) resData.getParcelable(BaseIPCService.INNER_KEY_REMOTE_TASK_RESULT_DATA);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             Log.d(TAG, "invokeSync failed, ipc invoke error : %s", e);
             final OnExceptionObserver onExceptionObserver = extInfo.getOnExceptionObserver();
             if (onExceptionObserver != null) {
@@ -198,23 +198,28 @@ public class IPCTaskExecutor {
 
         @Override
         public void onCallback(Bundle data) throws RemoteException {
-            final IPCInvokeCallback callback = this.mCallback;
-            if (callback == null) {
-                Log.w(TAG, "callback failed, ref has been release");
-                return;
+            try {
+                final IPCInvokeCallback callback = this.mCallback;
+                if (callback == null) {
+                    Log.w(TAG, "callback failed, ref has been release");
+                    return;
+                }
+                if (data == null) {
+                    callback.onCallback(null);
+                    return;
+                }
+                data.setClassLoader(IPCInvoker.class.getClassLoader());
+                boolean releaseRef = data.getBoolean(BaseIPCService.INNER_KEY_COMMAND_RELEASE_REF);
+                if (releaseRef) {
+                    Log.d(TAG, "release ref of callback(%s)", callback.hashCode());
+                    recycle();
+                    return;
+                }
+                callback.onCallback(data.getParcelable(BaseIPCService.INNER_KEY_REMOTE_TASK_RESULT_DATA));
+            } catch (Exception e) {
+                // TODO: 2020-05-26 albieliang 
+                Log.e(TAG, "onCallback error, %s", android.util.Log.getStackTraceString(e));
             }
-            if (data == null) {
-                callback.onCallback(null);
-                return;
-            }
-            data.setClassLoader(IPCInvoker.class.getClassLoader());
-            boolean releaseRef = data.getBoolean(BaseIPCService.INNER_KEY_COMMAND_RELEASE_REF);
-            if (releaseRef) {
-                Log.d(TAG, "release ref of callback(%s)", callback.hashCode());
-                recycle();
-                return;
-            }
-            callback.onCallback(data.getParcelable(BaseIPCService.INNER_KEY_REMOTE_TASK_RESULT_DATA));
         }
 
         @Override

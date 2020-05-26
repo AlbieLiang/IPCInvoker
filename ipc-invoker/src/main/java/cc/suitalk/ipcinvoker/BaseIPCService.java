@@ -75,7 +75,12 @@ public abstract class BaseIPCService extends Service {
             ThreadPool.post(new Runnable() {
                 @Override
                 public void run() {
-                    finalTask.invoke(remoteData, new IPCInvokeCallbackProxy(callback));
+                    try {
+                        finalTask.invoke(remoteData, new IPCInvokeCallbackProxy(callback));
+                    } catch (Exception e) {
+                        // TODO: 2020-05-26 albieliang
+                        Log.e(TAG, "invokeAsync error, %s'", android.util.Log.getStackTraceString(e));
+                    }
                 }
             });
             return;
@@ -99,7 +104,14 @@ public abstract class BaseIPCService extends Service {
             data.setClassLoader(BaseIPCService.class.getClassLoader());
             final Parcelable remoteData = data.getParcelable(INNER_KEY_REMOTE_TASK_DATA);
             Bundle bundle = new Bundle();
-            bundle.putParcelable(INNER_KEY_REMOTE_TASK_RESULT_DATA, task.invoke(remoteData));
+            Parcelable result = null;
+            try {
+                result = task.invoke(remoteData);
+            } catch (Exception e) {
+                // TODO: 2020-05-26 albieliang
+                Log.e(TAG, "invokeSync error, %s'", android.util.Log.getStackTraceString(e));
+            }
+            bundle.putParcelable(INNER_KEY_REMOTE_TASK_RESULT_DATA, result);
             return bundle;
         }
     };

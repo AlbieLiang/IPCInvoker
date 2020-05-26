@@ -98,6 +98,11 @@ public class IPCInvoker {
             public void addTypeTransfer(@NonNull BaseTypeTransfer transfer) {
                 ObjectTypeTransfer.addTypeTransfer(transfer);
             }
+
+            @Override
+            public void addTypeTransfer(BaseTypeTransfer... transfer) {
+                ObjectTypeTransfer.addTypeTransfer(transfer);
+            }
         });
         delegate.onAttachServiceInfo(initializer);
         if (KVStorage.get() == null) {

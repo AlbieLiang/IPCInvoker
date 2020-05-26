@@ -18,11 +18,11 @@
 package cc.suitalk.ipcinvoker.sample.async;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import cc.suitalk.ipcinvoker.IPCAsyncInvokeTask;
 import cc.suitalk.ipcinvoker.IPCInvokeCallback;
 import cc.suitalk.ipcinvoker.IPCInvoker;
+import cc.suitalk.ipcinvoker.extension.XParcelable;
 import cc.suitalk.ipcinvoker.sample.IPCSampleData;
 import cc.suitalk.ipcinvoker.sample.service.MainProcessIPCService;
 import cc.suitalk.ipcinvoker.tools.Log;
@@ -48,7 +48,7 @@ public class IPCInvokeSample_InvokeByTypeWithData {
     }
 
 
-    private static class IPCRemoteInvoke_PrintWithData implements IPCAsyncInvokeTask<IPCRemoteInvoke_PrintWithData, IPCSampleData>, Parcelable {
+    private static class IPCRemoteInvoke_PrintWithData implements IPCAsyncInvokeTask<IPCRemoteInvoke_PrintWithData, IPCSampleData>, XParcelable {
 
         private String name;
         private int pid;
@@ -61,29 +61,15 @@ public class IPCInvokeSample_InvokeByTypeWithData {
         }
 
         @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
+        public void writeToParcel(Parcel dest) {
             dest.writeString(name);
             dest.writeInt(pid);
         }
 
-        public static final Creator<IPCRemoteInvoke_PrintWithData> CREATOR = new Creator<IPCInvokeSample_InvokeByTypeWithData.IPCRemoteInvoke_PrintWithData>() {
-            @Override
-            public IPCInvokeSample_InvokeByTypeWithData.IPCRemoteInvoke_PrintWithData createFromParcel(Parcel in) {
-                IPCInvokeSample_InvokeByTypeWithData.IPCRemoteInvoke_PrintWithData o = new IPCInvokeSample_InvokeByTypeWithData.IPCRemoteInvoke_PrintWithData();
-                o.name = in.readString();
-                o.pid = in.readInt();
-                return o;
-            }
-
-            @Override
-            public IPCInvokeSample_InvokeByTypeWithData.IPCRemoteInvoke_PrintWithData[] newArray(int size) {
-                return new IPCInvokeSample_InvokeByTypeWithData.IPCRemoteInvoke_PrintWithData[size];
-            }
-        };
+        @Override
+        public void readFromParcel(Parcel in) {
+            this.name = in.readString();
+            this.pid = in.readInt();
+        }
     }
 }

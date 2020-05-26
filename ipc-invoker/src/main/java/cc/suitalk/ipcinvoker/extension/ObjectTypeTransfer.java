@@ -19,10 +19,13 @@ package cc.suitalk.ipcinvoker.extension;
 
 import android.os.Parcel;
 
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Created by albieliang on 2017/7/6.
@@ -30,8 +33,9 @@ import java.util.Map;
 
 public class ObjectTypeTransfer {
 
-    private static final List<BaseTypeTransfer> sTransferList = new LinkedList<>();
-    private static final Map<String, BaseTypeTransfer> sTransferMap = new HashMap<>();
+    private static final List<BaseTypeTransfer> sTransferList = new CopyOnWriteArrayList<>();
+    private static final Set<BaseTypeTransfer> sTransferSet = new CopyOnWriteArraySet<>();
+    private static final Map<String, BaseTypeTransfer> sTransferMap = new ConcurrentHashMap<>();
 
     public static BaseTypeTransfer getTypeTransfer(String transferClass) {
         return sTransferMap.get(transferClass);
@@ -43,6 +47,11 @@ public class ObjectTypeTransfer {
 
     public static BaseTypeTransfer getTypeTransfer(Object o) {
         for (BaseTypeTransfer transfer : sTransferList) {
+            if (transfer.canTransfer(o)) {
+                return transfer;
+            }
+        }
+        for (BaseTypeTransfer transfer : sTransferSet) {
             if (transfer.canTransfer(o)) {
                 return transfer;
             }
@@ -65,11 +74,26 @@ public class ObjectTypeTransfer {
         return null;
     }
 
-    public static void addTypeTransfer(BaseTypeTransfer transfer) {
+    public static synchronized void addTypeTransfer(BaseTypeTransfer transfer) {
         if (transfer == null || sTransferList.contains(transfer)) {
             return;
         }
         sTransferMap.put(transfer.getClass().getName(), transfer);
         sTransferList.add(transfer);
+    }
+
+    public static synchronized void addTypeTransfer(BaseTypeTransfer... transfers) {
+        if (transfers == null || transfers.length == 0) {
+            return;
+        }
+        final List<BaseTypeTransfer> temp = new ArrayList<>(transfers.length);
+        for (BaseTypeTransfer t : transfers) {
+            if (t == null || sTransferList.contains(t)) {
+                continue;
+            }
+            sTransferMap.put(t.getClass().getName(), t);
+            temp.add(t);
+        }
+        sTransferList.addAll(temp);
     }
 }

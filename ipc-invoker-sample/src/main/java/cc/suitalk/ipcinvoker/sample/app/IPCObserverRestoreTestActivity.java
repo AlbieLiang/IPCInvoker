@@ -11,8 +11,10 @@ import cc.suitalk.ipcinvoker.IPCInvoker;
 import cc.suitalk.ipcinvoker.IPCSyncInvokeTask;
 import cc.suitalk.ipcinvoker.event.IPCDispatcher;
 import cc.suitalk.ipcinvoker.event.IPCObserver;
+import cc.suitalk.ipcinvoker.sample.IPCSampleData;
 import cc.suitalk.ipcinvoker.sample.R;
 import cc.suitalk.ipcinvoker.sample.app.model.ThreadPool;
+import cc.suitalk.ipcinvoker.sample.event.OnClickEventDispatcher;
 import cc.suitalk.ipcinvoker.sample.service.MainProcessIPCService;
 import cc.suitalk.ipcinvoker.sample.service.PushProcessIPCService;
 import cc.suitalk.ipcinvoker.sample.service.SupportProcessIPCService;
@@ -125,7 +127,14 @@ public class IPCObserverRestoreTestActivity extends AppCompatActivity {
     private static final IPCObserver<Bundle> observer = new IPCObserver<Bundle>() {
         @Override
         public void onCallback(Bundle data) {
-            Log.i(TAG, "observer, from %s", IPCInvokeLogic.getCurrentProcessName());
+            Log.i(TAG, "observer, from %s, data : %s", IPCInvokeLogic.getCurrentProcessName(), data);
+        }
+    };
+
+    private static final IPCObserver<IPCSampleData> observer1 = new IPCObserver<IPCSampleData>() {
+        @Override
+        public void onCallback(IPCSampleData data) {
+            Log.i(TAG, "observer, from %s, data : %s", IPCInvokeLogic.getCurrentProcessName(), data);
         }
     };
 
@@ -135,6 +144,7 @@ public class IPCObserverRestoreTestActivity extends AppCompatActivity {
             Log.i(TAG, "IPCAddObserverSyncTask, invoke, %s", IPCInvokeLogic.getCurrentProcessName());
             IPCInvokeClient client = new IPCInvokeClient(SupportProcessIPCService.PROCESS_NAME);
             client.registerIPCObserver(IPCTestDispatcher.class, observer);
+            client.registerIPCObserver(OnClickEventDispatcher.class, observer1);
             return null;
         }
     }
@@ -151,8 +161,11 @@ public class IPCObserverRestoreTestActivity extends AppCompatActivity {
 
     private static class IPCTestDispatcher extends IPCDispatcher<Bundle> {
         private static final IPCTestDispatcher INSTANCE = new IPCTestDispatcher();
+        private static final OnClickEventDispatcher INSTANCE1 = new OnClickEventDispatcher();
         private static void dispatch() {
             INSTANCE.dispatch(new Bundle());
+            INSTANCE1.dispatch(new IPCSampleData());
+            Log.i(TAG, "dispatch");
         }
     }
 

@@ -27,4 +27,6 @@ import cc.suitalk.ipcinvoker.extension.BaseTypeTransfer;
 public interface TypeTransferInitializer {
 
     void addTypeTransfer(@NonNull BaseTypeTransfer transfer);
+
+    void addTypeTransfer(@NonNull BaseTypeTransfer... transfer);
 }

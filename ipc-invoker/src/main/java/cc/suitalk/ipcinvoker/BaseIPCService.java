@@ -80,6 +80,7 @@ public abstract class BaseIPCService extends Service {
                     } catch (Exception e) {
                         // TODO: 2020-05-26 albieliang
                         Log.e(TAG, "invokeAsync error, %s'", android.util.Log.getStackTraceString(e));
+                        GlobalExceptionManager.dispatchException(e);
                     }
                 }
             });
@@ -110,6 +111,7 @@ public abstract class BaseIPCService extends Service {
             } catch (Exception e) {
                 // TODO: 2020-05-26 albieliang
                 Log.e(TAG, "invokeSync error, %s'", android.util.Log.getStackTraceString(e));
+                GlobalExceptionManager.dispatchException(e);
             }
             bundle.putParcelable(INNER_KEY_REMOTE_TASK_RESULT_DATA, result);
             return bundle;

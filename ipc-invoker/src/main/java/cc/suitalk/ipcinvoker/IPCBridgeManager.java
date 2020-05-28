@@ -230,6 +230,7 @@ class IPCBridgeManager {
             if (onExceptionObserver != null) {
                 onExceptionObserver.onExceptionOccur(e);
             }
+            GlobalExceptionManager.dispatchException(e);
             return null;
         } finally {
         }

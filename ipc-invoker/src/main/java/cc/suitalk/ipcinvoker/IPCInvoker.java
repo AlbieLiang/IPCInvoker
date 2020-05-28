@@ -23,6 +23,7 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.Parcelable;
 
+import cc.suitalk.ipcinvoker.exception.OnExceptionObserver;
 import cc.suitalk.ipcinvoker.tools.Assert;
 
 import cc.suitalk.ipcinvoker.activate.Debuggable;
@@ -350,6 +351,24 @@ public class IPCInvoker {
      */
     public static boolean unregisterServiceConnection(@NonNull String processName, @NonNull ServiceConnection serviceConnection) {
         return ServiceConnectionManager.unregisterServiceConnection(processName, serviceConnection);
+    }
+
+    /**
+     * Register observer for exception in global range
+     * @param observer callback
+     * @return true means success, false otherwise
+     */
+    public static boolean registerGlobalExceptionObserver(@NonNull OnExceptionObserver observer) {
+        return GlobalExceptionManager.registerObserver(observer);
+    }
+
+    /**
+     * Unregister observer for exception in global range
+     * @param observer callback
+     * @return true means success, false otherwise
+     */
+    public static boolean unregisterGlobalExceptionObserver(@NonNull OnExceptionObserver observer) {
+        return GlobalExceptionManager.unregisterObserver(observer);
     }
 
     /**

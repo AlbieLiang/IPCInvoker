@@ -112,6 +112,7 @@ public class IPCTaskExecutor {
                     if (onExceptionObserver != null) {
                         onExceptionObserver.onExceptionOccur(e);
                     }
+                    GlobalExceptionManager.dispatchException(e);
                 }
                 if (extInfo.hasDefaultResult() && callback != null) {
                     callback.onCallback(extInfo.getDefaultResult());
@@ -171,6 +172,7 @@ public class IPCTaskExecutor {
             if (onExceptionObserver != null) {
                 onExceptionObserver.onExceptionOccur(e);
             }
+            GlobalExceptionManager.dispatchException(e);
         }
         return extInfo.getDefaultResult();
     }
@@ -219,6 +221,7 @@ public class IPCTaskExecutor {
             } catch (Exception e) {
                 // TODO: 2020-05-26 albieliang 
                 Log.e(TAG, "onCallback error, %s", android.util.Log.getStackTraceString(e));
+                GlobalExceptionManager.dispatchException(e);
             }
         }
 

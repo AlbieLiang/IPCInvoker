@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 
 import cc.suitalk.ipcinvoker.aidl.AIDL_IPCInvokeBridge;
@@ -42,6 +41,7 @@ import cc.suitalk.ipcinvoker.exception.RemoteServiceNotConnectedException;
 import cc.suitalk.ipcinvoker.recycle.DeathRecipientImpl;
 import cc.suitalk.ipcinvoker.recycle.ObjectRecycler;
 import cc.suitalk.ipcinvoker.tools.Log;
+import cc.suitalk.ipcinvoker.tools.SafeConcurrentHashMap;
 
 /**
  * Created by albieliang on 2017/5/14.
@@ -78,7 +78,7 @@ class IPCBridgeManager {
 
     private IPCBridgeManager() {
         mServiceClassMap = new HashMap<>();
-        mBridgeMap = new ConcurrentHashMap<>();
+        mBridgeMap = new SafeConcurrentHashMap<>();
         //
         HandlerThread thread = new HandlerThread("IPCBridgeThread#" + hashCode());
         thread.start();

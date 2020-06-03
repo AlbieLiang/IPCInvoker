@@ -20,12 +20,12 @@ package cc.suitalk.ipcinvoker;
 import android.support.annotation.RestrictTo;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import cc.suitalk.ipcinvoker.annotation.NonNull;
 import cc.suitalk.ipcinvoker.extension.Singleton;
 import cc.suitalk.ipcinvoker.reflect.ReflectUtil;
 import cc.suitalk.ipcinvoker.tools.Log;
+import cc.suitalk.ipcinvoker.tools.SafeConcurrentHashMap;
 
 /**
  * Created by albieliang on 2017/7/9.
@@ -36,7 +36,7 @@ public class ObjectStore {
 
     private static final String TAG = "IPC.ObjectStore";
 
-    private static final Map<String, Singleton> sMap = new ConcurrentHashMap<>();
+    private static final Map<String, Singleton> sMap = new SafeConcurrentHashMap<>();
 
     public static <T> T get(@NonNull String clazz, @NonNull Class<?> parentClass) {
         try {

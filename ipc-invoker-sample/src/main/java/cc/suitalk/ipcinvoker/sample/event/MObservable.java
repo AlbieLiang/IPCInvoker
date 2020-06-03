@@ -18,11 +18,11 @@
 package cc.suitalk.ipcinvoker.sample.event;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import cc.suitalk.ipcinvoker.annotation.NonNull;
 import cc.suitalk.ipcinvoker.event.IPCDispatcher;
 import cc.suitalk.ipcinvoker.event.IPCObservable;
+import cc.suitalk.ipcinvoker.tools.SafeConcurrentHashMap;
 
 /**
  * Created by albieliang on 2017/6/18.
@@ -30,7 +30,7 @@ import cc.suitalk.ipcinvoker.event.IPCObservable;
 
 public class MObservable {
 
-    private static final Map<String, IPCObservable<?>> sMap = new ConcurrentHashMap<>();
+    private static final Map<String, IPCObservable<?>> sMap = new SafeConcurrentHashMap<>();
 
     public static <T extends IPCDispatcher<?>> IPCObservable get(@NonNull String process, @NonNull Class<T> clazz) {
         String key = genKey(process, clazz);

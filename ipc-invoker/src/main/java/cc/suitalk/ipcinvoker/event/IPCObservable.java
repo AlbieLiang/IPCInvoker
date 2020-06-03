@@ -22,7 +22,6 @@ import android.os.Bundle;
 import cc.suitalk.ipcinvoker.tools.Assert;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import cc.suitalk.ipcinvoker.annotation.AnyThread;
 import cc.suitalk.ipcinvoker.annotation.NonNull;
@@ -30,6 +29,7 @@ import cc.suitalk.ipcinvoker.annotation.Nullable;
 import cc.suitalk.ipcinvoker.inner.InnerIPCObservable;
 import cc.suitalk.ipcinvoker.inner.InnerIPCObserver;
 import cc.suitalk.ipcinvoker.reflect.ReflectUtil;
+import cc.suitalk.ipcinvoker.tools.SafeConcurrentHashMap;
 
 /**
  * Created by albieliang on 2017/7/20.
@@ -89,7 +89,7 @@ public class IPCObservable<InputType> {
             Assert.assertNotNull(process);
             this.mProcess = process;
             mInnerIPCObservable = new InnerIPCObservable(mProcess);
-            mMap = new ConcurrentHashMap<>();
+            mMap = new SafeConcurrentHashMap<>();
         }
 
         @AnyThread

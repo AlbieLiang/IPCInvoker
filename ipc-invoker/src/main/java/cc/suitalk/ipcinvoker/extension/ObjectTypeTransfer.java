@@ -22,10 +22,9 @@ import android.os.Parcel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CopyOnWriteArraySet;
+
+import cc.suitalk.ipcinvoker.tools.SafeConcurrentHashMap;
 
 /**
  * Created by albieliang on 2017/7/6.
@@ -34,8 +33,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public class ObjectTypeTransfer {
 
     private static final List<BaseTypeTransfer> sTransferList = new CopyOnWriteArrayList<>();
-    private static final Set<BaseTypeTransfer> sTransferSet = new CopyOnWriteArraySet<>();
-    private static final Map<String, BaseTypeTransfer> sTransferMap = new ConcurrentHashMap<>();
+    private static final Map<String, BaseTypeTransfer> sTransferMap = new SafeConcurrentHashMap<>();
 
     public static BaseTypeTransfer getTypeTransfer(String transferClass) {
         return sTransferMap.get(transferClass);
@@ -47,11 +45,6 @@ public class ObjectTypeTransfer {
 
     public static BaseTypeTransfer getTypeTransfer(Object o) {
         for (BaseTypeTransfer transfer : sTransferList) {
-            if (transfer.canTransfer(o)) {
-                return transfer;
-            }
-        }
-        for (BaseTypeTransfer transfer : sTransferSet) {
             if (transfer.canTransfer(o)) {
                 return transfer;
             }

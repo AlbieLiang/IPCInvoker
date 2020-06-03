@@ -24,7 +24,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+
+import cc.suitalk.ipcinvoker.tools.SafeConcurrentHashMap;
 
 /**
  * Created by albieliang on 2017/6/18.
@@ -49,7 +50,7 @@ public class InnerIPCEventBus {
     }
 
     private InnerIPCEventBus() {
-        mMap = new ConcurrentHashMap<>();
+        mMap = new SafeConcurrentHashMap<>();
     }
 
     public boolean dispatch(String event, Bundle data) {

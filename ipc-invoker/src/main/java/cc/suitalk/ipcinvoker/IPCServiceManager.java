@@ -26,7 +26,7 @@ import cc.suitalk.ipcinvoker.annotation.NonNull;
  * Created by albieliang on 2017/5/20.
  */
 
-class IPCServiceManager {
+public class IPCServiceManager {
 
     private static volatile IPCServiceManager sMgr;
 

@@ -58,7 +58,7 @@ class WrapperParcelable implements Parcelable {
                 return;
             }
         }
-        dest.writeInt(HAS_DATA);
+        dest.writeInt(NO_DATA);
     }
 
     void readFromParcel(Parcel in) {

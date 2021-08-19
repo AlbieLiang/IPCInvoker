@@ -88,7 +88,7 @@ public class InvokeSyncSample {
     private static class HashCode implements IPCSyncInvokeTask<String, Integer> {
 
         @Override
-        public IPCInteger invoke(String data) {
+        public Integer invoke(String data) {
             return data.hashCode();
         }
     }
